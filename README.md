@@ -40,7 +40,7 @@
 ### 4. Βαθμολογία 
 
 1. Use case diagrams: 3 
-2. Software Requirements Specificatio: 2.5 
+2. Software Requirements Specification: 2.5 
 3. Robustness diagrams: 1 
 4. Code: 1.5 
 5. User Acceptance Testing document & results: 2 
