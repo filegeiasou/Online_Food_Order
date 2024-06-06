@@ -1,5 +1,5 @@
 # Robustness Diagrams
 ## Visual Paradigm Designs
 ### Links
-- [01_Customer](https://online.visual-paradigm.com/community/share/customer-1s9kdqabbt)
-- [02_Administrator](https://online.visual-paradigm.com/community/share/administrator-robustness-diagram-1s9kibsfxd)
+- [01_Customer](https://online.visual-paradigm.com/share.jsp?id=333431343036382d33)
+- [02_Administrator](https://online.visual-paradigm.com/share.jsp?id=333431343036382d33)
