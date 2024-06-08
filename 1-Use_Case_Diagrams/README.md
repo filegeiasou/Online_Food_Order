@@ -10,5 +10,5 @@
   ![Driver](Designs/03_UML_Driver.png)
   
 ### 04_Restaurant
-  ![Restaurant](Designs/04_UML_Administator.png)
+  ![Restaurant](Designs/02_UML_Restaurant.png)
   
