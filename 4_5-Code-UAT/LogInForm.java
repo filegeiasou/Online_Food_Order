@@ -1,11 +1,6 @@
 import java.io.IOException;
-
 import java.awt.FlowLayout;
-import java.awt.Font;
-
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -67,12 +62,15 @@ public class LogInForm extends JFrame implements ActionListener {
             // username.getText();
             // passwd.getPassword();
 
+            CredentialsHandler credHandler = new CredentialsHandler(username.getText(), passwd.getText());
+
             System.out.println("Username: " + username.getText());
             System.out.println("Password: " + passwd.getText());
             //! getText is depracated but getPassword hashes the password.
             //!  So if we do .toString we get a different result.
         }
 
+        /// show password checkbox functionality
         if(showPass.isSelected())
             passwd.setEchoChar((char) 0);
         else passwd.setEchoChar('*');
