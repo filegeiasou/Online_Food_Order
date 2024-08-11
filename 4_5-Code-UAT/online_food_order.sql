@@ -2,7 +2,7 @@ DROP DATABASE IF EXISTS Online_Food_Order_Delivery;
 CREATE DATABASE Online_Food_Order_Delivery;
 USE Online_Food_Order_Delivery;
 
-CREATE TABLE Users (
+CREATE TABLE User (
     USERNAME VARCHAR(50) PRIMARY KEY,
     PASSWORD VARCHAR(50)
 );
@@ -48,7 +48,7 @@ CREATE TABLE Administrator (
     -- FOREIGN KEY (PASSWORD) REFERENCES User(PASSWORD)
 );
 
-INSERT INTO Users 
+INSERT INTO User
 VALUES 
 ('admin', 'admin1234'),
 ('frottori', 'frosso1234'),
