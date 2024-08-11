@@ -56,3 +56,4 @@ VALUES
 ('filegeiasou', 'aggelos1234');
 
 SELECT * FROM USER;
+DELETE FROM USER WHERE USERNAME = "jim";

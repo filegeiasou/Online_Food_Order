@@ -1,20 +1,15 @@
-
-import javax.swing.*;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-
 import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
 
 public class LogInForm extends JFrame implements ActionListener {
     private JTextField username, unameRegField;
     private JPasswordField passwd, passwdRegField;
-    private JButton loginButton, regButton;
     private JCheckBox showPassLogin, showPassReg;
-    private JPanel mainPanel, loginPanel, regPanel;
+    private JButton loginButton, regButton;
+    private JPanel mainPanel, loginPanel, regPanel, dynamicPanel;
     private CardLayout cardLayout;
+    private JComboBox<String> userTypeComboBox;
 
     public LogInForm() {
         super("Log-in Form");
@@ -22,10 +17,10 @@ public class LogInForm extends JFrame implements ActionListener {
     }
 
     public void initForm() {
-        cardLayout = new CardLayout(); // we need the card layout so we can have a lot of panels in the same window
+        cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
-        // Login Form
+        // Login Form (Simple)
         loginPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
 
         JLabel usernameLabel = new JLabel("Username ");
@@ -42,6 +37,7 @@ public class LogInForm extends JFrame implements ActionListener {
         JLabel signUpLabel = new JLabel("<html><u>Sign Up</u></html>");
         signUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         signUpLabel.setForeground(Color.BLUE);
+        signUpLabel.setFont(new Font("JetBrains Mono", Font.BOLD, 13));
 
         loginPanel.add(usernameLabel);
         loginPanel.add(username);
@@ -63,16 +59,24 @@ public class LogInForm extends JFrame implements ActionListener {
         });
 
         // Registration Form
-        regPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
+        regPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
 
         JLabel unameRegLabel = new JLabel("Username ");
         unameRegField = new JTextField(12);
-
         JLabel passwdRegLabel = new JLabel("Password ");
         passwdRegField = new JPasswordField(12);
+        regButton = new JButton("Sign Up");
 
         showPassReg = new JCheckBox("Show Password");
-        regButton = new JButton("Sign Up");
+        showPassReg.setFocusable(false);
+
+        // User type selection
+        JLabel userTypeLabel = new JLabel("User Type");
+        String[] userTypes = {"Select", "Customer", "Driver", "Restaurant"};
+        userTypeComboBox = new JComboBox<>(userTypes);
+
+        dynamicPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
+        dynamicPanel.setVisible(false);  // Initially hidden, will show based on user type selection
 
         JLabel backToLoginLabel = new JLabel("<html><u>Back to Log In</u></html>");
         backToLoginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -84,10 +88,13 @@ public class LogInForm extends JFrame implements ActionListener {
         regPanel.add(passwdRegLabel);
         regPanel.add(passwdRegField);
         regPanel.add(showPassReg);
-        showPassReg.addActionListener(this);
-        regPanel.add(regButton);
+        regPanel.add(userTypeComboBox);
+        regPanel.add(dynamicPanel);  // Add dynamic panel to the registration panel
         regPanel.add(backToLoginLabel);
+        regPanel.add(regButton);
 
+        showPassReg.addActionListener(this);
+        userTypeComboBox.addActionListener(this);
         regButton.addActionListener(this);
         backToLoginLabel.addMouseListener(new MouseAdapter() {
             @Override
@@ -107,7 +114,7 @@ public class LogInForm extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 250);
+        setSize(300, 400);
         setVisible(true);
     }
 
@@ -115,13 +122,13 @@ public class LogInForm extends JFrame implements ActionListener {
     public void actionPerformed(ActionEvent ae) {
         if (ae.getSource() == loginButton) {
             String user = username.getText();
-            String pass = passwd.getText(); // Use getPassword instead of getText for JPasswordField
+            String pass = passwd.getText();
 
             System.out.println("Username: " + user);
             System.out.println("Password: " + pass);
 
-            CredentialsHandler loginHandler = new CredentialsHandler();
-            boolean res = loginHandler.checkEntry(user, pass);
+            CredentialsHandler ch = new CredentialsHandler();
+            boolean res = ch.checkEntry(user, pass);
 
             if (res)
                 JOptionPane.showMessageDialog(this, "Log In Successful");
@@ -130,32 +137,89 @@ public class LogInForm extends JFrame implements ActionListener {
         } else if (ae.getSource() == regButton) {
             String regUser = unameRegField.getText();
             String regPass = passwdRegField.getText();
+            String userType = (String) userTypeComboBox.getSelectedItem();
+
+            switch(userType) {
+                case "Customer":
+                    String address =
+            }
+
 
             System.out.println("New Username: " + regUser);
             System.out.println("New Password: " + regPass);
+            System.out.println("User Type: " + userType);
 
-            CredentialsHandler regHandler = new CredentialsHandler();
-            boolean regResult = regHandler.registerUser(regUser, regPass);
+            if(!regUser.isEmpty() && !regPass.isEmpty()) {
 
-            if(regResult) {
-                JOptionPane.showMessageDialog(this, "Registration Successful");
-                cardLayout.show(mainPanel, "Login");
+                CredentialsHandler regHandler = new CredentialsHandler();
+                boolean regResult = regHandler.registerUser(regUser, regPass);
+
+                if(regResult) {
+                    // Handle registration logic based on user type
+                    JOptionPane.showMessageDialog(this, "Registration Successful as " + userType);
+                    cardLayout.show(mainPanel, "Login");
+                } else {
+                    JOptionPane.showMessageDialog(this, "Registration failed");
+                }
             } else {
-                JOptionPane.showMessageDialog(this, "Registration Failed");
+                JOptionPane.showMessageDialog(this, "Please provide the required credentials");
+            }
+
+        } else if (ae.getSource() == userTypeComboBox) {
+            String selectedType = (String) userTypeComboBox.getSelectedItem();
+            if(selectedType.equals("Select")) {
+                dynamicPanel.setVisible(false);
+                return;
+            }
+
+            SwingUtilities.invokeLater(() -> updateDynamicPanel(selectedType));
+        }
+
+        // Handle show password checkbox for login panel
+        if (ae.getSource() == showPassLogin) {
+            if (showPassLogin.isSelected()) {
+                passwd.setEchoChar((char) 0);
+            } else {
+                passwd.setEchoChar('*');
             }
         }
 
-        if (showPassLogin.isSelected()) {
-            passwd.setEchoChar((char) 0);
-        } else {
-            passwd.setEchoChar('*');
+        // Handle show password checkbox for registration panel
+        if (ae.getSource() == showPassReg) {
+            if (showPassReg.isSelected()) {
+                passwdRegField.setEchoChar((char) 0);
+            } else {
+                passwdRegField.setEchoChar('*');
+            }
+        }
+    }
+
+    private void updateDynamicPanel(String userType) {
+        dynamicPanel.removeAll();  // Clear the panel
+
+        if (userType.equals("Customer")) {
+            dynamicPanel.add(new JLabel("Address:"));
+            dynamicPanel.add(new JTextField(12));
+        } else if (userType.equals("Driver")) {
+            dynamicPanel.add(new JLabel("Phone Number:"));
+            dynamicPanel.add(new JTextField(12));
+        } else if (userType.equals("Restaurant")) {
+            JPanel restaurantPanel = new JPanel();
+            restaurantPanel.setLayout(new BoxLayout(restaurantPanel, BoxLayout.Y_AXIS));
+
+            restaurantPanel.add(new JLabel("Restaurant Name"));
+            restaurantPanel.add(new JTextField(12));
+            restaurantPanel.add(new JLabel("Cuisine Type"));
+            restaurantPanel.add(new JTextField(12));
+            restaurantPanel.add(new JLabel("Location"));
+            restaurantPanel.add(new JTextField(12));
+
+            dynamicPanel.add(restaurantPanel);
         }
 
-        if (showPassReg.isSelected()) {
-            passwdRegField.setEchoChar((char) 0);
-        } else {
-            passwdRegField.setEchoChar('*');
-        }
+        dynamicPanel.revalidate();
+        dynamicPanel.repaint();
+        dynamicPanel.setVisible(true);
     }
 
     public static void main(String[] args) {
