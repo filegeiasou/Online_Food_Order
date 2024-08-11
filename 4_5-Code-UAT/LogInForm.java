@@ -62,12 +62,12 @@ public class LogInForm extends JFrame implements ActionListener {
             // username.getText();
             // passwd.getPassword();
 
-            CredentialsHandler credHandler = new CredentialsHandler(username.getText(), passwd.getText());
-
             System.out.println("Username: " + username.getText());
             System.out.println("Password: " + passwd.getText());
             //! getText is depracated but getPassword hashes the password.
             //!  So if we do .toString we get a different result.
+            
+            new CredentialsHandler(username.getText(), passwd.getText());
         }
 
         /// show password checkbox functionality
