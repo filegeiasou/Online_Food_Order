@@ -11,6 +11,8 @@ public class LogInForm extends JFrame implements ActionListener {
     private CardLayout cardLayout;
     private JComboBox<String> userTypeComboBox;
 
+    JTextField addressField = new JTextField(12);
+
     public LogInForm() {
         super("Log-in Form");
         initForm();
@@ -139,32 +141,43 @@ public class LogInForm extends JFrame implements ActionListener {
             String regPass = passwdRegField.getText();
             String userType = (String) userTypeComboBox.getSelectedItem();
 
-            switch(userType) {
-                case "Customer":
-                    String address =
-            }
-
-
             System.out.println("New Username: " + regUser);
             System.out.println("New Password: " + regPass);
             System.out.println("User Type: " + userType);
 
-            if(!regUser.isEmpty() && !regPass.isEmpty()) {
-
-                CredentialsHandler regHandler = new CredentialsHandler();
-                boolean regResult = regHandler.registerUser(regUser, regPass);
-
-                if(regResult) {
-                    // Handle registration logic based on user type
-                    JOptionPane.showMessageDialog(this, "Registration Successful as " + userType);
-                    cardLayout.show(mainPanel, "Login");
-                } else {
-                    JOptionPane.showMessageDialog(this, "Registration failed");
-                }
+            if(userType.equals("Select")) {
+                JOptionPane.showMessageDialog(this, "Please select a user type");
             } else {
-                JOptionPane.showMessageDialog(this, "Please provide the required credentials");
-            }
+                if(!regUser.isEmpty() && !regPass.isEmpty()) {
+                    CredentialsHandler regHandler = new CredentialsHandler();
 
+                    // handle registration based on user type
+                    switch (userType) {
+                        case "Customer":
+                            boolean regCustomerRes = regHandler.registerCustomer(regUser, regPass, addressField.getText());
+
+                            if(regCustomerRes) {
+                                JOptionPane.showMessageDialog(this, "Registration Successful as " + userType + ". Pressing OK will take you to the log-in page");
+                                cardLayout.show(mainPanel, "Login");
+                            } else JOptionPane.showMessageDialog(this, "Registration failed...");
+                        case "Driver":
+
+                        case "Restaurant":
+                        default:
+                            break;
+                    }
+
+//                    if(regResult) {
+//                        // Handle registration logic based on user type
+//                        JOptionPane.showMessageDialog(this, "Registration Successful as " + userType);
+//                        cardLayout.show(mainPanel, "Login");
+//                    } else {
+//                        JOptionPane.showMessageDialog(this, "Registration failed");
+//                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Please provide the required credentials");
+                }
+            }
         } else if (ae.getSource() == userTypeComboBox) {
             String selectedType = (String) userTypeComboBox.getSelectedItem();
             if(selectedType.equals("Select")) {
@@ -199,7 +212,7 @@ public class LogInForm extends JFrame implements ActionListener {
 
         if (userType.equals("Customer")) {
             dynamicPanel.add(new JLabel("Address:"));
-            dynamicPanel.add(new JTextField(12));
+            dynamicPanel.add(addressField);
         } else if (userType.equals("Driver")) {
             dynamicPanel.add(new JLabel("Phone Number:"));
             dynamicPanel.add(new JTextField(12));
