@@ -54,3 +54,5 @@ VALUES
 ('frottori', 'frosso1234'),
 ('tsosmi', 'dimitris1234'),
 ('filegeiasou', 'aggelos1234');
+
+SELECT * FROM USER;
