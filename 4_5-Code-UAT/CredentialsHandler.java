@@ -65,7 +65,13 @@ public class CredentialsHandler {
                 if(rowsInserted > 0) {
                     regStatus = true;
                 }
+
+                insertStatement.close();
             }
+
+            resultSet.close();
+            preparedStatement.close();
+            dbConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
