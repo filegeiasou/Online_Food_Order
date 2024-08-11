@@ -1,27 +1,33 @@
-import java.io.IOException;
-import java.awt.FlowLayout;
+
 import javax.swing.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import java.awt.*;
 
 public class LogInForm extends JFrame implements ActionListener {
-    private JTextField username;
-    private JPasswordField passwd;
-    private JCheckBox showPass;
-    private JButton loginButton;
+    private JTextField username, unameRegField;
+    private JPasswordField passwd, passwdRegField;
+    private JButton loginButton, regButton;
+    private JCheckBox showPassLogin, showPassReg;
+    private JPanel mainPanel, loginPanel, regPanel;
+    private CardLayout cardLayout;
 
-    public LogInForm () throws IOException {
-        super("Log-in Window");
+    public LogInForm() {
+        super("Log-in Form");
         initForm();
     }
 
     public void initForm() {
-        // setLayout(new FlowLayout());
-        setLayout(new FlowLayout(FlowLayout.CENTER, 10, 20));
+        cardLayout = new CardLayout(); // we need the card layout so we can have a lot of panels in the same window
+        mainPanel = new JPanel(cardLayout);
 
-        // JLabel loginlabel = new JLabel("Log-In Page");
-        // loginlabel.setFont(new Font("Arial", Font.BOLD, 22));
-        
+        // Login Form
+        loginPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
+
         JLabel usernameLabel = new JLabel("Username ");
         JLabel passwordLabel = new JLabel("Password ");
 
@@ -29,24 +35,74 @@ public class LogInForm extends JFrame implements ActionListener {
         passwd = new JPasswordField(12);
         loginButton = new JButton("Log-In");
 
-        showPass = new JCheckBox("Show Password");
-        showPass.setFocusable(false);
+        showPassLogin = new JCheckBox("Show Password");
+        showPassLogin.setFocusable(false);
 
-        // add(loginlabel);
-        // add credentials labels and fields
-        add(usernameLabel);
-        add(username);
-        add(passwordLabel);
-        add(passwd);
+        JLabel preSignUpLabel = new JLabel("Don't have an account? ");
+        JLabel signUpLabel = new JLabel("<html><u>Sign Up</u></html>");
+        signUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        signUpLabel.setForeground(Color.BLUE);
 
-        // add the show password heckbox to the frame and the listener
-        add(showPass);
-        showPass.addActionListener(this);
-        
-        // add log-in button to the frame and the listener
-        add(loginButton);
+        loginPanel.add(usernameLabel);
+        loginPanel.add(username);
+        loginPanel.add(passwordLabel);
+        loginPanel.add(passwd);
+        loginPanel.add(showPassLogin);
+        loginPanel.add(loginButton);
+        loginPanel.add(preSignUpLabel);
+        loginPanel.add(signUpLabel);
+
+        showPassLogin.addActionListener(this);
         loginButton.addActionListener(this);
-        
+
+        signUpLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent me) {
+                cardLayout.show(mainPanel, "Registration");
+            }
+        });
+
+        // Registration Form
+        regPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
+
+        JLabel unameRegLabel = new JLabel("Username ");
+        unameRegField = new JTextField(12);
+
+        JLabel passwdRegLabel = new JLabel("Password ");
+        passwdRegField = new JPasswordField(12);
+
+        showPassReg = new JCheckBox("Show Password");
+        regButton = new JButton("Sign Up");
+
+        JLabel backToLoginLabel = new JLabel("<html><u>Back to Log In</u></html>");
+        backToLoginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        backToLoginLabel.setForeground(Color.BLUE);
+        backToLoginLabel.setFont(new Font("JetBrains Mono", Font.BOLD, 13));
+
+        regPanel.add(unameRegLabel);
+        regPanel.add(unameRegField);
+        regPanel.add(passwdRegLabel);
+        regPanel.add(passwdRegField);
+        regPanel.add(showPassReg);
+        showPassReg.addActionListener(this);
+        regPanel.add(regButton);
+        regPanel.add(backToLoginLabel);
+
+        regButton.addActionListener(this);
+        backToLoginLabel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent me) {
+                cardLayout.show(mainPanel, "Login");
+            }
+        });
+
+        // Add both panels to the main panel
+        mainPanel.add(loginPanel, "Login");
+        mainPanel.add(regPanel, "Registration");
+
+        // Add the main panel to the frame
+        add(mainPanel);
+
         pack();
         setLocationRelativeTo(null);
         setResizable(false);
@@ -56,32 +112,53 @@ public class LogInForm extends JFrame implements ActionListener {
     }
 
     @Override
-    public void actionPerformed(ActionEvent ae)
-    {
-        if(ae.getSource() == loginButton) {
-            // username.getText();
-            // passwd.getPassword();
+    public void actionPerformed(ActionEvent ae) {
+        if (ae.getSource() == loginButton) {
+            String user = username.getText();
+            String pass = passwd.getText(); // Use getPassword instead of getText for JPasswordField
 
-            CredentialsHandler credHandler = new CredentialsHandler(username.getText(), passwd.getText());
+            System.out.println("Username: " + user);
+            System.out.println("Password: " + pass);
 
-            System.out.println("Username: " + username.getText());
-            System.out.println("Password: " + passwd.getText());
-            //! getText is depracated but getPassword hashes the password.
-            //!  So if we do .toString we get a different result.
+            CredentialsHandler loginHandler = new CredentialsHandler();
+            boolean res = loginHandler.checkEntry(user, pass);
+
+            if (res)
+                JOptionPane.showMessageDialog(this, "Log In Successful");
+            else
+                JOptionPane.showMessageDialog(this, "User with given credentials not found");
+        } else if (ae.getSource() == regButton) {
+            String regUser = unameRegField.getText();
+            String regPass = passwdRegField.getText();
+
+            System.out.println("New Username: " + regUser);
+            System.out.println("New Password: " + regPass);
+
+            CredentialsHandler regHandler = new CredentialsHandler();
+            boolean regResult = regHandler.registerUser(regUser, regPass);
+
+            if(regResult) {
+                JOptionPane.showMessageDialog(this, "Registration Successful");
+                cardLayout.show(mainPanel, "Login");
+            } else {
+                JOptionPane.showMessageDialog(this, "Registration Failed");
+            }
         }
 
-        /// show password checkbox functionality
-        if(showPass.isSelected())
+        if (showPassLogin.isSelected()) {
             passwd.setEchoChar((char) 0);
-        else passwd.setEchoChar('*');
+        } else {
+            passwd.setEchoChar('*');
+        }
+
+        if (showPassReg.isSelected()) {
+            passwdRegField.setEchoChar((char) 0);
+        } else {
+            passwdRegField.setEchoChar('*');
+        }
     }
 
     public static void main(String[] args) {
-        try {
-            new LogInForm();
-        } catch(IOException ioe) {
-            System.err.println("Could not start log in page");
-            ioe.printStackTrace();
-        }
+        new LogInForm();
     }
 }
