@@ -46,7 +46,6 @@ CREATE TABLE Administrator (
     ID INT PRIMARY KEY AUTO_INCREMENT,
     USERNAME VARCHAR(50),
     PASSWORD VARCHAR(50),
-    NAME VARCHAR(50),
     FOREIGN KEY (ID) REFERENCES User(ID)
     -- FOREIGN KEY (PASSWORD) REFERENCES User(PASSWORD)
 );
@@ -60,9 +59,7 @@ BEGIN
 END //
 DELIMITER ;
 
--- INSERT INTO User
--- VALUES 
--- ('admin', 'admin1234'),
+INSERT INTO User(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES ('admin', 'admin1234', "admin@gmail.com", "Admin");
 -- ('frottori', 'frosso1234'),
 -- ('tsosmi', 'dimitris1234'),
 -- ('filegeiasou', 'aggelos1234');
@@ -71,3 +68,6 @@ SELECT * FROM USER;
 SELECT * FROM CUSTOMER;
 SELECT * FROM DRIVER;
 SELECT * FROM RESTAURANT;
+
+# Admins will probably just be in the database and can only sign in.
+INSERT INTO ADMINISTRATOR(USERNAME, PASSWORD) VALUES ("admin", "admin1234");
