@@ -11,7 +11,7 @@ public class CustomerHomePage extends JFrame {
 
         add(welcomeLabel);
 
-        setSize(400, 300);
+        setSize(1200, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
