@@ -266,7 +266,7 @@ public class LogInForm extends JFrame implements ActionListener {
                 break;
         }
 
-        dynamicPanel.revalidate();
+        dynamicPanel.revalidate(); // needed in order for the GUI to work properly
         dynamicPanel.repaint();
         dynamicPanel.setVisible(true);
     }
