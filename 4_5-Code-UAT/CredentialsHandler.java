@@ -9,24 +9,33 @@ import java.util.Map;
 
 public class CredentialsHandler {
 
-//    Connection dbConnection;
-//
-//    {
-//        try {
-//            dbConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Online_Food_Order_Delivery", "root", "tsomis");
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    Connection dbConnection;
 
     public CredentialsHandler() {
+        try {
+            dbConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Online_Food_Order_Delivery", "root", "tsomis");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private boolean insertUser(String username, String password, String email, String userType) throws SQLException {
+        String regUserQuery = "INSERT INTO USER(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES (?, ?, ?, ?);";
+        PreparedStatement regUserStatement = dbConnection.prepareStatement(regUserQuery);
+        regUserStatement.setString(1, username);
+        regUserStatement.setString(2, password);
+        regUserStatement.setString(3, email);
+        regUserStatement.setString(4, userType);
+
+        int userRowsInserted = regUserStatement.executeUpdate();
+        regUserStatement.close();
+
+        return userRowsInserted > 0;
     }
 
     public Map<String, String> loginUser(String username, String password) {
         Map<String, String> result = new HashMap<>();
         try {
-            Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Online_Food_Order_Delivery", "root", "tsomis");
-
             // Fetch user details with matching username and password
             String checkQuery = "SELECT ID, USER_TYPE FROM USER WHERE EMAIL = ? AND PASSWORD = ?;";
             PreparedStatement preparedStatement = dbConnection.prepareStatement(checkQuery);
@@ -97,21 +106,10 @@ public class CredentialsHandler {
         boolean regStatus = false;
 
         try {
-            Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Online_Food_Order_Delivery", "root", "tsomis");
+            if(checkExisting(email)) return false;
 
-            boolean userFound = checkExisting(email);
-            if(userFound) return false;
+            if(insertUser(username, password, email, "Customer")) {
 
-            // First, insert the user into the USER table
-            String regUserQuery = "INSERT INTO USER(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES (?, ?, ?, ?);";
-            PreparedStatement regUserStatement = dbConnection.prepareStatement(regUserQuery);
-            regUserStatement.setString(1, username);
-            regUserStatement.setString(2, password);
-            regUserStatement.setString(3, email);
-            regUserStatement.setString(4, "Customer");
-
-            int userRowsInserted = regUserStatement.executeUpdate();
-            if (userRowsInserted > 0) {
                 // If user was successfully inserted, insert into the CUSTOMER table
                 String regCustomerQuery = "INSERT INTO CUSTOMER(USERNAME, PASSWORD, ADDRESS) VALUES (?, ?, ?);";
                 PreparedStatement regCustomerStatement = dbConnection.prepareStatement(regCustomerQuery);
@@ -119,15 +117,14 @@ public class CredentialsHandler {
                 regCustomerStatement.setString(2, password);
                 regCustomerStatement.setString(3, address);
 
-                int customerRowsInserted = regCustomerStatement.executeUpdate();
-                if (customerRowsInserted > 0) {
+                int RowsInserted = regCustomerStatement.executeUpdate();
+                if (RowsInserted > 0) {
                     regStatus = true;
                 }
 
                 regCustomerStatement.close();
             }
 
-            regUserStatement.close();
             dbConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -140,37 +137,24 @@ public class CredentialsHandler {
         boolean regStatus = false;
 
         try {
-            Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Online_Food_Order_Delivery", "root", "tsomis");
+            if(checkExisting(email)) return false;
 
-            boolean userFound = checkExisting(email);
-            if(userFound) return false;
-
-            // First, insert the user into the USER table
-            String regUserQuery = "INSERT INTO USER(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES (?, ?, ?, ?);";
-            PreparedStatement regUserStatement = dbConnection.prepareStatement(regUserQuery);
-            regUserStatement.setString(1, username);
-            regUserStatement.setString(2, password);
-            regUserStatement.setString(3, email);
-            regUserStatement.setString(4, "Driver");
-
-            int userRowsInserted = regUserStatement.executeUpdate();
-            if (userRowsInserted > 0) {
+            if(insertUser(username, password, email, "Driver")) {
                 // If user was successfully inserted, insert into the CUSTOMER table
-                String regCustomerQuery = "INSERT INTO DRIVER(USERNAME, PASSWORD, PHONE_NUMBER) VALUES (?, ?, ?);";
-                PreparedStatement regCustomerStatement = dbConnection.prepareStatement(regCustomerQuery);
-                regCustomerStatement.setString(1, username);
-                regCustomerStatement.setString(2, password);
-                regCustomerStatement.setString(3, phoneNumber);
+                String regDriverQuery = "INSERT INTO DRIVER(USERNAME, PASSWORD, PHONE_NUMBER) VALUES (?, ?, ?);";
+                PreparedStatement regDriverStatement = dbConnection.prepareStatement(regDriverQuery);
+                regDriverStatement.setString(1, username);
+                regDriverStatement.setString(2, password);
+                regDriverStatement.setString(3, phoneNumber);
 
-                int customerRowsInserted = regCustomerStatement.executeUpdate();
-                if (customerRowsInserted > 0) {
+                int RowsInserted = regDriverStatement.executeUpdate();
+                if (RowsInserted > 0) {
                     regStatus = true;
                 }
 
-                regCustomerStatement.close();
+                regDriverStatement.close();
             }
 
-            regUserStatement.close();
             dbConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -183,39 +167,26 @@ public class CredentialsHandler {
         boolean regStatus = false;
 
         try {
-            Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Online_Food_Order_Delivery", "root", "tsomis");
+            if(checkExisting(email)) return false;
 
-            boolean userFound = checkExisting(email);
-            if(userFound) return false;
-
-            // First, insert the user into the USER table
-            String regUserQuery = "INSERT INTO USER(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES (?, ?, ?, ?);";
-            PreparedStatement regUserStatement = dbConnection.prepareStatement(regUserQuery);
-            regUserStatement.setString(1, username);
-            regUserStatement.setString(2, password);
-            regUserStatement.setString(3, email);
-            regUserStatement.setString(4, "Restaurant");
-
-            int userRowsInserted = regUserStatement.executeUpdate();
-            if (userRowsInserted > 0) {
+            if(insertUser(username, password, email, "Restaurant")) {
                 // If user was successfully inserted, insert into the CUSTOMER table
-                String regCustomerQuery = "INSERT INTO RESTAURANT(USERNAME, PASSWORD, NAME, CUISINE_TYPE, LOCATION) VALUES (?, ?, ?, ?, ?);";
-                PreparedStatement regCustomerStatement = dbConnection.prepareStatement(regCustomerQuery);
-                regCustomerStatement.setString(1, username);
-                regCustomerStatement.setString(2, password);
-                regCustomerStatement.setString(3, restaurantName);
-                regCustomerStatement.setString(4, cuisineType);
-                regCustomerStatement.setString(5, location);
+                String regRestaurantQuery = "INSERT INTO RESTAURANT(USERNAME, PASSWORD, NAME, CUISINE_TYPE, LOCATION) VALUES (?, ?, ?, ?, ?);";
+                PreparedStatement regRestaurantStatement = dbConnection.prepareStatement(regRestaurantQuery);
+                regRestaurantStatement.setString(1, username);
+                regRestaurantStatement.setString(2, password);
+                regRestaurantStatement.setString(3, restaurantName);
+                regRestaurantStatement.setString(4, cuisineType);
+                regRestaurantStatement.setString(5, location);
 
-                int customerRowsInserted = regCustomerStatement.executeUpdate();
-                if (customerRowsInserted > 0) {
+                int RowsInserted = regRestaurantStatement.executeUpdate();
+                if (RowsInserted > 0) {
                     regStatus = true;
                 }
 
-                regCustomerStatement.close();
+                regRestaurantStatement.close();
             }
 
-            regUserStatement.close();
             dbConnection.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -232,8 +203,11 @@ public class CredentialsHandler {
         checkAlreadyExisting.setString(1, email);
 
         ResultSet checkSet = checkAlreadyExisting.executeQuery();
+        boolean exists = checkSet.isBeforeFirst();
 
-        return checkSet.isBeforeFirst();
+        checkSet.close();
+        checkAlreadyExisting.close();
+
+        return exists;
     }
-
 }
