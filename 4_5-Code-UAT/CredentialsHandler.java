@@ -67,43 +67,6 @@ public class CredentialsHandler {
         return result;
     }
 
-//    public boolean registerUser (String username, String password) {
-//        boolean regStatus = false;
-//
-//        try {
-//            Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Online_Food_Order_Delivery", "root", "tsomis");
-//
-//            String checkExistingQuery = "SELECT * FROM USER WHERE USERNAME = ? AND PASSWORD = ?;";
-//            PreparedStatement preparedStatement = dbConnection.prepareStatement(checkExistingQuery);
-//            preparedStatement.setString(1, username);
-//            preparedStatement.setString(2, password);
-//
-//            ResultSet resultSet = preparedStatement.executeQuery();
-//            if(!resultSet.isBeforeFirst()) {
-//                // if the user does not already exist
-//                String regQuery = "INSERT INTO USER VALUES (?, ?);";
-//                PreparedStatement insertStatement = dbConnection.prepareStatement(regQuery);
-//                insertStatement.setString(1, username);
-//                insertStatement.setString(2, password);
-//
-//                int rowsInserted = insertStatement.executeUpdate();
-//                if(rowsInserted > 0) {
-//                    regStatus = true;
-//                }
-//
-//                insertStatement.close();
-//            }
-//
-//            resultSet.close();
-//            preparedStatement.close();
-//            dbConnection.close();
-//        } catch (SQLException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return regStatus;
-//    }
-
     public boolean registerCustomer(String username, String password, String email, String address) {
         boolean regStatus = false;
 
