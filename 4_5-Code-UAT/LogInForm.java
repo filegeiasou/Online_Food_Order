@@ -32,57 +32,6 @@ public class LogInForm extends JFrame implements ActionListener {
         initLoginPanel();
         initRegistrationPanel();
 
-        // Registration Form
-        regPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
-
-        JLabel unameRegLabel = new JLabel("Username ");
-        unameRegField = new JTextField(15);
-
-        JLabel emailRegLabel = new JLabel("E-mail        ");
-        emailRegField = new JTextField(15);
-
-        JLabel passwdRegLabel = new JLabel("Password ");
-        passwdRegField = new JPasswordField(15);
-
-        regButton = new JButton("Sign Up");
-
-        showPassReg = new JCheckBox("Show Password");
-        showPassReg.setFocusable(false);
-
-        // User type selection
-        String[] userTypes = {"Select", "Customer", "Driver", "Restaurant"};
-        userTypeComboBox = new JComboBox<>(userTypes);
-
-        dynamicPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
-        dynamicPanel.setVisible(false);  // Initially hidden, will show based on user type selection
-
-        JLabel backToLoginLabel = new JLabel("<html><u>Back to Log In</u></html>");
-        backToLoginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        backToLoginLabel.setForeground(Color.BLUE);
-        backToLoginLabel.setFont(new Font("JetBrains Mono", Font.BOLD, 13));
-
-        regPanel.add(unameRegLabel);
-        regPanel.add(unameRegField);
-        regPanel.add(emailRegLabel);
-        regPanel.add(emailRegField);
-        regPanel.add(passwdRegLabel);
-        regPanel.add(passwdRegField);
-        regPanel.add(showPassReg);
-        regPanel.add(userTypeComboBox);
-        regPanel.add(dynamicPanel);  // Add dynamic panel to the registration panel
-        regPanel.add(backToLoginLabel);
-        regPanel.add(regButton);
-
-        showPassReg.addActionListener(this);
-        userTypeComboBox.addActionListener(this);
-        regButton.addActionListener(this);
-        backToLoginLabel.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent me) {
-                cardLayout.show(mainPanel, "Login");
-            }
-        });
-
         // add both panels to the main panel
         mainPanel.add(loginPanel, "Login");
         mainPanel.add(regPanel, "Registration");
@@ -90,6 +39,10 @@ public class LogInForm extends JFrame implements ActionListener {
         // add main panel to the frame
         add(mainPanel);
 
+        setupPanel();
+    }
+
+    private void setupPanel() {
         pack();
         setLocationRelativeTo(null); // in order for the window to be a bit more to the center
         setResizable(false);
@@ -115,11 +68,9 @@ public class LogInForm extends JFrame implements ActionListener {
 
         // Handle show password checkbox for login panel
         if (ae.getSource() == showPassLogin) {
-            if (showPassLogin.isSelected()) {
+            if (showPassLogin.isSelected())
                 passwd.setEchoChar((char) 0);
-            } else {
-                passwd.setEchoChar('*');
-            }
+            else passwd.setEchoChar('*');
         }
 
         // Handle show password checkbox for registration panel
@@ -259,38 +210,6 @@ public class LogInForm extends JFrame implements ActionListener {
         return false;
     }
 
-    private void handleLogin() {
-        String userEmail = email.getText();
-        String pass = passwd.getText();
-
-        CredentialsHandler ch = new CredentialsHandler();
-        Map<String, String> loginResult = ch.loginUser(userEmail, pass);
-
-        String userId = loginResult.get("USER_ID");
-        String userType = loginResult.get("USER_TYPE");
-
-        if (userId != null && !userId.isEmpty() && userType != null && !userType.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Logged in successfully");
-
-            switch (userType) {
-                case "Customer":
-                    // logic for customer home page
-                    break;
-                case "Driver":
-                    // logic for driver home page
-                    break;
-                case "Restaurant":
-                    // logic for restaurant home page
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(this, "Unknown User Type");
-                    break;
-            }
-        } else {
-            JOptionPane.showMessageDialog(this, "Invalid Username/Password");
-        }
-    }
-
     private void handleRegistration() {
         String regUser = unameRegField.getText();
         String regPass = passwdRegField.getText();
@@ -352,7 +271,35 @@ public class LogInForm extends JFrame implements ActionListener {
         dynamicPanel.setVisible(true);
     }
 
-    public static void main(String[] args) {
-        new LogInForm();
+    private void handleLogin() {
+        String userEmail = email.getText();
+        String pass = passwd.getText();
+
+        CredentialsHandler ch = new CredentialsHandler();
+        Map<String, String> loginResult = ch.loginUser(userEmail, pass);
+
+        String userId = loginResult.get("USER_ID");
+        String userType = loginResult.get("USER_TYPE");
+
+        if (userId != null && !userId.isEmpty() && userType != null && !userType.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Logged in successfully");
+
+            switch (userType) {
+                case "Customer":
+                    // logic for customer home page
+                    break;
+                case "Driver":
+                    // logic for driver home page
+                    break;
+                case "Restaurant":
+                    // logic for restaurant home page
+                    break;
+                default:
+                    JOptionPane.showMessageDialog(this, "Unknown User Type");
+                    break;
+            }
+        } else {
+            JOptionPane.showMessageDialog(this, "Invalid Username/Password");
+        }
     }
 }
