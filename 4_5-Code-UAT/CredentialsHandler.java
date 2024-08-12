@@ -33,13 +33,13 @@ public class CredentialsHandler {
         return userRowsInserted > 0;
     }
 
-    public Map<String, String> loginUser(String username, String password) {
+    public Map<String, String> loginUser(String email, String password) {
         Map<String, String> result = new HashMap<>();
         try {
-            // Fetch user details with matching username and password
-            String checkQuery = "SELECT ID, USER_TYPE FROM USER WHERE EMAIL = ? AND PASSWORD = ?;";
+            // Fetch user details with matching email and password
+            String checkQuery = "SELECT ID, USERNAME, USER_TYPE FROM USER WHERE EMAIL = ? AND PASSWORD = ?;";
             PreparedStatement preparedStatement = dbConnection.prepareStatement(checkQuery);
-            preparedStatement.setString(1, username);
+            preparedStatement.setString(1, email);
             preparedStatement.setString(2, password);
 
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -49,10 +49,12 @@ public class CredentialsHandler {
                 // Assuming the first result is correct or handle ambiguity
                 result.put("USER_ID", resultSet.getString("ID"));
                 result.put("USER_TYPE", resultSet.getString("USER_TYPE"));
+                result.put("USERNAME", resultSet.getString("USERNAME"));
             } else {
                 // In this case the user was not found
                 result.put("USER_ID", null);
                 result.put("USER_TYPE", null);
+                result.put("USERNAME", null);
             }
 
             resultSet.close();
