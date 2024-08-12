@@ -280,26 +280,37 @@ public class LogInForm extends JFrame implements ActionListener {
 
         String userId = loginResult.get("USER_ID");
         String userType = loginResult.get("USER_TYPE");
+        String username = loginResult.get("USERNAME");
 
         if (userId != null && !userId.isEmpty() && userType != null && !userType.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Logged in successfully");
-
-            switch (userType) {
-                case "Customer":
-                    // logic for customer home page
-                    break;
-                case "Driver":
-                    // logic for driver home page
-                    break;
-                case "Restaurant":
-                    // logic for restaurant home page
-                    break;
-                default:
-                    JOptionPane.showMessageDialog(this, "Unknown User Type");
-                    break;
-            }
+            launchHomePage(userType, username);
         } else {
             JOptionPane.showMessageDialog(this, "Invalid Username/Password");
+        }
+    }
+
+    private void launchHomePage(String userType, String username) {
+        dispose();
+        switch (userType) {
+            case "Customer":
+                // logic for customer home page
+                new CustomerHomePage(username);
+                break;
+            case "Driver":
+                new DriverHomePage(username);
+                // logic for driver home page
+                break;
+            case "Restaurant":
+                new RestaurantHomePage(username);
+                // logic for restaurant home page
+                break;
+            case "Admin":
+                new AdminHomePage(username);
+                break;
+            default:
+                JOptionPane.showMessageDialog(this, "Unknown User Type");
+                break;
         }
     }
 }
