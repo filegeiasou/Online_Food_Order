@@ -11,7 +11,7 @@ public class CredentialsHandler {
     Connection dbConnection;
     String url = "jdbc:mysql://localhost:3306/Online_Food_Order_Delivery";
     String user = "root";
-    String password = "Kalampoki-2003"; // Password for the database
+    String password = ""; // Password for the database
 
     public CredentialsHandler() {
         try {
