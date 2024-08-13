@@ -157,16 +157,13 @@ class AboutInfo extends JFrame {
 
         JPanel topPanel = new JPanel();
         topPanel.setBackground(new Color(0xe7a780));
-        ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
-        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
-        JLabel imageLabel = new JLabel(icon);
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        topPanel.add(imageLabel);
+        AppLogo logo = new AppLogo();
+        topPanel.add(logo.getLabel());
 
         JPanel botPanel = new JPanel(new GridBagLayout());
         botPanel.setBackground(new Color(0x575658));
 
-        JLabel usernamLabel = new JLabel("Username: "); usernamLabel.setForeground(Color.WHITE);
+        JLabel usernameLabel = new JLabel("Username: "); usernameLabel.setForeground(Color.WHITE);
         JLabel passwordLabel = new JLabel("Password: "); passwordLabel.setForeground(Color.WHITE);
         JLabel emailLabel = new JLabel("Email: "); emailLabel.setForeground(Color.WHITE);
         JLabel addressLabel = new JLabel("Address: "); addressLabel.setForeground(Color.WHITE);
@@ -182,26 +179,11 @@ class AboutInfo extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
 
-        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(usernamLabel, gbc);
-        gbc.gridx = 1;gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(usernameField, gbc);
-        gbc.gridx = 0; gbc.gridy = 1; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(passwordLabel, gbc);
-        gbc.gridx = 1;gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(passwordField, gbc);
-        gbc.gridx = 0; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(emailLabel, gbc);
-        gbc.gridx = 1;gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(emailField, gbc);
-        gbc.gridx = 0; gbc.gridy = 3; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(addressLabel, gbc);
-        gbc.gridx = 1;gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(addressField, gbc);
-        gbc.gridx = 0; gbc.gridy = 4; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(userTypeLabel, gbc);
-        gbc.gridx = 1;gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(userTypeField, gbc);
+        addToGrid(usernameLabel, usernameField, botPanel, gbc, 0);
+        addToGrid(passwordLabel, passwordField, botPanel, gbc, 1);
+        addToGrid(emailLabel, emailField, botPanel, gbc, 2);
+        addToGrid(addressLabel, addressField, botPanel, gbc, 3);
+        addToGrid(userTypeLabel, userTypeField, botPanel, gbc, 4);
 
         add(topPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
@@ -210,6 +192,15 @@ class AboutInfo extends JFrame {
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    private void addToGrid(JLabel label, JTextField field, JPanel panel, GridBagConstraints gbc, int y) {
+        for (int i = 0; i < 2; i++) {
+            gbc.gridx = i; 
+            gbc.gridy = y;
+            gbc.anchor = (i == 0) ? GridBagConstraints.EAST : GridBagConstraints.WEST;
+            panel.add((i == 0) ? label : field, gbc);
+        }
     }
 
     private void retrieveCustomerInfo() {
@@ -255,11 +246,8 @@ class OrdersPage extends JFrame {
 
         JPanel topPanel = new JPanel();
         topPanel.setBackground(new Color(0xe7a780));
-        ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
-        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
-        JLabel imageLabel = new JLabel(icon);
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        topPanel.add(imageLabel);
+        AppLogo logo = new AppLogo();
+        topPanel.add(logo.getLabel());
 
         JPanel botpanel = new JPanel();
         botpanel.setBackground(new Color(0x575658));

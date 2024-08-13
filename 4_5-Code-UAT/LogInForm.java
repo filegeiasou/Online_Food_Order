@@ -23,7 +23,6 @@ public class LogInForm extends JFrame implements ActionListener {
     public void initForm() {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
-
         addressField = new JTextField(12);
         phoneNumberField = new JTextField(12);
         restaurantNameField = new JTextField(12);
@@ -89,11 +88,8 @@ public class LogInForm extends JFrame implements ActionListener {
         JPanel botPanel = new JPanel(new GridBagLayout()); 
         botPanel.setBackground(new Color(0x575658));
     
-        ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
-        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
-        JLabel imageLabel = new JLabel(icon);
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        topPanel.add(imageLabel);
+        AppLogo logo = new AppLogo();
+        topPanel.add(logo.getLabel());
     
         JLabel emailLabel = new JLabel("E-mail");
         emailLabel.setForeground(Color.WHITE);
@@ -118,14 +114,9 @@ public class LogInForm extends JFrame implements ActionListener {
         // Set up GridBagConstraints 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(emailLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 0; gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(email, gbc);
-        gbc.gridx = 0; gbc.gridy = 1; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(passwordLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 1; gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(passwd, gbc);
+        addToGrid(emailLabel, email, botPanel, gbc,0, 0);
+        addToGrid(passwordLabel, passwd, botPanel, gbc,0, 1);
+
         gbc.gridx = 1; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST;
         botPanel.add(showPassLogin, gbc);
         gbc.gridx = 1; gbc.gridy = 2; gbc.anchor = GridBagConstraints.WEST; 
@@ -154,6 +145,15 @@ public class LogInForm extends JFrame implements ActionListener {
         });
     }    
 
+    private void addToGrid(JLabel label, JTextField field, JPanel panel, GridBagConstraints gbc, int x, int y) {
+        for (int i = x; i < 2; i++) {
+            gbc.gridx = i; 
+            gbc.gridy = y;
+            gbc.anchor = (i == 0) ? GridBagConstraints.EAST : GridBagConstraints.WEST;
+            panel.add((i == 0) ? label : field, gbc);
+        }
+    }
+
     private void initRegistrationPanel() {
 
         regPanel = new JPanel();
@@ -162,11 +162,8 @@ public class LogInForm extends JFrame implements ActionListener {
         JPanel botPanel = new JPanel(new GridBagLayout()); 
         botPanel.setBackground(new Color(0x575658));
 
-        ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
-        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
-        JLabel imageLabel = new JLabel(icon);
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        topPanel.add(imageLabel);
+        AppLogo logo = new AppLogo();
+        topPanel.add(logo.getLabel());
 
         JLabel unameRegLabel = new JLabel("Username ");
         unameRegLabel.setForeground(Color.WHITE);
@@ -201,18 +198,9 @@ public class LogInForm extends JFrame implements ActionListener {
         // Set up GridBagConstraints 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(unameRegLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 0; gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(unameRegField, gbc);
-        gbc.gridx = 0; gbc.gridy = 1; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(emailRegLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 1; gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(emailRegField, gbc);
-        gbc.gridx = 0; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST;
-        botPanel.add(passwdRegLabel, gbc);
-        gbc.gridx = 1; gbc.gridy = 2; gbc.anchor = GridBagConstraints.WEST;
-        botPanel.add(passwdRegField, gbc);
+        addToGrid(unameRegLabel, unameRegField, botPanel, gbc, 0, 0);
+        addToGrid(emailRegLabel, emailRegField, botPanel, gbc, 0, 1);
+        addToGrid(passwdRegLabel, passwdRegField, botPanel, gbc, 0, 2);
         gbc.gridx = 2; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST;
         botPanel.add(showPassReg, gbc);
         gbc.gridx = 1; gbc.gridy = 3; gbc.anchor = GridBagConstraints.WEST;
