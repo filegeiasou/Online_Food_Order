@@ -1,4 +1,3 @@
-
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.SQLException;
@@ -44,7 +43,6 @@ public class LogInForm extends JFrame implements ActionListener {
     }
 
     private void setupPanel() {
-        pack();
         setLocationRelativeTo(null); // in order for the window to be a bit more to the center
         //setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
