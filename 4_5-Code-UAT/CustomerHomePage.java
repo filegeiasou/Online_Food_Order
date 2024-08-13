@@ -2,13 +2,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import java.util.*;
 
 public class CustomerHomePage extends JFrame implements ActionListener {
 
-    JButton viewOrdersButton, infoButton, LogoutButton;
-    String username;
-    JList<String> restaurantList;
-    DefaultListModel<String> listModel;
+    private JButton viewOrdersButton, infoButton, LogoutButton;
+    private String username;
+    private JList<String> restaurantList;
+    private DefaultListModel<String> listModel;
 
     public CustomerHomePage(String username) {
         setTitle("Customer Home Page");
@@ -64,7 +65,7 @@ public class CustomerHomePage extends JFrame implements ActionListener {
                     int index = restaurantList.locationToIndex(e.getPoint());
                     if (index >= 0) {
                         String selectedRestaurant = restaurantList.getModel().getElementAt(index);
-                        new RestaurantPage(selectedRestaurant);
+                        new RestaurantPage(selectedRestaurant, username);
                     }
                 }
             }
@@ -82,7 +83,7 @@ public class CustomerHomePage extends JFrame implements ActionListener {
     private void loadRestaurants() {
         try {
             CredentialsHandler cHandler = new CredentialsHandler();
-            String query = "SELECT NAME FROM Restaurant";
+            String query = "SELECT ID, NAME FROM Restaurant";
             Statement stmt = cHandler.dbConnection.createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
@@ -90,6 +91,8 @@ public class CustomerHomePage extends JFrame implements ActionListener {
                 String restaurantName = rs.getString("name");
                 listModel.addElement(restaurantName);
             }
+
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -108,36 +111,9 @@ public class CustomerHomePage extends JFrame implements ActionListener {
             new LogInForm();
         }
     }
-}
 
-class RestaurantPage extends JFrame {
-    public RestaurantPage(String restaurantName) {
-        setTitle(restaurantName);
-        setLayout(new BorderLayout());
-
-        JPanel topPanel = new JPanel();
-        topPanel.setBackground(new Color(0xe7a780));
-        ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
-        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
-        JLabel imageLabel = new JLabel(icon);
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        topPanel.add(imageLabel);
-
-        JPanel botpanel = new JPanel();
-        botpanel.setBackground(new Color(0x575658));
-        JLabel infoLabel = new JLabel("Welcome to " + restaurantName);
-        infoLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        infoLabel.setForeground(Color.WHITE);
-        botpanel.add(infoLabel);
-
-        add(topPanel, BorderLayout.NORTH);
-        add(botpanel, BorderLayout.CENTER);
-
-        setSize(300, 500);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setVisible(true);
+    public String getUserName() {
+        return username;
     }
 }
 
@@ -207,7 +183,7 @@ class AboutInfo extends JFrame {
 
         try{
             CredentialsHandler cHandler = new CredentialsHandler();
-            String query = "SELECT ID, USERNAME, PASSWORD, ADDRESS FROM Customer WHERE USERNAME = ?";
+            String query = "SELECT PASSWORD, ADDRESS FROM Customer WHERE USERNAME = ?";
             PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
@@ -239,7 +215,167 @@ class AboutInfo extends JFrame {
     }
 }
 
+class RestaurantPage extends JFrame {
+    String restaurantName, customerUsername;
+    int restaurantID;
+    JPanel menuPanel;  // Panel to display menu items
+    ArrayList<JCheckBox> checkBoxes; // List to keep track of checkboxes
+    ArrayList<String> cart; // List to store selected items
+    double totalPrice = 0;
+
+    public RestaurantPage(String restaurantName, String customerUsername) {
+        setTitle(restaurantName);
+        setLayout(new BorderLayout());
+
+        JPanel topPanel = new JPanel();
+        topPanel.setBackground(new Color(0xe7a780));
+        AppLogo logo = new AppLogo();
+        topPanel.add(logo.getLabel());
+
+        JPanel botPanel = new JPanel(new BorderLayout());
+        botPanel.setBackground(new Color(0x575658));
+
+        JLabel infoLabel = new JLabel("Welcome to " + restaurantName);
+        infoLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        infoLabel.setForeground(Color.WHITE);
+        botPanel.add(infoLabel, BorderLayout.NORTH);
+
+        menuPanel = new JPanel();
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+        menuPanel.setBackground(new Color(0x575658));  // Match the background color
+
+        // Initialize lists
+        checkBoxes = new ArrayList<>();
+        cart = new ArrayList<>();
+
+        // Retrieve Menu Items
+        this.restaurantName = restaurantName;
+        this.customerUsername = customerUsername;
+        retrieveMenuItems();
+
+        JScrollPane scrollPane = new JScrollPane(menuPanel);
+        botPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Add "Add to Cart" button
+        JButton addToCartButton = new JButton("Add to Cart");
+        addToCartButton.addActionListener(e -> addToCart());
+        botPanel.add(addToCartButton, BorderLayout.SOUTH);
+
+        add(topPanel, BorderLayout.NORTH);
+        add(botPanel, BorderLayout.CENTER);
+
+        setSize(300, 500);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void retrieveMenuItems() {
+        try {
+            CredentialsHandler cHandler = new CredentialsHandler();
+            String query = "SELECT ID FROM Restaurant WHERE NAME = ?";
+            PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
+            pstmt.setString(1, restaurantName);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                restaurantID = rs.getInt("ID");
+            }
+
+            query = "SELECT NAME, PRICE, CATEGORY FROM Menu WHERE RESTAURANT_ID = ?";
+            pstmt = cHandler.dbConnection.prepareStatement(query);
+            pstmt.setInt(1, restaurantID);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                String itemName = rs.getString("NAME");
+                double itemPrice = rs.getDouble("PRICE");
+                String itemCategory = rs.getString("CATEGORY");
+
+                // Display each menu item
+                addMenuItem(itemName, itemPrice, itemCategory);
+
+            }
+
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addMenuItem(String name, double price, String category) {
+        JPanel itemPanel = new JPanel(new BorderLayout());
+        itemPanel.setBackground(new Color(0x575658));  
+        itemPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); 
+
+        JCheckBox checkBox = new JCheckBox(name + " - $" + String.format("%.2f", price) + " (" + category + ")");
+        checkBox.setBackground(new Color(0x575658));  
+        checkBox.setForeground(Color.WHITE);
+        checkBox.setFont(new Font("Arial", Font.BOLD, 14));
+        checkBoxes.add(checkBox);
+
+        itemPanel.add(checkBox, BorderLayout.CENTER);
+        menuPanel.add(itemPanel);
+    }
+
+    private void addToCart() {
+        cart.clear();  
+        for (JCheckBox checkBox : checkBoxes) {
+            if (checkBox.isSelected()) {
+                cart.add(checkBox.getText());
+                totalPrice += Double.parseDouble(checkBox.getText().split(" ")[2].substring(1));
+            }
+        }
+        showCartItems();
+        addOrderToDB();
+    }
+
+    private void showCartItems() {
+        if (cart.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Your cart is empty.", "Cart", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            StringBuilder cartContent = new StringBuilder("Items in your cart:\n");
+            for (String item : cart) {
+                cartContent.append(item).append("\n");
+            }
+            JOptionPane.showMessageDialog(this, cartContent.toString(), "Cart", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void addOrderToDB() {
+        try {
+            CredentialsHandler cHandler = new CredentialsHandler();
+
+            String query = "SELECT ID FROM CUSTOMER WHERE USERNAME = ?";
+            PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
+            pstmt.setString(1, customerUsername);
+            ResultSet rs = pstmt.executeQuery();
+            int customerID = -1;
+            while(rs.next()) {
+                customerID = rs.getInt("ID");
+            }
+
+            query = "INSERT INTO Orders(CUSTOMER_ID, RESTAURANT_ID, QUANTITY, TOTAL_PRICE, STATUS) VALUES (?, ?, ?, ?, ?)";
+            pstmt = cHandler.dbConnection.prepareStatement(query);
+            pstmt.setInt(1, customerID);
+            pstmt.setInt(2, restaurantID);
+            pstmt.setInt(3, cart.size());
+            pstmt.setDouble(4, totalPrice);
+            pstmt.setString(5, "Pending");
+            pstmt.executeUpdate();
+
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
 class OrdersPage extends JFrame {
+    String customerUsername;
+    JPanel ordersContainer;
+
     public OrdersPage(String username) {
         setTitle("Orders");
         setLayout(new BorderLayout());
@@ -249,20 +385,97 @@ class OrdersPage extends JFrame {
         AppLogo logo = new AppLogo();
         topPanel.add(logo.getLabel());
 
-        JPanel botpanel = new JPanel();
-        botpanel.setBackground(new Color(0x575658));
+        ordersContainer = new JPanel();
+        ordersContainer.setLayout(new BoxLayout(ordersContainer, BoxLayout.Y_AXIS));
+        ordersContainer.setBackground(new Color(0x575658));
+
+        JScrollPane scrollPane = new JScrollPane(ordersContainer);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
+        
+        JPanel botPanel = new JPanel(new BorderLayout());
+        botPanel.setBackground(new Color(0x575658));
         JLabel infoLabel = new JLabel("Orders for " + username);
         infoLabel.setFont(new Font("Arial", Font.BOLD, 18));
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         infoLabel.setForeground(Color.WHITE);
-        botpanel.add(infoLabel);
+        botPanel.add(infoLabel, BorderLayout.NORTH);
+
+        this.customerUsername = username;
+        retrieveOrders();
 
         add(topPanel, BorderLayout.NORTH);
-        add(botpanel, BorderLayout.CENTER);
+        add(scrollPane, BorderLayout.CENTER);
+        add(botPanel, BorderLayout.SOUTH);
 
-        setSize(300, 500);
+        setSize(400, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
+    }
+
+    private void retrieveOrders() {
+        try {
+            CredentialsHandler cHandler = new CredentialsHandler();
+
+            String query = "SELECT ID FROM CUSTOMER WHERE USERNAME = ?";
+            PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
+            pstmt.setString(1, customerUsername);
+            ResultSet rs = pstmt.executeQuery();
+            int customerID = -1;
+            if (rs.next()) {
+                customerID = rs.getInt("ID");
+            }
+
+            // Now retrieve the orders associated with the customer ID
+            query = "SELECT * FROM Orders WHERE CUSTOMER_ID = ?";
+            pstmt = cHandler.dbConnection.prepareStatement(query);
+            pstmt.setInt(1, customerID);
+            rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                int orderID = rs.getInt("ID");
+                int restaurantID = rs.getInt("RESTAURANT_ID");
+                int quantity = rs.getInt("QUANTITY");
+                double totalPrice = rs.getDouble("TOTAL_PRICE");
+                String status = rs.getString("STATUS");
+
+                // Create and add the order panel to the orders container
+                JPanel orderPanel = createOrderPanel(orderID, restaurantID, quantity, totalPrice, status);
+                ordersContainer.add(orderPanel);
+            }
+
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private JPanel createOrderPanel(int orderID, int restaurantID, int quantity, double totalPrice, String status) {
+        JPanel orderPanel = new JPanel();
+        orderPanel.setLayout(new BoxLayout(orderPanel, BoxLayout.Y_AXIS));
+        orderPanel.setBackground(new Color(0x424242));
+        orderPanel.setBorder(BorderFactory.createCompoundBorder(
+        BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
+        BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+
+        JLabel orderIdLabel = new JLabel("Order ID: " + orderID);
+        JLabel restaurantIdLabel = new JLabel("Restaurant ID: " + restaurantID);
+        JLabel quantityLabel = new JLabel("Quantity: " + quantity);
+        JLabel totalPriceLabel = new JLabel("Total Price: $" + String.format("%.2f", totalPrice));
+        JLabel statusLabel = new JLabel("Status: " + status);
+
+        orderIdLabel.setForeground(Color.WHITE);
+        restaurantIdLabel.setForeground(Color.WHITE);
+        quantityLabel.setForeground(Color.WHITE);
+        totalPriceLabel.setForeground(Color.WHITE);
+        statusLabel.setForeground(Color.WHITE);
+
+        orderPanel.add(orderIdLabel);
+        orderPanel.add(restaurantIdLabel);
+        orderPanel.add(quantityLabel);
+        orderPanel.add(totalPriceLabel);
+        orderPanel.add(statusLabel);
+
+        return orderPanel;
     }
 }

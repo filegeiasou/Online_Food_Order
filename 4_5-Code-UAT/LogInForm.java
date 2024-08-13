@@ -23,6 +23,7 @@ public class LogInForm extends JFrame implements ActionListener {
     public void initForm() {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
+
         addressField = new JTextField(12);
         phoneNumberField = new JTextField(12);
         restaurantNameField = new JTextField(12);
