@@ -50,6 +50,15 @@ CREATE TABLE Administrator (
     -- FOREIGN KEY (PASSWORD) REFERENCES User(PASSWORD)
 );
 
+CREATE TABLE Menu{
+    ID INT PRIMARY KEY AUTO_INCREMENT,
+    RESTAURANT_ID INT,
+    NAME VARCHAR(50),
+    PRICE FLOAT(10,2),
+    CATEGORY VARCHAR(50),
+    FOREIGN KEY (RESTAURANT_ID) REFERENCES Restaurant(ID)
+};
+
 DELIMITER //
 CREATE TRIGGER capitalize
 BEFORE INSERT ON CUSTOMER
@@ -78,3 +87,11 @@ INSERT INTO ADMINISTRATOR(USERNAME, PASSWORD) VALUES ("admin", "admin1234");
 # ΕΝΔΕΙΚΤΙΚΑ
 INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("manos", "manos1234", "Misafir", "Athens", "Turkish", 4);
 INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("aggelos", "aggelos1234", "Elliniko", "Athens", "Greek", 4.5);
+
+# MENU FOR MISAFIR
+INSERT INTO Menu(RESTAURANT_ID, NAME, PRICE, CATEGORY) 
+VALUES 
+(1, "Kebab", 5, "Main"),
+(1, "Baklava", 3, "Dessert"),
+(1, "Raki", 4, "Drink"),
+(1, "Kokoretsi", 6, "Main");
