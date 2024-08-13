@@ -1,6 +1,0 @@
-{
-    "java.project.referencedLibraries": [
-        "lib/**/*.jar",
-        "/Users/frottori/Documents/Files/JDBC Drivers/mysql-connector-j-8.1.0.jar"
-    ]
-}
