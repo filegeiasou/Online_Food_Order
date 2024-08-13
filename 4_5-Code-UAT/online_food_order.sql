@@ -27,7 +27,7 @@ CREATE TABLE Restaurant (
     NAME VARCHAR(50),
     LOCATION VARCHAR(50),
     CUISINE_TYPE VARCHAR(50),
-    RATING FLOAT(2,2),
+    RATING FLOAT(10,2),
     FOREIGN KEY (ID) REFERENCES User(ID)
     -- FOREIGN KEY (PASSWORD) REFERENCES User(PASSWORD)
 );
@@ -59,7 +59,10 @@ BEGIN
 END //
 DELIMITER ;
 
-INSERT INTO User(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES ('admin', 'admin1234', "admin@gmail.com", "Admin");
+INSERT INTO User(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES 
+('admin', 'admin1234', "admin@gmail.com", "Admin"),
+('manos', 'manos1234', "manos@gmail.com", "Restaurant"),
+('aggelos', 'aggelos1234', "aggelos@gmail.com", "Restaurant");
 -- ('frottori', 'frosso1234'),
 -- ('tsosmi', 'dimitris1234'),
 -- ('filegeiasou', 'aggelos1234');
@@ -71,3 +74,7 @@ SELECT * FROM RESTAURANT;
 
 # Admins will probably just be in the database and can only sign in.
 INSERT INTO ADMINISTRATOR(USERNAME, PASSWORD) VALUES ("admin", "admin1234");
+
+# ΕΝΔΕΙΚΤΙΚΑ
+INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("manos", "manos1234", "Misafir", "Athens", "Turkish", 4);
+INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("aggelos", "aggelos1234", "Elliniko", "Athens", "Greek", 4.5);

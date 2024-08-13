@@ -13,12 +13,7 @@ public class LogInForm extends JFrame implements ActionListener {
     private JPanel mainPanel, loginPanel, regPanel, dynamicPanel;
     private CardLayout cardLayout;
     private JComboBox<String> userTypeComboBox;
-
-    JTextField addressField = new JTextField(12);
-    JTextField phoneNumberField = new JTextField(12);
-    JTextField restaurantNameField = new JTextField(12);
-    JTextField cuisineTypeField = new JTextField(12);
-    JTextField locationField = new JTextField(12);
+    JTextField addressField, phoneNumberField, restaurantNameField, cuisineTypeField, locationField;
 
     public LogInForm() {
         super("Log-in Form");
@@ -29,6 +24,12 @@ public class LogInForm extends JFrame implements ActionListener {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
 
+        addressField = new JTextField(12);
+        phoneNumberField = new JTextField(12);
+        restaurantNameField = new JTextField(12);
+        cuisineTypeField = new JTextField(12);
+        locationField = new JTextField(12);
+       
         initLoginPanel();
         initRegistrationPanel();
 
@@ -45,9 +46,9 @@ public class LogInForm extends JFrame implements ActionListener {
     private void setupPanel() {
         pack();
         setLocationRelativeTo(null); // in order for the window to be a bit more to the center
-        setResizable(false);
+        //setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(300, 400);
+        setSize(500, 550);
         setVisible(true);
     }
 
@@ -82,33 +83,65 @@ public class LogInForm extends JFrame implements ActionListener {
     }
 
     private void initLoginPanel() {
-        loginPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
-
-        JLabel emailLabel = new JLabel("E-mail        ");
+        loginPanel = new JPanel();
+        JPanel topPanel = new JPanel();
+        topPanel.setBackground(new Color(0xe7a780));
+        JPanel botPanel = new JPanel(new GridBagLayout()); 
+        botPanel.setBackground(new Color(0x575658));
+    
+        ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
+        JLabel imageLabel = new JLabel(icon);
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        topPanel.add(imageLabel);
+    
+        JLabel emailLabel = new JLabel("E-mail");
+        emailLabel.setForeground(Color.WHITE);
         JLabel passwordLabel = new JLabel("Password ");
-
+        passwordLabel.setForeground(Color.WHITE);
+    
         email = new JTextField(15);
         passwd = new JPasswordField(15);
         loginButton = new JButton("Log-In");
-
+    
         showPassLogin = new JCheckBox("Show Password");
+        showPassLogin.setForeground(Color.WHITE);
         showPassLogin.setFocusable(false);
-
+    
         JLabel preSignUpLabel = new JLabel("Don't have an account? ");
+        preSignUpLabel.setForeground(Color.WHITE);
         JLabel signUpLabel = new JLabel("<html><u>Sign Up</u></html>");
         signUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         signUpLabel.setForeground(Color.BLUE);
         signUpLabel.setFont(new Font("JetBrains Mono", Font.BOLD, 13));
-
-        loginPanel.add(emailLabel);
-        loginPanel.add(email);
-        loginPanel.add(passwordLabel);
-        loginPanel.add(passwd);
-        loginPanel.add(showPassLogin);
-        loginPanel.add(loginButton);
-        loginPanel.add(preSignUpLabel);
-        loginPanel.add(signUpLabel);
-
+    
+        // Set up GridBagConstraints 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST;
+        botPanel.add(emailLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 0; gbc.anchor = GridBagConstraints.WEST;
+        botPanel.add(email, gbc);
+        gbc.gridx = 0; gbc.gridy = 1; gbc.anchor = GridBagConstraints.EAST;
+        botPanel.add(passwordLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 1; gbc.anchor = GridBagConstraints.WEST;
+        botPanel.add(passwd, gbc);
+        gbc.gridx = 1; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST;
+        botPanel.add(showPassLogin, gbc);
+        gbc.gridx = 1; gbc.gridy = 2; gbc.anchor = GridBagConstraints.WEST; 
+        botPanel.add(loginButton, gbc);
+    
+        JPanel signUpPanel = new JPanel();
+        signUpPanel.add(preSignUpLabel);
+        signUpPanel.add(signUpLabel);
+        signUpPanel.setBackground(botPanel.getBackground()); 
+    
+        gbc.gridx = 1; gbc.gridy = 4; gbc.anchor = GridBagConstraints.CENTER;
+        botPanel.add(signUpPanel, gbc);
+    
+        loginPanel.setLayout(new BorderLayout());
+        loginPanel.add(topPanel, BorderLayout.NORTH);
+        loginPanel.add(botPanel, BorderLayout.CENTER);
+    
         // Add listeners
         showPassLogin.addActionListener(this);
         loginButton.addActionListener(this);
@@ -118,22 +151,36 @@ public class LogInForm extends JFrame implements ActionListener {
                 cardLayout.show(mainPanel, "Registration");
             }
         });
-    }
+    }    
 
     private void initRegistrationPanel() {
-        regPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 15));
+
+        regPanel = new JPanel();
+        JPanel topPanel = new JPanel();
+        topPanel.setBackground(new Color(0xe7a780));
+        JPanel botPanel = new JPanel(new GridBagLayout()); 
+        botPanel.setBackground(new Color(0x575658));
+
+        ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
+        JLabel imageLabel = new JLabel(icon);
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        topPanel.add(imageLabel);
 
         JLabel unameRegLabel = new JLabel("Username ");
+        unameRegLabel.setForeground(Color.WHITE);
         unameRegField = new JTextField(15);
 
-        JLabel emailRegLabel = new JLabel("E-mail        ");
+        JLabel emailRegLabel = new JLabel("E-mail");
+        emailRegLabel.setForeground(Color.WHITE);
         emailRegField = new JTextField(15);
 
         JLabel passwdRegLabel = new JLabel("Password ");
+        passwdRegLabel.setForeground(Color.WHITE);
         passwdRegField = new JPasswordField(15);
 
         regButton = new JButton("Sign Up");
         showPassReg = new JCheckBox("Show Password");
+        showPassReg.setForeground(Color.WHITE);
         showPassReg.setFocusable(false);
 
         // User type selection
@@ -142,23 +189,46 @@ public class LogInForm extends JFrame implements ActionListener {
 
         dynamicPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
         dynamicPanel.setVisible(false);  // Initially hidden, will show based on user type selection
+        dynamicPanel.setBackground(botPanel.getBackground());
 
         JLabel backToLoginLabel = new JLabel("<html><u>Back to Log In</u></html>");
         backToLoginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         backToLoginLabel.setForeground(Color.BLUE);
         backToLoginLabel.setFont(new Font("JetBrains Mono", Font.BOLD, 13));
 
-        regPanel.add(unameRegLabel);
-        regPanel.add(unameRegField);
-        regPanel.add(emailRegLabel);
-        regPanel.add(emailRegField);
-        regPanel.add(passwdRegLabel);
-        regPanel.add(passwdRegField);
-        regPanel.add(showPassReg);
-        regPanel.add(userTypeComboBox);
-        regPanel.add(dynamicPanel);  // Add dynamic panel to the registration panel
-        regPanel.add(backToLoginLabel);
-        regPanel.add(regButton);
+        // Set up GridBagConstraints 
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.gridx = 0; gbc.gridy = 0; gbc.anchor = GridBagConstraints.EAST;
+        botPanel.add(unameRegLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 0; gbc.anchor = GridBagConstraints.WEST;
+        botPanel.add(unameRegField, gbc);
+        gbc.gridx = 0; gbc.gridy = 1; gbc.anchor = GridBagConstraints.EAST;
+        botPanel.add(emailRegLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 1; gbc.anchor = GridBagConstraints.WEST;
+        botPanel.add(emailRegField, gbc);
+        gbc.gridx = 0; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST;
+        botPanel.add(passwdRegLabel, gbc);
+        gbc.gridx = 1; gbc.gridy = 2; gbc.anchor = GridBagConstraints.WEST;
+        botPanel.add(passwdRegField, gbc);
+        gbc.gridx = 2; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST;
+        botPanel.add(showPassReg, gbc);
+        gbc.gridx = 1; gbc.gridy = 3; gbc.anchor = GridBagConstraints.WEST;
+        botPanel.add(userTypeComboBox, gbc);
+        gbc.gridx = 1; gbc.gridy = 4; gbc.anchor = GridBagConstraints.CENTER;
+        botPanel.add(dynamicPanel, gbc); // Add dynamic panel to the registration panel
+
+        JPanel signUpPanel = new JPanel();
+        signUpPanel.add(backToLoginLabel);
+        signUpPanel.add(regButton);
+        signUpPanel.setBackground(botPanel.getBackground());
+    
+        gbc.gridx = 1; gbc.gridy = 5; gbc.anchor = GridBagConstraints.CENTER;
+        botPanel.add(signUpPanel, gbc);
+
+        regPanel.setLayout(new BorderLayout());
+        regPanel.add(topPanel, BorderLayout.NORTH);
+        regPanel.add(botPanel, BorderLayout.CENTER);
 
         // Add listeners
         showPassReg.addActionListener(this);
@@ -212,7 +282,7 @@ public class LogInForm extends JFrame implements ActionListener {
 
     private void handleRegistration() {
         String regUser = unameRegField.getText();
-        String regPass = passwdRegField.getText();
+        String regPass = new String(passwdRegField.getPassword());
         String regEmail = emailRegField.getText();
         String userType = (String) userTypeComboBox.getSelectedItem();
 
@@ -244,22 +314,28 @@ public class LogInForm extends JFrame implements ActionListener {
 
         switch (userType) {
             case "Customer":
-                dynamicPanel.add(new JLabel("Address:"));
+                JLabel addressLabel = new JLabel("Address"); addressLabel.setForeground(Color.WHITE);
+                dynamicPanel.add(addressLabel);
                 dynamicPanel.add(addressField);
                 break;
             case "Driver":
-                dynamicPanel.add(new JLabel("Phone Number:"));
+                JLabel phoneLabel = new JLabel("Phone Number");phoneLabel.setForeground(Color.WHITE);
+                dynamicPanel.add(phoneLabel);
                 dynamicPanel.add(phoneNumberField);
                 break;
             case "Restaurant":
                 JPanel restaurantPanel = new JPanel();
                 restaurantPanel.setLayout(new BoxLayout(restaurantPanel, BoxLayout.Y_AXIS));
+                restaurantPanel.setBackground(new Color(0x575658));
 
-                restaurantPanel.add(new JLabel("Restaurant Name"));
+                JLabel restaurantNameLabel = new JLabel("Restaurant Name");restaurantNameLabel.setForeground(Color.WHITE);
+                JLabel cuisineTypeLabel = new JLabel("Cuisine Type");cuisineTypeLabel.setForeground(Color.WHITE);
+                JLabel locationLabel = new JLabel("Location");locationLabel.setForeground(Color.WHITE);
+                restaurantPanel.add(restaurantNameLabel);
                 restaurantPanel.add(restaurantNameField);
-                restaurantPanel.add(new JLabel("Cuisine Type"));
+                restaurantPanel.add(cuisineTypeLabel);
                 restaurantPanel.add(cuisineTypeField);
-                restaurantPanel.add(new JLabel("Location"));
+                restaurantPanel.add(locationLabel);
                 restaurantPanel.add(locationField);
 
                 dynamicPanel.add(restaurantPanel);
@@ -273,7 +349,7 @@ public class LogInForm extends JFrame implements ActionListener {
 
     private void handleLogin() {
         String userEmail = email.getText();
-        String pass = passwd.getText();
+        String pass = new String(passwd.getPassword());
 
         CredentialsHandler ch = new CredentialsHandler();
         Map<String, String> loginResult = ch.loginUser(userEmail, pass);
