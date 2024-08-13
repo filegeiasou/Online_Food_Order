@@ -1,4 +1,3 @@
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,10 +9,13 @@ import java.util.Map;
 public class CredentialsHandler {
 
     Connection dbConnection;
+    String url = "jdbc:mysql://localhost:3306/Online_Food_Order_Delivery";
+    String user = "root";
+    String password = "Kalampoki-2003"; // Password for the database
 
     public CredentialsHandler() {
         try {
-            dbConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Online_Food_Order_Delivery", "root", "tsomis");
+            dbConnection = DriverManager.getConnection(url,user,password);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -161,8 +163,6 @@ public class CredentialsHandler {
     }
 
     public boolean checkExisting(String email) throws SQLException {
-        Connection dbConnection = DriverManager.getConnection("jdbc:mysql://localhost:3306/Online_Food_Order_Delivery", "root", "tsomis");
-
         String checkQuery = "SELECT * FROM USER WHERE EMAIL = ?";
         PreparedStatement checkAlreadyExisting = dbConnection.prepareStatement(checkQuery);
         checkAlreadyExisting.setString(1, email);
