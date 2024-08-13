@@ -90,6 +90,7 @@ public class LogInForm extends JFrame implements ActionListener {
         botPanel.setBackground(new Color(0x575658));
     
         ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
+        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
         JLabel imageLabel = new JLabel(icon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.add(imageLabel);
@@ -162,6 +163,7 @@ public class LogInForm extends JFrame implements ActionListener {
         botPanel.setBackground(new Color(0x575658));
 
         ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
+        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
         JLabel imageLabel = new JLabel(icon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.add(imageLabel);

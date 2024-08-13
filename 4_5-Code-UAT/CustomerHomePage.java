@@ -28,6 +28,7 @@ public class CustomerHomePage extends JFrame implements ActionListener {
         LogoutButton.addActionListener(this);
 
         ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
+        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
         JLabel imageLabel = new JLabel(icon);
 
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -117,6 +118,7 @@ class RestaurantPage extends JFrame {
         JPanel topPanel = new JPanel();
         topPanel.setBackground(new Color(0xe7a780));
         ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
+        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
         JLabel imageLabel = new JLabel(icon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.add(imageLabel);
@@ -156,6 +158,7 @@ class AboutInfo extends JFrame {
         JPanel topPanel = new JPanel();
         topPanel.setBackground(new Color(0xe7a780));
         ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
+        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
         JLabel imageLabel = new JLabel(icon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.add(imageLabel);
@@ -253,6 +256,7 @@ class OrdersPage extends JFrame {
         JPanel topPanel = new JPanel();
         topPanel.setBackground(new Color(0xe7a780));
         ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
+        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
         JLabel imageLabel = new JLabel(icon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
         topPanel.add(imageLabel);
