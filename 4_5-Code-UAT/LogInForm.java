@@ -69,7 +69,7 @@ public class LogInForm extends JFrame implements ActionListener {
         if (ae.getSource() == showPassLogin) {
             if (showPassLogin.isSelected())
                 passwd.setEchoChar((char) 0);
-            else passwd.setEchoChar('*');
+            else passwd.setEchoChar('●');
         }
 
         // Handle show password checkbox for registration panel
