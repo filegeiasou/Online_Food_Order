@@ -1,7 +1,7 @@
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.event.*;
+import javax.swing.table.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.sql.*;
 
@@ -44,9 +44,20 @@ public class AdminHomePage extends JFrame {
 
     private JPanel createUserPanel(String userType) {
         JPanel panel = new JPanel(new BorderLayout());
+        panel.setBackground(new Color(0x575658)); // Set panel background to black
+        panel.setBorder(BorderFactory.createLineBorder(new Color(0x575658))); // Set panel border to black
 
         // Table for displaying users
         JTable userTable = new JTable();
+        userTable.setBackground(new Color(0x575658)); // Set table background to black
+        userTable.setForeground(Color.WHITE); // Set table text to white
+        userTable.setGridColor(Color.WHITE); // Set grid color to white
+
+        // Set table header (ID, Username, etc.) background to black and text to white
+        JTableHeader tableHeader = userTable.getTableHeader();
+        tableHeader.setBackground(new Color(0x575658)); // Set header background to black
+        tableHeader.setForeground(Color.WHITE); // Set header text to white
+
         DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"ID", "Username", "Email", "Details"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -73,10 +84,17 @@ public class AdminHomePage extends JFrame {
 
         // Scroll pane for the table
         JScrollPane scrollPane = new JScrollPane(userTable);
+        scrollPane.getViewport().setBackground(new Color(0x575658)); // Set scroll pane background to black
 
         // Control panel with buttons and search bar
         JPanel controlPanel = new JPanel();
+        controlPanel.setBackground(new Color(0x575658)); // Set control panel background to black
+        controlPanel.setForeground(Color.WHITE); // Set control panel text to white
+
         JTextField searchField = new JTextField(15);
+        searchField.setForeground(new Color(0x575658)); 
+        searchField.setBackground(Color.WHITE); 
+
         JButton searchButton = new JButton("Search");
         JButton addButton = new JButton("Add");
         JButton editButton = new JButton("Edit");
@@ -84,9 +102,17 @@ public class AdminHomePage extends JFrame {
         JButton refreshButton = new JButton("Refresh");
         JButton logOutButton = new JButton("Log Out");
 
+        // Set buttons background to black and text to white
+        JButton[] buttons = {searchButton, addButton, editButton, deleteButton, refreshButton, logOutButton};
+        for (JButton button : buttons) {
+            button.setBackground(Color.WHITE);
+            button.setForeground(Color.BLACK);
+        }
         searchButton.setEnabled(false);
 
-        controlPanel.add(new JLabel("Search"));
+        JLabel searchLabel = new JLabel("Search");
+        searchLabel.setForeground(Color.WHITE); 
+        controlPanel.add(searchLabel);
         controlPanel.add(searchField);
         controlPanel.add(searchButton);
         controlPanel.add(addButton);
