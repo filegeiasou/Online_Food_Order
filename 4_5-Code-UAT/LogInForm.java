@@ -76,7 +76,7 @@ public class LogInForm extends JFrame implements ActionListener {
         if (ae.getSource() == showPassReg) {
             if (showPassReg.isSelected())
                 passwdRegField.setEchoChar((char) 0);
-            else passwdRegField.setEchoChar('*');
+            else passwdRegField.setEchoChar('●');
         }
     }
 
