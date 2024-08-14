@@ -342,34 +342,39 @@ class RestaurantPage extends JFrame {
     }
 
     private void addMenuCategory(CredentialsHandler cHandler, String category) {
-        try{
-            String query = "SELECT NAME, PRICE, CATEGORY FROM Menu WHERE RESTAURANT_ID = ? AND CATEGORY = ?";
+        try {
+            String query = "SELECT NAME, PRICE FROM Menu WHERE RESTAURANT_ID = ? AND CATEGORY = ?";
             PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setInt(1, restaurantID);
             pstmt.setString(2, category);
             ResultSet rs = pstmt.executeQuery();
 
+            JPanel categoryPanel = new JPanel();
+            categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.Y_AXIS));
+            categoryPanel.setBackground(new Color(0x575658)); // Match the background color
+            categoryPanel.setBorder(BorderFactory.createTitledBorder(category)); // Title with category name
+
             while (rs.next()) {
                 String itemName = rs.getString("NAME");
                 double itemPrice = rs.getDouble("PRICE");
-                String itemCategory = rs.getString("CATEGORY");
+                addMenuItem(categoryPanel, itemName, itemPrice, category);
+            }
 
-                // Display each menu item
-                addMenuItem(itemName, itemPrice, itemCategory);}
-            pstmt.close();
-    }
-        catch (SQLException e) {
+            menuPanel.add(categoryPanel);
+            menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between categories
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    private void addMenuItem(String name, double price, String category) {
-        JPanel itemPanel = new JPanel(new BorderLayout());
-        itemPanel.setBackground(new Color(0x575658));  
-        itemPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5)); 
 
-        JCheckBox checkBox = new JCheckBox(name + " - €" + String.format("%.2f", price) + " (" + category + ")");
-        checkBox.setBackground(new Color(0x575658));  
+    private void addMenuItem(JPanel categoryPanel, String name, double price, String category) {
+        JPanel itemPanel = new JPanel(new BorderLayout());
+        itemPanel.setBackground(new Color(0x575658));
+        itemPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+
+        JCheckBox checkBox = new JCheckBox(name + " - €" + String.format("%.2f", price));
+        checkBox.setBackground(new Color(0x575658));
         checkBox.setForeground(Color.WHITE);
         checkBox.setFont(new Font("Arial", Font.BOLD, 14));
 
@@ -378,8 +383,9 @@ class RestaurantPage extends JFrame {
         checkBoxes.add(checkBox);
 
         itemPanel.add(checkBox, BorderLayout.CENTER);
-        menuPanel.add(itemPanel);
+        categoryPanel.add(itemPanel);
     }
+
 
     private void addToCart() {
         cart.clear();
