@@ -125,7 +125,7 @@ public class CustomerHomePage extends JFrame implements ActionListener {
         try {
             CredentialsHandler cHandler = new CredentialsHandler();
             String query = "SELECT * FROM Restaurant";
-            Statement stmt = cHandler.dbConnection.createStatement();
+            Statement stmt = cHandler.getDBConnection().createStatement();
             ResultSet rs = stmt.executeQuery(query);
 
             while (rs.next()) {
@@ -228,7 +228,7 @@ class AboutInfo extends JFrame {
         try{
             CredentialsHandler cHandler = new CredentialsHandler();
             String query = "SELECT PASSWORD, ADDRESS FROM Customer WHERE USERNAME = ?";
-            PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
 
@@ -241,7 +241,7 @@ class AboutInfo extends JFrame {
             }
 
             query = "SELECT EMAIL, USER_TYPE FROM User WHERE USERNAME = ?";
-            pstmt = cHandler.dbConnection.prepareStatement(query);
+            pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setString(1, username);
             rs = pstmt.executeQuery();
 
@@ -321,7 +321,7 @@ class RestaurantPage extends JFrame {
         try {
             CredentialsHandler cHandler = new CredentialsHandler();
             String query = "SELECT ID FROM Restaurant WHERE NAME = ?";
-            PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setString(1, restaurantName);
             ResultSet rs = pstmt.executeQuery();
 
@@ -344,7 +344,7 @@ class RestaurantPage extends JFrame {
     private void addMenuCategory(CredentialsHandler cHandler, String category) {
         try{
             String query = "SELECT NAME, PRICE, CATEGORY FROM Menu WHERE RESTAURANT_ID = ? AND CATEGORY = ?";
-            PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setInt(1, restaurantID);
             pstmt.setString(2, category);
             ResultSet rs = pstmt.executeQuery();
@@ -421,7 +421,7 @@ class RestaurantPage extends JFrame {
             CredentialsHandler cHandler = new CredentialsHandler();
 
             String query = "SELECT ID FROM CUSTOMER WHERE USERNAME = ?";
-            PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setString(1, customerUsername);
             ResultSet rs = pstmt.executeQuery();
             int customerID = -1;
@@ -430,7 +430,7 @@ class RestaurantPage extends JFrame {
             }
 
             query = "INSERT INTO Orders(CUSTOMER_ID, RESTAURANT_ID, QUANTITY, TOTAL_PRICE, STATUS) VALUES (?, ?, ?, ?, ?)";
-            pstmt = cHandler.dbConnection.prepareStatement(query);
+            pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setInt(1, customerID);
             pstmt.setInt(2, restaurantID);
             pstmt.setInt(3, cart.size());
@@ -494,7 +494,7 @@ class OrdersPage extends JFrame {
             CredentialsHandler cHandler = new CredentialsHandler();
 
             String query = "SELECT ID FROM CUSTOMER WHERE USERNAME = ?";
-            PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setString(1, customerUsername);
             ResultSet rs = pstmt.executeQuery();
             int customerID = -1;
@@ -504,7 +504,7 @@ class OrdersPage extends JFrame {
 
             // Now retrieve the orders associated with the customer ID
             query = "SELECT * FROM Orders WHERE CUSTOMER_ID = ?";
-            pstmt = cHandler.dbConnection.prepareStatement(query);
+            pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setInt(1, customerID);
             rs = pstmt.executeQuery();
 
@@ -515,7 +515,7 @@ class OrdersPage extends JFrame {
                 int restaurantID = rs.getInt("RESTAURANT_ID");
 
                 // Retrieve the restaurant name
-                pstmt = cHandler.dbConnection.prepareStatement("SELECT NAME FROM Restaurant WHERE ID = ?");
+                pstmt = cHandler.getDBConnection().prepareStatement("SELECT NAME FROM Restaurant WHERE ID = ?");
                 pstmt.setInt(1, restaurantID);
                 ResultSet restaurantRS = pstmt.executeQuery();
                 String restaurantName = "";
