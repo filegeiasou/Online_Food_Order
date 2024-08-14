@@ -10,51 +10,15 @@ public class CustomerHomePage extends JFrame implements ActionListener {
     private String username;
     private JList<String> restaurantList;
     private DefaultListModel<String> listModel;
+    JPanel topPanel, botPanel;
 
     public CustomerHomePage(String username) {
-        setTitle("Customer Home Page");
-        setLayout(new BorderLayout());
+        
         this.username = username;
-
-        JPanel topPanel = new JPanel();
-        JPanel botPanel = new JPanel();
-        JLabel welcomeLabel = new JLabel("Welcome, " + username + "!");
-
-        // Buttons
-        viewOrdersButton = new JButton("View Orders");
-        infoButton = new JButton("Account Info");
-        LogoutButton = new JButton("Logout");
-        viewOrdersButton.addActionListener(this);
-        infoButton.addActionListener(this);
-        LogoutButton.addActionListener(this);
-
-        ImageIcon icon = new ImageIcon("4_5-Code-UAT/logo.png");
-        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
-        JLabel imageLabel = new JLabel(icon);
-
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 25));
-        welcomeLabel.setForeground(Color.WHITE);
-
-        topPanel.setLayout(new BorderLayout());
-        topPanel.add(imageLabel, BorderLayout.CENTER); 
-        topPanel.add(welcomeLabel, BorderLayout.SOUTH); 
-        topPanel.setBackground(new Color(0xe7a780));
-
-        botPanel.setLayout(new FlowLayout());
-        botPanel.add(viewOrdersButton);
-        botPanel.add(infoButton);
-        botPanel.add(LogoutButton);
-        botPanel.setBackground(new Color(0x575658));
-
-        // Adding the list of restaurants
         listModel = new DefaultListModel<>();
         restaurantList = new JList<>(listModel);
-        JScrollPane listScrollPane = new JScrollPane(restaurantList);
-        listScrollPane.setPreferredSize(new Dimension(450, 300));
-        botPanel.add(listScrollPane);
-
+        initFrame();
+      
         // Load restaurants from database
         loadRestaurants();
 
@@ -70,6 +34,50 @@ public class CustomerHomePage extends JFrame implements ActionListener {
                 }
             }
         });
+    }
+
+    private void initFrame() {
+        setTitle("Customer Home Page");
+        setLayout(new BorderLayout());
+
+        topPanel = new JPanel();
+        botPanel = new JPanel();
+        JLabel welcomeLabel = new JLabel("Welcome, " + username + "!");
+
+        // Buttons
+        viewOrdersButton = new JButton("View Orders"); 
+        viewOrdersButton.setBackground(Color.WHITE); viewOrdersButton.setForeground(Color.BLACK); viewOrdersButton.setFocusable(false); 
+        viewOrdersButton.addActionListener(this);
+
+        infoButton = new JButton("Account Info");
+        infoButton.setBackground(Color.WHITE); infoButton.setForeground(Color.BLACK); infoButton.setFocusable(false);
+        infoButton.addActionListener(this);
+
+        LogoutButton = new JButton("Logout");
+        LogoutButton.setBackground(Color.WHITE); LogoutButton.setForeground(Color.BLACK); LogoutButton.setFocusable(false);
+        LogoutButton.addActionListener(this);
+
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 25));
+        welcomeLabel.setForeground(Color.WHITE);
+
+        // Logo
+        AppLogo logo = new AppLogo();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.add(logo.getLabel(), BorderLayout.CENTER); 
+        topPanel.add(welcomeLabel, BorderLayout.SOUTH); 
+        topPanel.setBackground(new Color(0xe7a780));
+
+        botPanel.setLayout(new FlowLayout());
+        botPanel.add(viewOrdersButton);
+        botPanel.add(infoButton);
+        botPanel.add(LogoutButton);
+        botPanel.setBackground(new Color(0x575658));
+
+        // Add the list of restaurants
+        JScrollPane listScrollPane = new JScrollPane(restaurantList);
+        listScrollPane.setPreferredSize(new Dimension(450, 300));
+        botPanel.add(listScrollPane);
 
         add(topPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
@@ -225,6 +233,17 @@ class RestaurantPage extends JFrame {
     JButton addToCartButton; // JButton is declared here in order to be accessed from other methods
 
     public RestaurantPage(String restaurantName, String customerUsername) {
+        // Initialize lists
+        checkBoxes = new ArrayList<>();
+        cart = new ArrayList<>();
+        // Retrieve Menu Items
+        this.restaurantName = restaurantName;
+        this.customerUsername = customerUsername;
+        initFrame();
+        retrieveMenuItems();   
+    }
+
+    private void initFrame(){
         setTitle(restaurantName);
         setLayout(new BorderLayout());
 
@@ -246,15 +265,6 @@ class RestaurantPage extends JFrame {
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setBackground(new Color(0x575658));  // Match the background color
 
-        // Initialize lists
-        checkBoxes = new ArrayList<>();
-        cart = new ArrayList<>();
-
-        // Retrieve Menu Items
-        this.restaurantName = restaurantName;
-        this.customerUsername = customerUsername;
-        retrieveMenuItems();
-
         JScrollPane scrollPane = new JScrollPane(menuPanel);
         botPanel.add(scrollPane, BorderLayout.CENTER);
 
@@ -267,7 +277,7 @@ class RestaurantPage extends JFrame {
         add(topPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
 
-        setSize(300, 500);
+        setSize(500, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -393,6 +403,13 @@ class OrdersPage extends JFrame {
     JPanel ordersContainer;
 
     public OrdersPage(String username) {
+        
+        this.customerUsername = username;
+        initFrame();   
+        retrieveOrders();
+    }
+
+    private void initFrame(){
         setTitle("Orders");
         setLayout(new BorderLayout());
 
@@ -407,23 +424,20 @@ class OrdersPage extends JFrame {
 
         JScrollPane scrollPane = new JScrollPane(ordersContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
-        
+
         JPanel botPanel = new JPanel(new BorderLayout());
         botPanel.setBackground(new Color(0x575658));
-        JLabel infoLabel = new JLabel("Orders for " + username);
+        JLabel infoLabel = new JLabel("Orders for " + customerUsername);
         infoLabel.setFont(new Font("Arial", Font.BOLD, 18));
         infoLabel.setHorizontalAlignment(SwingConstants.CENTER);
         infoLabel.setForeground(Color.WHITE);
         botPanel.add(infoLabel, BorderLayout.NORTH);
 
-        this.customerUsername = username;
-        retrieveOrders();
-
         add(topPanel, BorderLayout.NORTH);
         add(scrollPane, BorderLayout.CENTER);
         add(botPanel, BorderLayout.SOUTH);
 
-        setSize(400, 600);
+        setSize(500, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
