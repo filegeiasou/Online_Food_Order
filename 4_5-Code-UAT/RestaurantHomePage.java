@@ -55,7 +55,6 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         buttonPanel.setBackground(new Color(0x575658));
         buttonPanel.add(infoButton);
         buttonPanel.add(LogoutButton);
-
         botPanel.add(buttonPanel, BorderLayout.NORTH);
         
         add(topPanel, BorderLayout.NORTH);
@@ -192,8 +191,6 @@ class AboutInfoRES extends JFrame {
                 String email = rs.getString("EMAIL");
                 emailField.setText(email);
             }
-
-            pstmt.close();
 
             pstmt.close();
         } catch (SQLException e) {
