@@ -98,6 +98,9 @@ public class LogInForm extends JFrame implements ActionListener {
         email = new JTextField(15);
         passwd = new JPasswordField(15);
         loginButton = new JButton("Log-In");
+        loginButton.setFocusable(false);
+        loginButton.setBackground(Color.WHITE);
+        loginButton.setForeground(Color.BLACK);
     
         showPassLogin = new JCheckBox("Show Password");
         showPassLogin.setForeground(Color.WHITE);
@@ -178,10 +181,15 @@ public class LogInForm extends JFrame implements ActionListener {
         passwdRegField = new JPasswordField(15);
 
         regButton = new JButton("Sign Up");
+        regButton.setFocusable(false);
+        regButton.setBackground(Color.WHITE);
+        regButton.setForeground(Color.BLACK);
+
         showPassReg = new JCheckBox("Show Password");
         showPassReg.setForeground(Color.WHITE);
+        showPassReg.setBackground(botPanel.getBackground());
         showPassReg.setFocusable(false);
-
+        
         // User type selection
         String[] userTypes = {"Select", "Customer", "Driver", "Restaurant"};
         userTypeComboBox = new JComboBox<>(userTypes);
