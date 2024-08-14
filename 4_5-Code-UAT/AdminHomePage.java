@@ -1,3 +1,6 @@
+
+import com.mysql.cj.log.Log;
+
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -13,7 +16,7 @@ public class AdminHomePage extends JFrame {
     Connection dbConnection;
     String url = "jdbc:mysql://localhost:3306/Online_Food_Order_Delivery";
     String user = "root";
-    String password = "tsomis";
+    String password = "root";
 
     public AdminHomePage(String username) {
         try {
@@ -54,9 +57,12 @@ public class AdminHomePage extends JFrame {
 
         // Table for displaying users
         JTable userTable = new JTable();
-        DefaultTableModel tableModel = new DefaultTableModel(
-                new Object[]{"ID", "Username", "Email", "Details"}, 0
-        );
+        DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"ID", "Username", "Email", "Details"}, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         userTable.setModel(tableModel);
 
         // Assign table and model based on user type
@@ -275,6 +281,7 @@ public class AdminHomePage extends JFrame {
     private void addUser(String userType) {
         // Implement add logic here based on userType
         JOptionPane.showMessageDialog(this, "Add new " + userType);
+        SwingUtilities.invokeLater(this::launchAddForm);
     }
 
     private void editUser(String userType, int selectedRow) {
@@ -297,5 +304,12 @@ public class AdminHomePage extends JFrame {
 
     private void refreshTable(String userType) {
         populateTable(userType);
+    }
+
+    private void launchAddForm() {
+//        LogInForm addUserForm = new LogInForm();
+//        addUserForm.getCardLayout().show(addUserForm.getMainPanel(), "Registration");
+//        addUserForm.getDynamicPanel().setVisible(true);
+//        addUserForm.handleRegistration();
     }
 }
