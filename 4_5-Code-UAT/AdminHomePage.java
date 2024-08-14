@@ -1,6 +1,3 @@
-
-import com.mysql.cj.log.Log;
-
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -12,18 +9,11 @@ public class AdminHomePage extends JFrame {
     private JTabbedPane tabbedPane;
     private JTable customerTable, driverTable, restaurantTable;
     private DefaultTableModel customerTableModel, driverTableModel, restaurantTableModel;
-
     Connection dbConnection;
-    String url = "jdbc:mysql://localhost:3306/Online_Food_Order_Delivery";
-    String user = "root";
-    String password = "root";
 
     public AdminHomePage(String username) {
-        try {
-            dbConnection = DriverManager.getConnection(url, user, password);
-        } catch (SQLException se) {
-            se.printStackTrace();
-        }
+        CredentialsHandler cHandler = new CredentialsHandler();
+        dbConnection = cHandler.getDBConnection();
 
         setTitle("Admin Panel");
         setSize(800, 600);
@@ -184,7 +174,7 @@ public class AdminHomePage extends JFrame {
 
         tableModel.setRowCount(0);
 
-        try (Statement stmt = dbConnection.createStatement(); ResultSet rs = stmt.executeQuery(query)) {
+        try (Statement stmt = dbConnection.createStatement(); ResultSet rs = stmt.executeQuery(query)){
             while (rs.next()) {
                 Object[] row = new Object[4];
                 row[0] = rs.getInt("ID");

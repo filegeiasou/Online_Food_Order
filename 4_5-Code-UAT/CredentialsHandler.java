@@ -4,10 +4,10 @@ import java.util.Map;
 
 public class CredentialsHandler {
 
-    Connection dbConnection;
-    String url = "jdbc:mysql://localhost:3306/Online_Food_Order_Delivery";
-    String user = "root";
-    String password = "root";
+    private Connection dbConnection;
+    private String url = "jdbc:mysql://localhost:3306/Online_Food_Order_Delivery";
+    private String user = "root";
+    private String password = "root";
 
     public CredentialsHandler() {
         try {
@@ -17,6 +17,9 @@ public class CredentialsHandler {
         }
     }
 
+    public Connection getDBConnection() {
+        return dbConnection;
+    }
     // Inserts into USER table and returns the generated ID
     private int insertUser(String username, String password, String email, String userType) throws SQLException {
         String regUserQuery = "INSERT INTO USER(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES (?, ?, ?, ?);";
