@@ -343,24 +343,23 @@ class RestaurantPage extends JFrame {
             pstmt.setInt(1, restaurantID);
             pstmt.setString(2, category);
             ResultSet rs = pstmt.executeQuery();
-            JPanel categoryPanel = null;
+
+            boolean hasItems = false;
+    
+            JPanel categoryPanel = new JPanel();
+            categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.Y_AXIS));
+            categoryPanel.setBackground(new Color(0x575658)); // Match the background color
+            TitledBorder border = BorderFactory.createTitledBorder(category);
+            border.setTitleColor(Color.WHITE);
+            categoryPanel.setBorder(border);
     
             while (rs.next()) {
-                // Create a new panel for each category
-                categoryPanel = new JPanel();
-                categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.Y_AXIS));
-                categoryPanel.setBackground(new Color(0x575658)); // Match the background color
-                TitledBorder border = BorderFactory.createTitledBorder(category);
-                border.setTitleColor(Color.WHITE);
-                categoryPanel.setBorder(border);
-
-                // Add menu items to the category panel
+                hasItems = true;
                 String itemName = rs.getString("NAME");
                 double itemPrice = rs.getDouble("PRICE");
                 addMenuItem(categoryPanel, itemName, itemPrice, category);
             }
-
-            if(categoryPanel != null){
+            if(hasItems) {
                 menuPanel.add(categoryPanel);
                 menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); 
             }
