@@ -3,6 +3,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.util.*;
+import javax.swing.border.*;
 
 public class CustomerHomePage extends JFrame implements ActionListener {
 
@@ -354,19 +355,26 @@ class RestaurantPage extends JFrame {
             pstmt.setString(2, category);
             ResultSet rs = pstmt.executeQuery();
 
+            boolean hasItems = false;
+
             JPanel categoryPanel = new JPanel();
             categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.Y_AXIS));
-            categoryPanel.setBackground(new Color(0x575658)); // Match the background color
-            categoryPanel.setBorder(BorderFactory.createTitledBorder(category)); // title based on the category of the items
+            categoryPanel.setBackground(new Color(0x575658)); 
+            TitledBorder border = BorderFactory.createTitledBorder(category);
+            border.setTitleColor(Color.WHITE);
+            categoryPanel.setBorder(border);
 
             while (rs.next()) {
+                hasItems = true;
                 String itemName = rs.getString("NAME");
                 double itemPrice = rs.getDouble("PRICE");
                 addMenuItem(categoryPanel, itemName, itemPrice, category);
             }
 
-            menuPanel.add(categoryPanel);
-            menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between categories
+            if(hasItems) {
+                menuPanel.add(categoryPanel);
+                menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); 
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
