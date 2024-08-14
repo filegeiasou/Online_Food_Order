@@ -98,7 +98,17 @@ VALUES
 (1, "Kebab", 5, "Main"),
 (1, "Baklava", 3, "Dessert"),
 (1, "Raki", 4, "Drink"),
-(1, "Kokoretsi", 6, "Main");
+(1, "Kokoretsi", 6, "Main"),
+(1, "Souvlaki", 4, "Main"),
+(1, "Tzatziki", 2, "Appetizer"),
+(1, "Moussaka", 5, "Main"),
+(1, "Frappe", 3, "Drink"),
+(1, "Galaktoboureko", 4, "Dessert"),
+(1, "Ouzo", 4, "Drink"),
+(1, "Pastitsio", 5, "Main"),
+(1, "Saganaki", 3, "Appetizer"),
+(1, "Loukoumades", 3, "Dessert"),
+(1, "Tsipouro", 4, "Drink");
 
 
 SELECT * FROM USER;

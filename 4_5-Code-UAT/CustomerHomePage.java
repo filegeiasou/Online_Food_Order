@@ -329,10 +329,25 @@ class RestaurantPage extends JFrame {
                 restaurantID = rs.getInt("ID");
             }
 
-            query = "SELECT NAME, PRICE, CATEGORY FROM Menu WHERE RESTAURANT_ID = ?";
-            pstmt = cHandler.dbConnection.prepareStatement(query);
+            // Retrieve the menu categories
+            addMenuCategory(cHandler, "Appetizer");
+            addMenuCategory(cHandler, "Main");
+            addMenuCategory(cHandler, "Dessert");
+            addMenuCategory(cHandler, "Drinks");
+
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void addMenuCategory(CredentialsHandler cHandler, String category) {
+        try{
+            String query = "SELECT NAME, PRICE, CATEGORY FROM Menu WHERE RESTAURANT_ID = ? AND CATEGORY = ?";
+            PreparedStatement pstmt = cHandler.dbConnection.prepareStatement(query);
             pstmt.setInt(1, restaurantID);
-            rs = pstmt.executeQuery();
+            pstmt.setString(2, category);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 String itemName = rs.getString("NAME");
@@ -340,12 +355,10 @@ class RestaurantPage extends JFrame {
                 String itemCategory = rs.getString("CATEGORY");
 
                 // Display each menu item
-                addMenuItem(itemName, itemPrice, itemCategory);
-
-            }
-
+                addMenuItem(itemName, itemPrice, itemCategory);}
             pstmt.close();
-        } catch (SQLException e) {
+    }
+        catch (SQLException e) {
             e.printStackTrace();
         }
     }
