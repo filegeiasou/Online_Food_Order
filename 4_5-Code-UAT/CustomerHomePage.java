@@ -230,6 +230,7 @@ class RestaurantPage extends JFrame {
     ArrayList<JCheckBox> checkBoxes; // List to keep track of checkboxes
     ArrayList<String> cart; // List to store selected items
     double totalPrice = 0;
+    JButton addToCartButton; // JButton is declared here in order to be accessed from other methods
 
     public RestaurantPage(String restaurantName, String customerUsername) {
         // Initialize lists
@@ -268,8 +269,9 @@ class RestaurantPage extends JFrame {
         botPanel.add(scrollPane, BorderLayout.CENTER);
 
         // Add "Add to Cart" button
-        JButton addToCartButton = new JButton("Add to Cart");
+        addToCartButton = new JButton("Add to Cart");
         addToCartButton.addActionListener(e -> addToCart());
+        addToCartButton.setEnabled(false); // start with the button locked. This will update if the user selected an item
         botPanel.add(addToCartButton, BorderLayout.SOUTH);
 
         add(topPanel, BorderLayout.NORTH);
@@ -323,6 +325,9 @@ class RestaurantPage extends JFrame {
         checkBox.setBackground(new Color(0x575658));  
         checkBox.setForeground(Color.WHITE);
         checkBox.setFont(new Font("Arial", Font.BOLD, 14));
+
+        checkBox.addItemListener(e -> updateAddToCartButton());
+
         checkBoxes.add(checkBox);
 
         itemPanel.add(checkBox, BorderLayout.CENTER);
@@ -330,15 +335,26 @@ class RestaurantPage extends JFrame {
     }
 
     private void addToCart() {
-        cart.clear();  
+        cart.clear();
         for (JCheckBox checkBox : checkBoxes) {
             if (checkBox.isSelected()) {
                 cart.add(checkBox.getText());
                 totalPrice += Double.parseDouble(checkBox.getText().split(" ")[2].substring(1));
             }
         }
+        
         showCartItems();
         addOrderToDB();
+    }
+
+    private void updateAddToCartButton() {
+        for(JCheckBox checkBox : checkBoxes) {
+            if(checkBox.isSelected()) {
+                addToCartButton.setEnabled(true);
+                return;
+            }
+        }
+        addToCartButton.setEnabled(false);
     }
 
     private void showCartItems() {
