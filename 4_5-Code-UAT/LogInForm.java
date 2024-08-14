@@ -101,6 +101,7 @@ public class LogInForm extends JFrame implements ActionListener {
     
         showPassLogin = new JCheckBox("Show Password");
         showPassLogin.setForeground(Color.WHITE);
+        showPassLogin.setBackground(botPanel.getBackground());
         showPassLogin.setFocusable(false);
     
         JLabel preSignUpLabel = new JLabel("Don't have an account? ");
