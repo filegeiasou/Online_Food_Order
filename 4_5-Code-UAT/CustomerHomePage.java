@@ -3,7 +3,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
 import java.util.*;
-import javax.swing.border.TitledBorder;
 
 public class CustomerHomePage extends JFrame implements ActionListener {
 
@@ -14,12 +13,12 @@ public class CustomerHomePage extends JFrame implements ActionListener {
     JPanel topPanel, botPanel;
 
     public CustomerHomePage(String username) {
-        
+
         this.username = username;
         listModel = new DefaultListModel<>();
         restaurantList = new JList<>(listModel);
         initFrame();
-      
+
         // Load restaurants from database
         loadRestaurants();
 
@@ -41,80 +40,86 @@ public class CustomerHomePage extends JFrame implements ActionListener {
     private void initFrame() {
         setTitle("Customer Home Page");
         setLayout(new BorderLayout());
-    
+
         topPanel = new JPanel();
         botPanel = new JPanel();
         JPanel buttonPanel = new JPanel();
         JPanel listPanel = new JPanel(); // Panel to hold the label and scroll pane together
-    
-        JLabel welcomeLabel = new JLabel("Welcome, " + username + "!");
-    
-        // Buttons
-        viewOrdersButton = new JButton("View Orders"); 
-        infoButton = new JButton("Account Info");
-        LogoutButton = new JButton("Logout");
 
-        JButton[] buttons = {viewOrdersButton, infoButton, LogoutButton};
-        for (JButton button : buttons) {
-            button.setBackground(Color.WHITE);
-            button.setForeground(Color.BLACK);
-            button.setFocusable(false); 
-            button.addActionListener(this);
-        }
-    
+        JLabel welcomeLabel = new JLabel("Welcome, " + username + "!");
+
+        // Buttons
+        viewOrdersButton = new JButton("View Orders");
+        viewOrdersButton.setBackground(Color.WHITE);
+        viewOrdersButton.setForeground(Color.BLACK);
+        viewOrdersButton.setFocusable(false);
+        viewOrdersButton.addActionListener(this);
+
+        infoButton = new JButton("Account Info");
+        infoButton.setBackground(Color.WHITE);
+        infoButton.setForeground(Color.BLACK);
+        infoButton.setFocusable(false);
+        infoButton.addActionListener(this);
+
+        LogoutButton = new JButton("Logout");
+        LogoutButton.setBackground(Color.WHITE);
+        LogoutButton.setForeground(Color.BLACK);
+        LogoutButton.setFocusable(false);
+        LogoutButton.addActionListener(this);
+
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 25));
         welcomeLabel.setForeground(Color.WHITE);
-    
+
         // Logo
         AppLogo logo = new AppLogo();
         topPanel.setLayout(new BorderLayout());
-        topPanel.add(logo.getLabel(), BorderLayout.CENTER); 
-        topPanel.add(welcomeLabel, BorderLayout.SOUTH); 
+        topPanel.add(logo.getLabel(), BorderLayout.CENTER);
+        topPanel.add(welcomeLabel, BorderLayout.SOUTH);
         topPanel.setBackground(new Color(0xe7a780));
-    
+
         botPanel.setLayout(new BorderLayout());
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.setBackground(new Color(0x575658));
         buttonPanel.add(viewOrdersButton);
         buttonPanel.add(infoButton);
         buttonPanel.add(LogoutButton);
-    
+
         botPanel.add(buttonPanel, BorderLayout.NORTH);
         botPanel.setBackground(new Color(0x575658));
-    
+
         // Available Restaurants Label
         JLabel availableRestaurantsLabel = new JLabel("Available Restaurants");
         availableRestaurantsLabel.setFont(new Font("Arial", Font.BOLD, 18));
         availableRestaurantsLabel.setForeground(new Color(0xe7a780));
         availableRestaurantsLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    
+
         // Restaurant List
         restaurantList.setFont(new Font("Arial", Font.PLAIN, 18));
         restaurantList.setBackground(new Color(0x575658));
-        restaurantList.setForeground(Color.WHITE); 
-    
+        restaurantList.setForeground(Color.WHITE);
+
         JScrollPane listScrollPane = new JScrollPane(restaurantList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         listScrollPane.setPreferredSize(new Dimension(450, 300));
         listScrollPane.setBorder(BorderFactory.createLineBorder(new Color(0x575658)));
         listScrollPane.setBackground(new Color(0x575658));
         listScrollPane.getViewport().setBackground(new Color(0x575658));
-    
+
         listPanel.setLayout(new BorderLayout());
         listPanel.setBackground(new Color(0x575658)); // Match background color
         listPanel.add(availableRestaurantsLabel, BorderLayout.NORTH);
         listPanel.add(listScrollPane, BorderLayout.CENTER);
-    
+
         botPanel.add(listPanel, BorderLayout.CENTER);
-    
+
         add(topPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
-    
+
         setSize(500, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-    }    
+    }
 
     private void loadRestaurants() {
         try {
@@ -143,7 +148,7 @@ public class CustomerHomePage extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == viewOrdersButton) {
-            new OrdersPage(username); 
+            new OrdersPage(username);
         }
         if (e.getSource() == infoButton) {
             new AboutInfo(username);
@@ -191,7 +196,7 @@ class AboutInfo extends JFrame {
         passwordField = new JTextField(20); passwordField.setEditable(false); passwordField.setFocusable(false);
         addressField = new JTextField(20); addressField.setEditable(false); addressField.setFocusable(false);
         emailField = new JTextField(20);  emailField.setEditable(false); emailField.setFocusable(false);
-    
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
 
@@ -211,7 +216,7 @@ class AboutInfo extends JFrame {
 
     private void addToGrid(JLabel label, JTextField field, JPanel panel, GridBagConstraints gbc, int y) {
         for (int i = 0; i < 2; i++) {
-            gbc.gridx = i; 
+            gbc.gridx = i;
             gbc.gridy = y;
             gbc.anchor = (i == 0) ? GridBagConstraints.EAST : GridBagConstraints.WEST;
             panel.add((i == 0) ? label : field, gbc);
@@ -259,7 +264,7 @@ class RestaurantPage extends JFrame {
     ArrayList<JCheckBox> checkBoxes; // List to keep track of checkboxes
     ArrayList<String> cart; // List to store selected items
     double totalPrice = 0;
-    JButton addToCartButton; // JButton is declared here in order to be accessed from other methods
+    JButton addToCartButton, viewCartButton; // JButton is declared here in order to be accessed from other methods
 
     public RestaurantPage(String restaurantName, String customerUsername) {
         // Initialize lists
@@ -269,7 +274,7 @@ class RestaurantPage extends JFrame {
         this.restaurantName = restaurantName;
         this.customerUsername = customerUsername;
         initFrame();
-        retrieveMenuItems();   
+        retrieveMenuItems();
     }
 
     private void initFrame(){
@@ -298,10 +303,15 @@ class RestaurantPage extends JFrame {
         botPanel.add(scrollPane, BorderLayout.CENTER);
 
         // Add "Add to Cart" button
-        addToCartButton = new JButton("Add to Cart");
-        addToCartButton.addActionListener(e -> addToCart());
-        addToCartButton.setEnabled(false); // start with the button locked. This will update if the user selected an item
-        botPanel.add(addToCartButton, BorderLayout.SOUTH);
+//        addToCartButton = new JButton("Add to Cart");
+//        addToCartButton.addActionListener(e -> addToCart());
+//        addToCartButton.setEnabled(false); // start with the button locked. This will update if the user selected an item
+//        botPanel.add(addToCartButton, BorderLayout.SOUTH);
+
+        viewCartButton = new JButton("View Cart");
+        viewCartButton.setEnabled(false);
+        viewCartButton.addActionListener(e -> showCartItems());
+        botPanel.add(viewCartButton, BorderLayout.SOUTH);
 
         add(topPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
@@ -344,29 +354,23 @@ class RestaurantPage extends JFrame {
             pstmt.setString(2, category);
             ResultSet rs = pstmt.executeQuery();
 
-            boolean hasItems = false;
-    
             JPanel categoryPanel = new JPanel();
             categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.Y_AXIS));
             categoryPanel.setBackground(new Color(0x575658)); // Match the background color
-            TitledBorder border = BorderFactory.createTitledBorder(category);
-            border.setTitleColor(Color.WHITE);
-            categoryPanel.setBorder(border);
-    
+            categoryPanel.setBorder(BorderFactory.createTitledBorder(category)); // title based on the category of the items
+
             while (rs.next()) {
-                hasItems = true;
                 String itemName = rs.getString("NAME");
                 double itemPrice = rs.getDouble("PRICE");
                 addMenuItem(categoryPanel, itemName, itemPrice, category);
             }
-            if(hasItems) {
-                menuPanel.add(categoryPanel);
-                menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); 
-            }
+
+            menuPanel.add(categoryPanel);
+            menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between categories
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }    
+    }
 
     private void addMenuItem(JPanel categoryPanel, String name, double price, String category) {
         JPanel itemPanel = new JPanel(new BorderLayout());
@@ -378,7 +382,7 @@ class RestaurantPage extends JFrame {
         checkBox.setForeground(Color.WHITE);
         checkBox.setFont(new Font("Arial", Font.BOLD, 14));
 
-        checkBox.addItemListener(e -> updateAddToCartButton());
+        checkBox.addItemListener(e -> addToCart());
 
         checkBoxes.add(checkBox);
 
@@ -386,41 +390,78 @@ class RestaurantPage extends JFrame {
         categoryPanel.add(itemPanel);
     }
 
-
     private void addToCart() {
         cart.clear();
         for (JCheckBox checkBox : checkBoxes) {
             if (checkBox.isSelected()) {
+                String[] parts = checkBox.getText().split(" - €");
                 cart.add(checkBox.getText());
-                totalPrice += Double.parseDouble(checkBox.getText().split(" ")[2].substring(1));
+                totalPrice += Double.parseDouble(parts[1].split(" ")[0]);
             }
         }
-        
-        showCartItems();
-        addOrderToDB();
+
+        viewCartButton.setEnabled(!cart.isEmpty());
+
+//        showCartItems();
+//        addOrderToDB();
     }
 
-    private void updateAddToCartButton() {
-        for(JCheckBox checkBox : checkBoxes) {
-            if(checkBox.isSelected()) {
-                addToCartButton.setEnabled(true);
-                return;
-            }
-        }
-        addToCartButton.setEnabled(false);
-    }
+//    private void updateViewCartButton() {
+//        for(JCheckBox checkBox : checkBoxes) {
+//            if(checkBox.isSelected()) {
+//                viewCartButton.setEnabled(true);
+//                return;
+//            }
+//        }
+//        viewCartButton.setEnabled(false);
+//    }
 
     private void showCartItems() {
+        StringBuilder cartContent = null;
         if (cart.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Your cart is empty.", "Cart", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            StringBuilder cartContent = new StringBuilder("Items in your cart:\n");
+            cartContent = new StringBuilder("Items in your cart:\n");
             for (String item : cart) {
                 cartContent.append(item).append("\n");
             }
-            JOptionPane.showMessageDialog(this, cartContent.toString(), "Cart", JOptionPane.INFORMATION_MESSAGE);
+//            JOptionPane.showMessageDialog(this, cartContent.toString(), "Cart", JOptionPane.INFORMATION_MESSAGE);
+        }
+
+        int result = JOptionPane.showOptionDialog(
+                this, // parent component
+                cartContent.toString(), // message
+                "Cart", // title
+                JOptionPane.YES_NO_OPTION, // type of options
+                JOptionPane.INFORMATION_MESSAGE, // type of message
+                null,
+                new Object[]{"Finish Order", "Add More Items"}, // options
+                "Add More Items" // initial value
+        );
+
+        if (result == JOptionPane.YES_OPTION) {
+            finishOrder();
         }
     }
+
+    private void finishOrder() {
+        if (cart.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Your cart is empty. Please add items before finishing the order.", "Empty Cart", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // add the order to the database
+        addOrderToDB();
+
+        // show a confirmation message
+        JOptionPane.showMessageDialog(this, "Your order has been placed successfully!", "Order Confirmation", JOptionPane.INFORMATION_MESSAGE);
+
+        cart.clear(); // clear cart
+        totalPrice = 0; // reset price
+
+        dispose();
+    }
+
 
     private void addOrderToDB() {
         try {
@@ -457,7 +498,7 @@ class OrdersPage extends JFrame {
 
     public OrdersPage(String username) {
         this.customerUsername = username;
-        initFrame();   
+        initFrame();
         retrieveOrders();
     }
 
@@ -471,7 +512,7 @@ class OrdersPage extends JFrame {
         topPanel.add(logo.getLabel());
 
         ordersContainer = new JPanel();
-        ordersContainer.setLayout(new GridLayout(0, 1, 10, 10)); 
+        ordersContainer.setLayout(new GridLayout(0, 1, 10, 10));
         ordersContainer.setBackground(new Color(0x575658));
 
         JScrollPane scrollPane = new JScrollPane(ordersContainer);
@@ -549,8 +590,8 @@ class OrdersPage extends JFrame {
         orderPanel.setLayout(new BoxLayout(orderPanel, BoxLayout.Y_AXIS));
         orderPanel.setBackground(new Color(0x424242));
         orderPanel.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
-        BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+                BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
+                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         orderPanel.setPreferredSize(new Dimension(150, 100));
 
         JLabel orderCountLabel = new JLabel("Order: " + orderCount);
