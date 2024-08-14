@@ -82,6 +82,7 @@ public class AdminHomePage extends JFrame {
         JButton editButton = new JButton("Edit");
         JButton deleteButton = new JButton("Delete");
         JButton refreshButton = new JButton("Refresh");
+        JButton logOutButton = new JButton("Log Out");
 
         searchButton.setEnabled(false);
 
@@ -92,6 +93,7 @@ public class AdminHomePage extends JFrame {
         controlPanel.add(editButton);
         controlPanel.add(deleteButton);
         controlPanel.add(refreshButton);
+        controlPanel.add(logOutButton);
 
         // Add components to the main panel
         panel.add(controlPanel, BorderLayout.NORTH);
@@ -130,6 +132,10 @@ public class AdminHomePage extends JFrame {
         editButton.addActionListener(e -> editUser(userType, userTable.getSelectedRow()));
         deleteButton.addActionListener(e -> deleteUser(userType, userTable.getSelectedRow()));
         refreshButton.addActionListener(e -> refreshTable(userType));
+        logOutButton.addActionListener(e -> {
+            dispose();
+            new LogInForm();
+        });
 
         populateTable("Customer");
         populateTable("Driver");
