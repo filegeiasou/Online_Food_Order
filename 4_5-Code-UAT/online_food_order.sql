@@ -12,7 +12,7 @@ CREATE TABLE User (
 
 CREATE TABLE Customer (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    USERNAME VARCHAR(50),
+    USERNAME VARCHAR(50) UNIQUE,
     PASSWORD VARCHAR(50),
     -- NAME VARCHAR(50),
     ADDRESS VARCHAR(50),
@@ -21,7 +21,7 @@ CREATE TABLE Customer (
 
 CREATE TABLE Restaurant (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    USERNAME VARCHAR(50),
+    USERNAME VARCHAR(50) UNIQUE,
     PASSWORD VARCHAR(50),
     NAME VARCHAR(50),
     LOCATION VARCHAR(50),
@@ -32,7 +32,7 @@ CREATE TABLE Restaurant (
 
 CREATE TABLE Driver (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    USERNAME VARCHAR(50),
+    USERNAME VARCHAR(50) UNIQUE,
     PASSWORD VARCHAR(50),
     -- NAME VARCHAR(50),
     PHONE_NUMBER VARCHAR(50),
@@ -41,7 +41,7 @@ CREATE TABLE Driver (
 
 CREATE TABLE Administrator (
     ID INT PRIMARY KEY AUTO_INCREMENT,
-    USERNAME VARCHAR(50),
+    USERNAME VARCHAR(50) UNIQUE,
     PASSWORD VARCHAR(50),
     FOREIGN KEY (ID) REFERENCES User(ID)
 );
@@ -97,8 +97,18 @@ INSERT INTO Menu(RESTAURANT_ID, NAME, PRICE, CATEGORY)
 VALUES 
 (1, "Kebab", 5, "Main"),
 (1, "Baklava", 3, "Dessert"),
-(1, "Raki", 4, "Drink"),
-(1, "Kokoretsi", 6, "Main");
+(1, "Raki", 4, "Drinks"),
+(1, "Kokoretsi", 6, "Main"),
+(1, "Souvlaki", 4, "Main"),
+(1, "Tzatziki", 2, "Appetizer"),
+(1, "Moussaka", 5, "Main"),
+(1, "Frappe", 3, "Drinks"),
+(1, "Galaktoboureko", 4, "Dessert"),
+(1, "Ouzo", 4, "Drinks"),
+(1, "Pastitsio", 5, "Main"),
+(1, "Saganaki", 3, "Appetizer"),
+(1, "Loukoumades", 3, "Dessert"),
+(1, "Tsipouro", 4, "Drinks");
 
 
 SELECT * FROM USER;
