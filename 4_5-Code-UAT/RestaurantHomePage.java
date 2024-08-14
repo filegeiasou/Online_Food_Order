@@ -2,7 +2,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
-// import java.util.*;
 
 public class RestaurantHomePage extends JFrame implements ActionListener {
 
@@ -85,8 +84,6 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
 
 class AboutInfoRES extends JFrame {
     private String username;
-    private JLabel infoLabel;
-    private JPanel panel;
     private JTextField passwordField, emailField, nameField, locationField, cuisineField, ratingField;;
 
     public AboutInfoRES(String username) {
