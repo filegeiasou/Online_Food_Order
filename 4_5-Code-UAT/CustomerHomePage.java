@@ -50,22 +50,16 @@ public class CustomerHomePage extends JFrame implements ActionListener {
     
         // Buttons
         viewOrdersButton = new JButton("View Orders"); 
-        viewOrdersButton.setBackground(Color.WHITE);
-        viewOrdersButton.setForeground(Color.BLACK);
-        viewOrdersButton.setFocusable(false); 
-        viewOrdersButton.addActionListener(this);
-    
         infoButton = new JButton("Account Info");
-        infoButton.setBackground(Color.WHITE);
-        infoButton.setForeground(Color.BLACK);
-        infoButton.setFocusable(false);
-        infoButton.addActionListener(this);
-    
         LogoutButton = new JButton("Logout");
-        LogoutButton.setBackground(Color.WHITE);
-        LogoutButton.setForeground(Color.BLACK);
-        LogoutButton.setFocusable(false);
-        LogoutButton.addActionListener(this);
+
+        JButton[] buttons = {viewOrdersButton, infoButton, LogoutButton};
+        for (JButton button : buttons) {
+            button.setBackground(Color.WHITE);
+            button.setForeground(Color.BLACK);
+            button.setFocusable(false); 
+            button.addActionListener(this);
+        }
     
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 25));

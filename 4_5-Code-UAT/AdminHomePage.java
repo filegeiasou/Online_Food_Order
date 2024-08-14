@@ -16,14 +16,12 @@ public class AdminHomePage extends JFrame {
         dbConnection = cHandler.getDBConnection();
 
         setTitle("Admin Panel");
-        setSize(800, 600);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-
+        setLayout(new BorderLayout());
+        
         AppLogo appLogo = new AppLogo();
-
         JPanel logoPanel = new JPanel();
         logoPanel.add(appLogo.getLabel());
+        logoPanel.setBackground(new Color(0xe7a780));
 
         tabbedPane = new JTabbedPane();
 
@@ -32,31 +30,31 @@ public class AdminHomePage extends JFrame {
         tabbedPane.addTab("Drivers", createUserPanel("Driver"));
         tabbedPane.addTab("Restaurants", createUserPanel("Restaurant"));
 
-        setLayout(new BorderLayout());
-        logoPanel.setBackground(new Color(0xe7a780));
         add(logoPanel, BorderLayout.NORTH);
         add(tabbedPane, BorderLayout.CENTER);
-
         add(tabbedPane);
 
         setVisible(true);
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
     }
 
     private JPanel createUserPanel(String userType) {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color(0x575658)); // Set panel background to black
-        panel.setBorder(BorderFactory.createLineBorder(new Color(0x575658))); // Set panel border to black
+        panel.setBackground(new Color(0x575658)); 
+        panel.setBorder(BorderFactory.createLineBorder(new Color(0x575658))); 
 
         // Table for displaying users
         JTable userTable = new JTable();
-        userTable.setBackground(new Color(0x575658)); // Set table background to black
-        userTable.setForeground(Color.WHITE); // Set table text to white
-        userTable.setGridColor(Color.WHITE); // Set grid color to white
+        userTable.setBackground(new Color(0x575658)); 
+        userTable.setForeground(Color.WHITE); 
+        userTable.setGridColor(Color.WHITE);
 
         // Set table header (ID, Username, etc.) background to black and text to white
         JTableHeader tableHeader = userTable.getTableHeader();
-        tableHeader.setBackground(new Color(0x575658)); // Set header background to black
-        tableHeader.setForeground(Color.WHITE); // Set header text to white
+        tableHeader.setBackground(new Color(0x575658)); 
+        tableHeader.setForeground(Color.WHITE);
 
         DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"ID", "Username", "Email", "Details"}, 0) {
             @Override
@@ -84,12 +82,12 @@ public class AdminHomePage extends JFrame {
 
         // Scroll pane for the table
         JScrollPane scrollPane = new JScrollPane(userTable);
-        scrollPane.getViewport().setBackground(new Color(0x575658)); // Set scroll pane background to black
+        scrollPane.getViewport().setBackground(new Color(0x575658)); 
 
         // Control panel with buttons and search bar
         JPanel controlPanel = new JPanel();
-        controlPanel.setBackground(new Color(0x575658)); // Set control panel background to black
-        controlPanel.setForeground(Color.WHITE); // Set control panel text to white
+        controlPanel.setBackground(new Color(0x575658)); 
+        controlPanel.setForeground(Color.WHITE); 
 
         JTextField searchField = new JTextField(15);
         searchField.setForeground(new Color(0x575658)); 
