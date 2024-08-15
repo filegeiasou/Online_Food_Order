@@ -171,13 +171,13 @@ class AboutInfoRES extends JFrame {
             while (rs.next()) {
                 String passwd = rs.getString("PASSWORD");
                 String name = rs.getString("NAME");
-                String locatio = rs.getString("LOCATION");
+                String location = rs.getString("LOCATION");
                 String cuisine = rs.getString("CUISINE_TYPE");
                 String rating = rs.getString("RATING");
 
                 passwordField.setText(passwd);
                 nameField.setText(name);
-                locationField.setText(locatio);
+                locationField.setText(location);
                 cuisineField.setText(cuisine);
                 ratingField.setText(rating);
             }
