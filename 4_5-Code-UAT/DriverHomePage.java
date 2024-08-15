@@ -190,12 +190,27 @@ public class DriverHomePage extends JFrame {
         JLabel deliveryStatusLabel = new JLabel("Status:");
         JLabel deliveryStatusValue = new JLabel("N/A");
 
-        addToGrid(0, orderIdLabel, orderIdValue, "OrderID", panel, gbc);
-        addToGrid(1, customerLabel, customerValue, "Customer", panel, gbc);
-        addToGrid(2, addressLabel, addressValue, "Customer's Address", panel, gbc);
-        addToGrid(3, restaurantLabel, restaurantValue, "Restaurant", panel, gbc);
-        addToGrid(4, totalCostLabel, totalCostValue, "Total Cost", panel, gbc);
-        addToGrid(5, deliveryStatusLabel, deliveryStatusValue, "Status", panel, gbc);
+        JLabel[] labels = {orderIdLabel, orderIdValue, 
+            customerLabel, customerValue, addressLabel, 
+            addressValue, restaurantLabel, restaurantValue, 
+            totalCostLabel, totalCostValue, deliveryStatusLabel, deliveryStatusValue};
+
+        String[] names = {"OrderID", "Customer", 
+        "Customer's Address", "Restaurant", "Total Cost", "Status"};
+        
+        int i = 0, n = 0, x = 0;
+        gbc.gridwidth = 1;
+        for(JLabel label : labels) {
+            gbc.gridx = x;
+            gbc.gridy = i;
+            panel.add(label, gbc);
+            x = (x%2 == 0)? 1 : 0;
+            if(x == 1) {
+                deliveryLabels.put(names[n], label);
+                n++;
+            }
+            i++;
+        }
 
         // Add Start Delivery Button
         JButton startButton = new JButton("Start Delivery");
@@ -205,7 +220,7 @@ public class DriverHomePage extends JFrame {
         JButton[] buttons = {startButton, completeButton};
         gbc.gridy = 6;
         gbc.gridwidth = 1;
-        int i = 0;
+        i = 0;
         for (JButton button : buttons) {
             gbc.gridx = i;
             panel.add(button, gbc);
@@ -230,16 +245,6 @@ public class DriverHomePage extends JFrame {
         });
 
         return panel;
-    }
-
-    private void addToGrid(int y, JLabel label, JLabel value, String name, JPanel panel, GridBagConstraints gbc) {
-        gbc.gridx = 0;
-        gbc.gridy = y;
-        gbc.gridwidth = 1;
-        panel.add(label, gbc);
-        gbc.gridx = 1;
-        panel.add(value, gbc);
-        deliveryLabels.put(name, value);
     }
 
     private void updateDeliveryPanel(int orderId) {
