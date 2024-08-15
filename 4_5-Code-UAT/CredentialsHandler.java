@@ -130,7 +130,7 @@ public class CredentialsHandler {
                 String regDriverQuery = "INSERT INTO DRIVER(ID, USERNAME, PASSWORD, PHONE_NUMBER) VALUES (?, ?, ?, ?);";
                 PreparedStatement regDriverStatement = dbConnection.prepareStatement(regDriverQuery);
                 regDriverStatement.setInt(1, userId);
-                regDriverStatement.setString(2, user);
+                regDriverStatement.setString(2, username);
                 regDriverStatement.setString(3, password);
                 regDriverStatement.setString(4, phoneNumber);
 
