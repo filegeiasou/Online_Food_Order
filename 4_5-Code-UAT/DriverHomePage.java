@@ -15,7 +15,7 @@ public class DriverHomePage extends JFrame {
     private Timer refreshTimer;
     private int orderId;
     private Connection dbConnection;
-    private JPanel deliveryPanel;
+    private JPanel deliveryPanel, topPanel, botPanel;
     private Map<String, JLabel> deliveryLabels;
     String username;
 
@@ -24,9 +24,32 @@ public class DriverHomePage extends JFrame {
         CredentialsHandler cHandler = new CredentialsHandler();
         dbConnection = cHandler.getDBConnection();
         this.username = driverUsername;
+        initFrame();
+        populateOrders();
+    }
 
+    private void initFrame(){
         setTitle("Driver Page");
         setLayout(new BorderLayout());
+
+        // Top panel for logo and welcome message
+        topPanel = new JPanel();
+        topPanel.setLayout(new BorderLayout());
+        topPanel.setBackground(new Color(0xe7a780));
+
+        botPanel = new JPanel();
+        botPanel.setLayout(new BorderLayout());
+        botPanel.setBackground(new Color(0x575658));
+
+        // Logo and welcome label
+        AppLogo logo = new AppLogo();
+        JLabel welcomeLabel = new JLabel("Welcome, " + username + "!");
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 25));
+        welcomeLabel.setForeground(Color.WHITE);
+
+        topPanel.add(logo.getLabel(), BorderLayout.CENTER);
+        topPanel.add(welcomeLabel, BorderLayout.SOUTH);
 
         // Create the main panels
         JPanel ordersPanel = createOrdersPanel();
@@ -35,17 +58,19 @@ public class DriverHomePage extends JFrame {
         deliveryPanel.setVisible(false);
 
         // Add panels to the frame
-        add(ordersPanel, BorderLayout.CENTER);
-        add(supportPanel, BorderLayout.SOUTH);
-        add(deliveryPanel, BorderLayout.NORTH); // Place it at the top
+        botPanel.add(ordersPanel, BorderLayout.CENTER);
+        botPanel.add(supportPanel, BorderLayout.SOUTH);
+        botPanel.add(deliveryPanel, BorderLayout.NORTH); // Place it at the top
+
+        // Add top and bottom panels to the frame
+        add(topPanel, BorderLayout.NORTH);
+        add(botPanel, BorderLayout.CENTER);
 
         // Setup frame
         setSize(800, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
-
-        populateOrders();
     }
 
     private JPanel createOrdersPanel() {
@@ -165,67 +190,28 @@ public class DriverHomePage extends JFrame {
         JLabel deliveryStatusLabel = new JLabel("Status:");
         JLabel deliveryStatusValue = new JLabel("N/A");
 
-        // Add Order Number Label and Value
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 1;
-        panel.add(orderIdLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(orderIdValue, gbc);
-        deliveryLabels.put("OrderID", orderIdValue);
-
-        // Add Customer Label and Value
-        gbc.gridx = 0;
-        gbc.gridy = 1;
-        panel.add(customerLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(customerValue, gbc);
-        deliveryLabels.put("Customer", customerValue);
-
-        // Add Restaurant Label and Value
-        gbc.gridx = 0;
-        gbc.gridy = 2;
-        panel.add(addressLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(addressValue, gbc);
-        deliveryLabels.put("Customer's Address", addressValue);
-
-        // Add Total Cost Label and Value
-        gbc.gridx = 0;
-        gbc.gridy = 3;
-        panel.add(restaurantLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(restaurantValue, gbc);
-        deliveryLabels.put("Restaurant", restaurantValue);
-
-        gbc.gridx = 0;
-        gbc.gridy = 4;
-        panel.add(totalCostLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(totalCostValue, gbc);
-        deliveryLabels.put("Total Cost", totalCostValue);
-
-        // Add Status Label and Value
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        panel.add(deliveryStatusLabel, gbc);
-        gbc.gridx = 1;
-        panel.add(deliveryStatusValue, gbc);
-        deliveryLabels.put("Status", deliveryStatusValue);
+        addToGrid(0, orderIdLabel, orderIdValue, "OrderID", panel, gbc);
+        addToGrid(1, customerLabel, customerValue, "Customer", panel, gbc);
+        addToGrid(2, addressLabel, addressValue, "Customer's Address", panel, gbc);
+        addToGrid(3, restaurantLabel, restaurantValue, "Restaurant", panel, gbc);
+        addToGrid(4, totalCostLabel, totalCostValue, "Total Cost", panel, gbc);
+        addToGrid(5, deliveryStatusLabel, deliveryStatusValue, "Status", panel, gbc);
 
         // Add Start Delivery Button
         JButton startButton = new JButton("Start Delivery");
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        gbc.gridwidth = 1; // Span only one cell
-        panel.add(startButton, gbc);
-
         // Add Complete Delivery Button
         JButton completeButton = new JButton("Complete Delivery");
-        gbc.gridx = 1;
+
+        JButton[] buttons = {startButton, completeButton};
         gbc.gridy = 6;
+        gbc.gridwidth = 1;
+        int i = 0;
+        for (JButton button : buttons) {
+            gbc.gridx = i;
+            panel.add(button, gbc);
+            i++;
+        }
         completeButton.setEnabled(false);
-        panel.add(completeButton, gbc);
 
         // Add button actions
         startButton.addActionListener(e -> {
@@ -244,6 +230,16 @@ public class DriverHomePage extends JFrame {
         });
 
         return panel;
+    }
+
+    private void addToGrid(int y, JLabel label, JLabel value, String name, JPanel panel, GridBagConstraints gbc) {
+        gbc.gridx = 0;
+        gbc.gridy = y;
+        gbc.gridwidth = 1;
+        panel.add(label, gbc);
+        gbc.gridx = 1;
+        panel.add(value, gbc);
+        deliveryLabels.put(name, value);
     }
 
     private void updateDeliveryPanel(int orderId) {
