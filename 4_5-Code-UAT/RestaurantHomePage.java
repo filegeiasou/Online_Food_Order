@@ -106,7 +106,7 @@ class AboutInfoRES extends JFrame {
         JLabel usernameLabel = new JLabel("Username: "); 
         JLabel passwordLabel = new JLabel("Password: "); 
         JLabel emailLabel = new JLabel("Email: "); 
-        JLabel nameLabel = new JLabel("Name: "); 
+        JLabel nameLabel = new JLabel("Restaurant Name: ");
         JLabel locationLabel = new JLabel("Location: "); 
         JLabel cuisineLabel = new JLabel("Cuisine: "); 
         JLabel ratingLabel = new JLabel("Rating: "); 

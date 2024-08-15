@@ -225,7 +225,6 @@ class AboutInfo extends JFrame {
     }
 
     private void retrieveCustomerInfo() {
-
         try{
             CredentialsHandler cHandler = new CredentialsHandler();
             String query = "SELECT PASSWORD, ADDRESS FROM Customer WHERE USERNAME = ?";
@@ -410,19 +409,7 @@ class RestaurantPage extends JFrame {
 
         viewCartButton.setEnabled(!cart.isEmpty());
 
-//        showCartItems();
-//        addOrderToDB();
     }
-
-//    private void updateViewCartButton() {
-//        for(JCheckBox checkBox : checkBoxes) {
-//            if(checkBox.isSelected()) {
-//                viewCartButton.setEnabled(true);
-//                return;
-//            }
-//        }
-//        viewCartButton.setEnabled(false);
-//    }
 
     private void showCartItems() {
         StringBuilder cartContent = null;
