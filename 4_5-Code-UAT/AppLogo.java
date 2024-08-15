@@ -6,7 +6,7 @@ public class AppLogo  {
     private JLabel imageLabel;
     AppLogo() {
         icon = new ImageIcon("logo.png");
-        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_DEFAULT));
+        icon = new ImageIcon(icon.getImage().getScaledInstance(100, 90, Image.SCALE_SMOOTH));
         imageLabel = new JLabel(icon);
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
     }
