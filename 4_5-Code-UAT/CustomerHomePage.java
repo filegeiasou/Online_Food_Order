@@ -457,7 +457,6 @@ class RestaurantPage extends JFrame {
         dispose();
     }
 
-
     private void addOrderToDB() {
         try {
             CredentialsHandler cHandler = new CredentialsHandler();
@@ -477,7 +476,7 @@ class RestaurantPage extends JFrame {
             pstmt.setInt(2, restaurantID);
             pstmt.setInt(3, cart.size());
             pstmt.setDouble(4, totalPrice);
-            pstmt.setString(5, "Pending");
+            pstmt.setString(5, "Awaiting Confirmation");
             pstmt.executeUpdate();
 
             pstmt.close();
