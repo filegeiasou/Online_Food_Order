@@ -399,6 +399,7 @@ class RestaurantPage extends JFrame {
 
     private void addToCart() {
         cart.clear();
+        totalPrice = 0;
         for (JCheckBox checkBox : checkBoxes) {
             if (checkBox.isSelected()) {
                 String[] parts = checkBox.getText().split(" - €");
@@ -408,7 +409,6 @@ class RestaurantPage extends JFrame {
         }
 
         viewCartButton.setEnabled(!cart.isEmpty());
-
     }
 
     private void showCartItems() {
