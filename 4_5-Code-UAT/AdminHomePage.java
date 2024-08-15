@@ -168,17 +168,18 @@ public class AdminHomePage extends JFrame {
     }
 
     private void populateTable(String userType) {
-        String query;
+        String userQuery = "SELECT ID, USERNAME, EMAIL FROM User WHERE USERNAME IN (SELECT USERNAME FROM " + userType + ")";
+        String additionalQuery = "";
 
         switch (userType) {
             case "Customer":
-                query = "SELECT U.ID, U.USERNAME, U.EMAIL, C.ADDRESS FROM User U JOIN Customer C ON U.ID = C.ID";
+                additionalQuery = "SELECT ADDRESS FROM Customer WHERE USERNAME = ?";
                 break;
             case "Driver":
-                query = "SELECT U.ID, U.USERNAME, U.EMAIL, D.PHONE_NUMBER FROM User U JOIN Driver D ON U.ID = D.ID";
+                additionalQuery = "SELECT PHONE_NUMBER FROM Driver WHERE USERNAME = ?";
                 break;
             case "Restaurant":
-                query = "SELECT U.ID, U.USERNAME, U.EMAIL, R.NAME FROM User U JOIN Restaurant R ON U.ID = R.ID";
+                additionalQuery = "SELECT NAME FROM Restaurant WHERE USERNAME = ?";
                 break;
             default:
                 return;
@@ -203,31 +204,44 @@ public class AdminHomePage extends JFrame {
 
         tableModel.setRowCount(0);
 
-        try (Statement stmt = dbConnection.createStatement(); ResultSet rs = stmt.executeQuery(query)){
+        try (Statement stmt = dbConnection.createStatement(); ResultSet rs = stmt.executeQuery(userQuery)) {
             while (rs.next()) {
-                Object[] row = new Object[4];
-                row[0] = rs.getInt("ID");
-                row[1] = rs.getString("USERNAME");
-                row[2] = rs.getString("EMAIL");
-                switch (userType) {
-                    case "Customer":
-                        row[3] = rs.getString("ADDRESS");
-                        break;
-                    case "Driver":
-                        row[3] = rs.getString("PHONE_NUMBER");
-                        break;
-                    case "Restaurant":
-                        row[3] = rs.getString("NAME");
-                        break;
-                    default:
-                        row[3] = "";
+                int id = rs.getInt("ID");
+                String username = rs.getString("USERNAME");
+                String email = rs.getString("EMAIL");
+
+                try (PreparedStatement pstmt = dbConnection.prepareStatement(additionalQuery)) {
+                    pstmt.setString(1, username);
+                    try (ResultSet additionalRs = pstmt.executeQuery()) {
+                        if (additionalRs.next()) {
+                            Object[] row = new Object[4];
+                            row[0] = id;
+                            row[1] = username;
+                            row[2] = email;
+
+                            switch (userType) {
+                                case "Customer":
+                                    row[3] = additionalRs.getString("ADDRESS");
+                                    break;
+                                case "Driver":
+                                    row[3] = additionalRs.getString("PHONE_NUMBER");
+                                    break;
+                                case "Restaurant":
+                                    row[3] = additionalRs.getString("NAME");
+                                    break;
+                                default:
+                                    row[3] = "";
+                            }
+                            tableModel.addRow(row);
+                        }
+                    }
                 }
-                tableModel.addRow(row);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
+
 
     private void searchUser(String userType, JTextField searchField) {
         String searchTerm = searchField.getText();
@@ -317,8 +331,42 @@ public class AdminHomePage extends JFrame {
             JOptionPane.showMessageDialog(this, "Please select a " + userType + " to delete");
             return;
         }
+
+        JTable userTable;
+        switch (userType) {
+            case "Customer":
+                userTable = customerTable;
+                break;
+            case "Driver":
+                userTable = driverTable;
+                break;
+            case "Restaurant":
+                userTable = restaurantTable;
+                break;
+            default:
+                return;
+        }
+
+        String id = userTable.getValueAt(selectedRow, 0).toString();
+
         // Implement delete logic here based on userType
-        JOptionPane.showMessageDialog(this, "Delete " + userType);
+        int confirmDeletion = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirmDeletion == JOptionPane.YES_OPTION) {
+            // Implement the deletion logic here based on ID or any unique identifier
+            String deleteUserQuery = "DELETE FROM User WHERE ID = ?";
+            try {
+                PreparedStatement pstmt = dbConnection.prepareStatement(deleteUserQuery);
+                pstmt.setInt(1, Integer.parseInt(id));
+
+                int rowsDeleted = pstmt.executeUpdate();
+                if(rowsDeleted > 0) {
+                    refreshTable(userType);
+                }
+
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     private void refreshTable(String userType) {
