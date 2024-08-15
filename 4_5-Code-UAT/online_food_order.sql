@@ -1,5 +1,10 @@
 DROP DATABASE IF EXISTS Online_Food_Order_Delivery;
 CREATE DATABASE Online_Food_Order_Delivery;
+
+# Create a user for the database
+CREATE USER online_food_order_user@localhost IDENTIFIED BY 'food';
+GRANT ALL PRIVILEGES ON Online_Food_Order_Delivery.* TO online_food_order_user@localhost;
+
 USE Online_Food_Order_Delivery;
 
 CREATE TABLE User (

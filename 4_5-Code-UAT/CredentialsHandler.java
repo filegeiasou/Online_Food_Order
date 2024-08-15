@@ -6,10 +6,11 @@ public class CredentialsHandler {
 
     private Connection dbConnection;
     private String url = "jdbc:mysql://localhost:3306/Online_Food_Order_Delivery";
-    private String user = "root";
-    private String password = "root";
+    private String user = "online_food_order_user";
+    private String password = "food";
 
     public CredentialsHandler() {
+
         try {
             dbConnection = DriverManager.getConnection(url, user, password);
         } catch (SQLException e) {
