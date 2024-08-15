@@ -9,7 +9,7 @@ import java.sql.*;
 public class RestaurantHomePage extends JFrame implements ActionListener {
 
     private String username;
-    private JButton infoButton, LogoutButton;
+    private JButton menuButton, infoButton, LogoutButton;
     private JPanel topPanel, botPanel, buttonPanel;
     private OrderTableModel orderTableModel;
     private JTable ordersTable;
@@ -53,23 +53,23 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         topPanel.add(welcomeLabel, BorderLayout.SOUTH);
 
         // Buttons
+        menuButton = new JButton("Menu");
         infoButton = new JButton("Account Info");
         LogoutButton = new JButton("Logout");
 
-        JButton[] buttons = {infoButton, LogoutButton};
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.setBackground(new Color(0x575658));
+
+        JButton[] buttons = {menuButton, infoButton, LogoutButton, };
         for (JButton button : buttons) {
             button.setBackground(Color.WHITE);
             button.setForeground(Color.BLACK);
             button.setFocusable(false);
             button.addActionListener(this);
+            buttonPanel.add(button);
         }
-
-        buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
-        buttonPanel.setBackground(new Color(0x575658));
-        buttonPanel.add(infoButton);
-        buttonPanel.add(LogoutButton);
-        botPanel.add(buttonPanel, BorderLayout.NORTH);
+        botPanel.add(buttonPanel, BorderLayout.NORTH);     
 
         // Configure JTable
         ordersTable.setFont(new Font("Arial", Font.PLAIN, 18));
