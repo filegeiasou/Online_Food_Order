@@ -1,3 +1,6 @@
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -8,16 +11,29 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
     private String username;
     private JButton infoButton, LogoutButton;
     private JPanel topPanel, botPanel, buttonPanel;
+    private OrderTableModel orderTableModel;
+    private JTable ordersTable;
 
     public RestaurantHomePage(String username) {
         this.username = username;
-        initFrame();    
+        orderTableModel = new OrderTableModel();
+        ordersTable = new JTable(orderTableModel);
+        initFrame();
+
+        // Retrieve the restaurant name for the given username
+        String restaurantName = getRestaurantName(username);
+        if (restaurantName != null) {
+            loadOrders(restaurantName); // Load orders based on the restaurant name
+        } else {
+            System.err.println("Restaurant name could not be found for username: " + username);
+        }
     }
 
     private void initFrame() {
         setTitle("Restaurant Home Page");
         setLayout(new BorderLayout());
-        // Panels
+
+        // Top panel for logo and welcome message
         topPanel = new JPanel();
         topPanel.setLayout(new BorderLayout());
         topPanel.setBackground(new Color(0xe7a780));
@@ -26,19 +42,17 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         botPanel.setLayout(new BorderLayout());
         botPanel.setBackground(new Color(0x575658));
 
-        // Logo on topPanel
+        // Logo and welcome label
         AppLogo logo = new AppLogo();
-        
-        // Welcome label under logo
         JLabel welcomeLabel = new JLabel("Welcome, " + username + "!");
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 25));
         welcomeLabel.setForeground(Color.WHITE);
 
-        topPanel.add(logo.getLabel(), BorderLayout.CENTER); 
-        topPanel.add(welcomeLabel, BorderLayout.SOUTH); 
+        topPanel.add(logo.getLabel(), BorderLayout.CENTER);
+        topPanel.add(welcomeLabel, BorderLayout.SOUTH);
 
-        // Buttons 
+        // Buttons
         infoButton = new JButton("Account Info");
         LogoutButton = new JButton("Logout");
 
@@ -46,7 +60,7 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         for (JButton button : buttons) {
             button.setBackground(Color.WHITE);
             button.setForeground(Color.BLACK);
-            button.setFocusable(false); 
+            button.setFocusable(false);
             button.addActionListener(this);
         }
 
@@ -56,21 +70,88 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         buttonPanel.add(infoButton);
         buttonPanel.add(LogoutButton);
         botPanel.add(buttonPanel, BorderLayout.NORTH);
-        
+
+        // Configure JTable
+        ordersTable.setFont(new Font("Arial", Font.PLAIN, 18));
+        ordersTable.setBackground(new Color(0x575658));
+        ordersTable.setForeground(Color.WHITE);
+        ordersTable.setSelectionBackground(new Color(0x4a4a4a));
+        ordersTable.setSelectionForeground(Color.WHITE);
+
+        JScrollPane tableScrollPane = new JScrollPane(ordersTable,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        tableScrollPane.setPreferredSize(new Dimension(450, 300));
+        tableScrollPane.setBorder(BorderFactory.createLineBorder(new Color(0x575658)));
+        tableScrollPane.getViewport().setBackground(new Color(0x575658));
+
+        // Add the scroll pane to the center of botPanel
+        botPanel.add(tableScrollPane, BorderLayout.CENTER);
+
+        // Add top and bottom panels to the frame
         add(topPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
+
+        // Frame settings
         setSize(500, 500);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
+    private String getRestaurantName(String username) {
+        String restaurantName = null;
+        String query = "SELECT R.NAME " +
+                "FROM RESTAURANT R " +
+                "WHERE USERNAME = ?";
+        CredentialsHandler cHandler = new CredentialsHandler();
+        try (PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query)) {
+            pstmt.setString(1, username);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    restaurantName = rs.getString("NAME");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return restaurantName;
+    }
+
+    private void loadOrders(String restaurantName) {
+        String retrieveOrders = "SELECT O.ID as OrderId, U.USERNAME as CustomerName " +
+                                "FROM ORDERS O " +
+                                "JOIN RESTAURANT R ON O.RESTAURANT_ID = R.ID " +
+                                "JOIN USER U ON O.CUSTOMER_ID = U.ID " +
+                                "WHERE R.NAME = ? " +
+                                "AND O.STATUS = 'Awaiting Confirmation'";
+
+        CredentialsHandler cHandler = new CredentialsHandler();
+        try (PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(retrieveOrders)) {
+            pstmt.setString(1, restaurantName); // Set the restaurant name in the query
+            try (ResultSet rs = pstmt.executeQuery()) {
+                orderTableModel.clearOrders(); // Clear previous orders
+                while (rs.next()) {
+                    int orderId = rs.getInt("OrderId");
+                    String customerName = rs.getString("CustomerName");
+
+                    System.out.println("Order ID: " + orderId + ", Customer Name: " + customerName);
+                    Order order = new Order(orderId, customerName);
+                    orderTableModel.addOrder(order);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == infoButton) {
             new AboutInfoRES(username);
         }
-        if(e.getSource() == LogoutButton) {
+        if (e.getSource() == LogoutButton) {
             dispose();
             new LogInForm();
         }
@@ -81,9 +162,75 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
     }
 }
 
+class OrderTableModel extends AbstractTableModel {
+    private final List<Order> orders;
+    private final String[] columnNames = {"Order ID", "Customer Name"};
+
+    public OrderTableModel() {
+        this.orders = new ArrayList<>();
+    }
+
+    @Override
+    public int getRowCount() {
+        return orders.size();
+    }
+
+    @Override
+    public int getColumnCount() {
+        return columnNames.length;
+    }
+
+    @Override
+    public Object getValueAt(int rowIndex, int columnIndex) {
+        Order order = orders.get(rowIndex);
+        switch (columnIndex) {
+            case 0:
+                return order.getOrderId();
+            case 1:
+                return order.getCustomerName();
+            default:
+                return null;
+        }
+    }
+
+    @Override
+    public String getColumnName(int column) {
+        return columnNames[column];
+    }
+
+    public void addOrder(Order order) {
+        orders.add(order);
+        fireTableRowsInserted(orders.size() - 1, orders.size() - 1);
+    }
+
+    public void clearOrders() {
+        orders.clear();
+        fireTableDataChanged();
+    }
+}
+
+class Order {
+    private final int orderId;
+    private final String customerName;
+
+    public Order(int orderId, String customerName) {
+        this.orderId = orderId;
+        this.customerName = customerName;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public String getCustomerName() {
+        return customerName;
+    }
+}
+
 class AboutInfoRES extends JFrame {
     private String username;
-    private JTextField passwordField, emailField, nameField, locationField, cuisineField, ratingField;;
+    private JTextField passwordField, emailField, nameField, locationField, cuisineField, ratingField;
+    ;
 
     public AboutInfoRES(String username) {
         this.username = username;
@@ -103,31 +250,31 @@ class AboutInfoRES extends JFrame {
         JPanel botPanel = new JPanel(new GridBagLayout());
         botPanel.setBackground(new Color(0x575658));
 
-        JLabel usernameLabel = new JLabel("Username: "); 
-        JLabel passwordLabel = new JLabel("Password: "); 
-        JLabel emailLabel = new JLabel("Email: "); 
+        JLabel usernameLabel = new JLabel("Username: ");
+        JLabel passwordLabel = new JLabel("Password: ");
+        JLabel emailLabel = new JLabel("Email: ");
         JLabel nameLabel = new JLabel("Restaurant Name: ");
-        JLabel locationLabel = new JLabel("Location: "); 
-        JLabel cuisineLabel = new JLabel("Cuisine: "); 
-        JLabel ratingLabel = new JLabel("Rating: "); 
+        JLabel locationLabel = new JLabel("Location: ");
+        JLabel cuisineLabel = new JLabel("Cuisine: ");
+        JLabel ratingLabel = new JLabel("Rating: ");
 
         JLabel[] labels = {usernameLabel, passwordLabel, emailLabel, nameLabel, locationLabel, cuisineLabel, ratingLabel};
         for (JLabel label : labels) {
             label.setForeground(Color.WHITE);
         }
 
-        JTextField usernameField = new JTextField(20); 
+        JTextField usernameField = new JTextField(20);
         usernameField.setText(username);
-        passwordField = new JTextField(20); 
-        emailField = new JTextField(20); 
+        passwordField = new JTextField(20);
+        emailField = new JTextField(20);
         nameField = new JTextField(20);
-        locationField = new JTextField(20); 
-        cuisineField = new JTextField(20); 
-        ratingField = new JTextField(20); 
+        locationField = new JTextField(20);
+        cuisineField = new JTextField(20);
+        ratingField = new JTextField(20);
 
         JTextField[] fields = {usernameField, passwordField, emailField, nameField, locationField, cuisineField, ratingField};
         for (JTextField field : fields) {
-            field.setEditable(false); 
+            field.setEditable(false);
             field.setFocusable(false);
         }
 
@@ -161,7 +308,7 @@ class AboutInfoRES extends JFrame {
     }
 
     private void retrieveRestaurantInfo() {
-        try{
+        try {
             CredentialsHandler cHandler = new CredentialsHandler();
             String query = "SELECT * FROM Restaurant WHERE USERNAME = ?";
             PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
