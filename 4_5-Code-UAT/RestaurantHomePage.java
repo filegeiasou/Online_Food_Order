@@ -8,8 +8,8 @@ import java.sql.*;
 
 public class RestaurantHomePage extends JFrame implements ActionListener {
 
-    private String username;
-    private JButton menuButton, infoButton, LogoutButton;
+    private final String username;
+    private JButton refreshButton, menuButton, infoButton, LogoutButton;
     private JPanel topPanel, botPanel, buttonPanel;
     private OrderTableModel orderTableModel;
     private JTable ordersTable;
@@ -52,16 +52,17 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         topPanel.add(logo.getLabel(), BorderLayout.CENTER);
         topPanel.add(welcomeLabel, BorderLayout.SOUTH);
 
-        // Buttons
+        // Initialize Buttons
+        refreshButton = new JButton("Refresh");
         menuButton = new JButton("Menu");
         infoButton = new JButton("Account Info");
-        LogoutButton = new JButton("Logout");
+        LogoutButton = new JButton("Log Out");
 
         buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.setBackground(new Color(0x575658));
 
-        JButton[] buttons = {menuButton, infoButton, LogoutButton, };
+        JButton[] buttons = {refreshButton, menuButton, infoButton, LogoutButton};
         for (JButton button : buttons) {
             button.setBackground(Color.WHITE);
             button.setForeground(Color.BLACK);
@@ -69,14 +70,26 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
             button.addActionListener(this);
             buttonPanel.add(button);
         }
-        botPanel.add(buttonPanel, BorderLayout.NORTH);     
+        botPanel.add(buttonPanel, BorderLayout.NORTH);
 
         // Configure JTable
-        ordersTable.setFont(new Font("Arial", Font.PLAIN, 18));
+        ordersTable.setFont(new Font("Arial", Font.PLAIN, 14));
         ordersTable.setBackground(new Color(0x575658));
         ordersTable.setForeground(Color.WHITE);
         ordersTable.setSelectionBackground(new Color(0x4a4a4a));
         ordersTable.setSelectionForeground(Color.WHITE);
+
+        ordersTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(e.getClickCount() == 2) {
+                    int row = ordersTable.rowAtPoint(e.getPoint());
+                    if(row >= 0) {
+                        viewOrderItems();
+                    }
+                }
+            }
+        });
 
         JScrollPane tableScrollPane = new JScrollPane(ordersTable,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
@@ -93,17 +106,59 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         add(botPanel, BorderLayout.CENTER);
 
         // Frame settings
-        setSize(500, 500);
+        setSize(800, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
+    private void viewOrderItems() {
+        String cart = "";
+
+        String restaurantName = getRestaurantName(username);
+
+        // Retrieve the items of the order
+        String retrieveOrders = "SELECT O.ITEMS as Items " +
+                                "FROM ORDERS O " +
+                                "JOIN RESTAURANT R ON O.RESTAURANT_ID = R.ID " +
+                                "JOIN USER U ON O.CUSTOMER_ID = U.ID " +
+                                "WHERE R.NAME = ? " +
+                                "AND O.STATUS = 'Awaiting Confirmation'";
+        CredentialsHandler cHandler = new CredentialsHandler();
+        try (PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(retrieveOrders)) {
+            pstmt.setString(1, restaurantName);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                cart = rs.getString("Items");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        int result = JOptionPane.showOptionDialog(
+                this, // parent component
+                cart, // message
+                "Cart", // title
+                JOptionPane.YES_NO_OPTION, // type of options
+                JOptionPane.INFORMATION_MESSAGE, // type of message
+                null,
+                new Object[]{"Accept Order", "Decline Order"}, // options
+                "Add More Items" // initial value
+        );
+
+        if (result == JOptionPane.YES_OPTION) {
+            // Implement accept order logic
+            JOptionPane.showMessageDialog(this, "Order Accepted");
+        } else if(result == JOptionPane.NO_OPTION) {
+            JOptionPane.showMessageDialog(this, "Order Declined");
+        }
+    }
+
     private String getRestaurantName(String username) {
         String restaurantName = null;
-        String query = "SELECT R.NAME " +
-                "FROM RESTAURANT R " +
-                "WHERE USERNAME = ?";
+        String query = "SELECT R.NAME FROM RESTAURANT R WHERE USERNAME = ?";
+
         CredentialsHandler cHandler = new CredentialsHandler();
         try (PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query)) {
             pstmt.setString(1, username);
@@ -119,7 +174,11 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
     }
 
     private void loadOrders(String restaurantName) {
-        String retrieveOrders = "SELECT O.ID as OrderId, U.USERNAME as CustomerName " +
+        String retrieveOrders = "SELECT O.ID as OrderId," +
+                                "       U.USERNAME as CustomerName," +
+                                "       O.QUANTITY as Quantity," +
+                                "       O.TOTAL_PRICE as TotalCost," +
+                                "       O.STATUS as Status " +
                                 "FROM ORDERS O " +
                                 "JOIN RESTAURANT R ON O.RESTAURANT_ID = R.ID " +
                                 "JOIN USER U ON O.CUSTOMER_ID = U.ID " +
@@ -134,9 +193,11 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
                 while (rs.next()) {
                     int orderId = rs.getInt("OrderId");
                     String customerName = rs.getString("CustomerName");
+                    int quantity = rs.getInt("Quantity");
+                    float totalCost = rs.getFloat("TotalCost");
+                    String status = rs.getString("Status");
 
-                    System.out.println("Order ID: " + orderId + ", Customer Name: " + customerName);
-                    Order order = new Order(orderId, customerName);
+                    Order order = new Order(orderId, customerName, quantity, totalCost, status);
                     orderTableModel.addOrder(order);
                 }
             }
@@ -145,12 +206,23 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         }
     }
 
-
     @Override
     public void actionPerformed(ActionEvent e) {
+        if(e.getSource() == refreshButton) {
+            String restaurantName = getRestaurantName(username);
+            if(restaurantName != null)
+                loadOrders(restaurantName);
+            else System.err.println("Restaurant couldn't be found with the given name");
+        }
+
+        if(e.getSource() == menuButton) {
+            // Implement Menu Logic
+        }
+
         if (e.getSource() == infoButton) {
             new AboutInfoRES(username);
         }
+
         if (e.getSource() == LogoutButton) {
             dispose();
             new LogInForm();
@@ -164,7 +236,7 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
 
 class OrderTableModel extends AbstractTableModel {
     private final List<Order> orders;
-    private final String[] columnNames = {"Order ID", "Customer Name"};
+    private final String[] columnNames = {"Order ID", "Customer Name", "Quantity", "Total Cost", "Status"};
 
     public OrderTableModel() {
         this.orders = new ArrayList<>();
@@ -188,6 +260,12 @@ class OrderTableModel extends AbstractTableModel {
                 return order.getOrderId();
             case 1:
                 return order.getCustomerName();
+            case 2:
+                return order.getQuantity();
+            case 3:
+                return order.getTotalCost();
+            case 4:
+                return order.getStatus();
             default:
                 return null;
         }
@@ -205,17 +283,20 @@ class OrderTableModel extends AbstractTableModel {
 
     public void clearOrders() {
         orders.clear();
-        fireTableDataChanged();
     }
 }
 
 class Order {
-    private final int orderId;
-    private final String customerName;
+    private final int orderId, quantity;
+    private final String customerName, status;
+    private final float totalCost;
 
-    public Order(int orderId, String customerName) {
+    public Order(int orderId, String customerName, int quantity, float totalCost, String status) {
         this.orderId = orderId;
         this.customerName = customerName;
+        this.quantity = quantity;
+        this.totalCost = totalCost;
+        this.status = status;
     }
 
     public int getOrderId() {
@@ -225,12 +306,23 @@ class Order {
     public String getCustomerName() {
         return customerName;
     }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public String getTotalCost() {
+        return totalCost + " €";
+    }
+
+    public String getStatus() {
+        return status;
+    }
 }
 
 class AboutInfoRES extends JFrame {
     private String username;
     private JTextField passwordField, emailField, nameField, locationField, cuisineField, ratingField;
-    ;
 
     public AboutInfoRES(String username) {
         this.username = username;
