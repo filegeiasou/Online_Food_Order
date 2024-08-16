@@ -1,3 +1,4 @@
+import javax.security.auth.login.CredentialException;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,11 +115,12 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
 
     private void viewOrderItems() {
         String cart = "";
+        int orderId = 0;
 
         String restaurantName = getRestaurantName(username);
 
         // Retrieve the items of the order
-        String retrieveOrders = "SELECT O.ITEMS as Items " +
+        String retrieveOrders = "SELECT O.ID as OrderId, O.ITEMS as Items " +
                                 "FROM ORDERS O " +
                                 "JOIN RESTAURANT R ON O.RESTAURANT_ID = R.ID " +
                                 "JOIN USER U ON O.CUSTOMER_ID = U.ID " +
@@ -130,6 +132,7 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
             ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
+                orderId = rs.getInt("OrderId");
                 cart = rs.getString("Items");
             }
         } catch (SQLException e) {
@@ -149,9 +152,35 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
 
         if (result == JOptionPane.YES_OPTION) {
             // Implement accept order logic
+            acceptOrder(orderId);
             JOptionPane.showMessageDialog(this, "Order Accepted");
         } else if(result == JOptionPane.NO_OPTION) {
+            declineOrder(orderId);
             JOptionPane.showMessageDialog(this, "Order Declined");
+        }
+    }
+
+    private void acceptOrder(int orderId) {
+        CredentialsHandler cHandler = new CredentialsHandler();
+        String setDeclineStatus = "UPDATE Orders SET STATUS = 'Accepted' WHERE ID = ? ";
+        try(PreparedStatement declineStatement = cHandler.getDBConnection().prepareStatement(setDeclineStatus)) {
+            declineStatement.setInt(1, orderId);
+            declineStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void declineOrder(int orderId) {
+        CredentialsHandler cHandler = new CredentialsHandler();
+        String setDeclineStatus = "UPDATE Orders SET STATUS = 'Declined' WHERE ID = ? ";
+        try(PreparedStatement declineStatement = cHandler.getDBConnection().prepareStatement(setDeclineStatus)) {
+            declineStatement.setInt(1, orderId);
+            declineStatement.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 
