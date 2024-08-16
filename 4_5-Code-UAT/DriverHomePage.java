@@ -4,6 +4,8 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +14,6 @@ public class DriverHomePage extends JFrame {
     private JTable ordersTable;
     private DefaultTableModel ordersTableModel;
     private JButton refreshOrders, acceptOrderButton, startDeliveryButton, completeDeliveryButton, contactSupportButton;
-    private Timer refreshTimer;
     private int orderId;
     private Connection dbConnection;
     private JPanel deliveryPanel, topPanel, botPanel;
@@ -83,12 +84,22 @@ public class DriverHomePage extends JFrame {
                 return false;
             }
         };
+
         ordersTable = new JTable(ordersTableModel);
+        ordersTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedRow = ordersTable.rowAtPoint(e.getPoint());
+                acceptOrderButton.setEnabled(selectedRow >= 0);
+            }
+        });
+
         JScrollPane scrollPane = new JScrollPane(ordersTable);
 
         JPanel actionsPanel = new JPanel();
         refreshOrders = new JButton("Refresh");
         acceptOrderButton = new JButton("Accept Order");
+        acceptOrderButton.setEnabled(false);
 
         actionsPanel.add(refreshOrders);
         actionsPanel.add(acceptOrderButton);
@@ -166,81 +177,69 @@ public class DriverHomePage extends JFrame {
 
     private JPanel createDeliveryPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Current Delivery",
+        panel.setBorder(BorderFactory.createTitledBorder(
+                BorderFactory.createEtchedBorder(), "Current Delivery",
                 TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.BOLD, 14), Color.BLUE));
 
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets( 6, 6, 6, 6); // Add padding between components
+        gbc.insets = new Insets(6, 6, 6, 6); // Padding between components
         gbc.anchor = GridBagConstraints.WEST; // Align components to the left
 
         // Initialize the map to store labels
         deliveryLabels = new HashMap<>();
 
         // Define and add labels and values to the panel
-        JLabel orderIdLabel = new JLabel("Order Number:");
-        JLabel orderIdValue = new JLabel("N/A");
-        JLabel customerLabel = new JLabel("Customer:");
-        JLabel customerValue = new JLabel("N/A");
-        JLabel addressLabel = new JLabel("Customer's Address");
-        JLabel addressValue = new JLabel("N/A");
-        JLabel restaurantLabel = new JLabel("Restaurant:");
-        JLabel restaurantValue = new JLabel("N/A");
-        JLabel totalCostLabel = new JLabel("Total Cost:");
-        JLabel totalCostValue = new JLabel("N/A");
-        JLabel deliveryStatusLabel = new JLabel("Status:");
-        JLabel deliveryStatusValue = new JLabel("N/A");
+        String[] labelNames = {
+                "Order Number:", "Customer:", "Customer's Address:",
+                "Restaurant:", "Total Cost:", "Status:"
+        };
+        String[] labelKeys = {
+                "OrderID", "Customer", "Customer's Address",
+                "Restaurant", "Total Cost", "Status"
+        };
 
-        JLabel[] labels = {orderIdLabel, orderIdValue, 
-            customerLabel, customerValue, addressLabel, 
-            addressValue, restaurantLabel, restaurantValue, 
-            totalCostLabel, totalCostValue, deliveryStatusLabel, deliveryStatusValue};
+        for (int i = 0; i < labelNames.length; i++) {
+            JLabel label = new JLabel(labelNames[i]);
+            JLabel value = new JLabel("N/A");
 
-        String[] names = {"OrderID", "Customer", 
-        "Customer's Address", "Restaurant", "Total Cost", "Status"};
-        
-        int i = 0, n = 0, x = 0;
-        gbc.gridwidth = 1;
-        for(JLabel label : labels) {
-            gbc.gridx = x;
+            gbc.gridx = 0;
             gbc.gridy = i;
             panel.add(label, gbc);
-            x = (x%2 == 0)? 1 : 0;
-            if(x == 1) {
-                deliveryLabels.put(names[n], label);
-                n++;
-            }
-            i++;
+
+            gbc.gridx = 1;
+            panel.add(value, gbc);
+
+            deliveryLabels.put(labelKeys[i], value);
         }
 
-        // Add Start Delivery Button
-        JButton startButton = new JButton("Start Delivery");
-        // Add Complete Delivery Button
-        JButton completeButton = new JButton("Complete Delivery");
+        // Add the Start/Finish Delivery Buttons
+        startDeliveryButton = new JButton("Start Delivery");
+        completeDeliveryButton = new JButton("Complete Delivery");
 
-        JButton[] buttons = {startButton, completeButton};
-        gbc.gridy = 6;
+        gbc.gridx = 0;
+        gbc.gridy = labelNames.length;
         gbc.gridwidth = 1;
-        i = 0;
-        for (JButton button : buttons) {
-            gbc.gridx = i;
-            panel.add(button, gbc);
-            i++;
-        }
-        completeButton.setEnabled(false);
+        panel.add(startDeliveryButton, gbc);
+
+        gbc.gridx = 1;
+        panel.add(completeDeliveryButton, gbc);
+        completeDeliveryButton.setEnabled(false); // Initially disabled
 
         // Add button actions
-        startButton.addActionListener(e -> {
+        startDeliveryButton.addActionListener(e -> {
             // Implement start delivery logic
             deliveryLabels.get("Status").setText("In Progress");
-            startButton.setEnabled(false);
-            completeButton.setEnabled(true);
+            startDeliveryButton.setEnabled(false);
+            completeDeliveryButton.setEnabled(true);
             JOptionPane.showMessageDialog(DriverHomePage.this, "Delivery started!");
         });
 
-        completeButton.addActionListener(e -> {
+        completeDeliveryButton.addActionListener(e -> {
             // Implement complete delivery logic
             deliveryLabels.get("Status").setText("Completed");
-            panel.setVisible(false);
+            startDeliveryButton.setEnabled(true);
+            completeDeliveryButton.setEnabled(false);
+            panel.setVisible(false); // Hide panel after completion
             JOptionPane.showMessageDialog(DriverHomePage.this, "Delivery completed!");
         });
 
