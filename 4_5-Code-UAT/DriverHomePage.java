@@ -91,6 +91,10 @@ public class DriverHomePage extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 int selectedRow = ordersTable.rowAtPoint(e.getPoint());
                 acceptOrderButton.setEnabled(selectedRow >= 0);
+                    if(e.getClickCount() == 2 && selectedRow >= 0) {
+                        int orderId = (int) ordersTable.getValueAt(selectedRow, 0);
+                        viewOrderItems(orderId);
+                    }
             }
         });
 
@@ -103,7 +107,7 @@ public class DriverHomePage extends JFrame {
 
         actionsPanel.add(refreshOrders);
         actionsPanel.add(acceptOrderButton);
-        
+
         ordersPanel.add(scrollPane, BorderLayout.CENTER);
         ordersPanel.add(actionsPanel, BorderLayout.SOUTH);
 
@@ -151,6 +155,26 @@ public class DriverHomePage extends JFrame {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    private void viewOrderItems(int orderId) {
+        String cart = "";
+        String getItems = "SELECT ITEMS as Items FROM ORDERS WHERE ID = ?";
+        CredentialsHandler cHandler = new CredentialsHandler();
+
+        try(PreparedStatement getItemsStmt = cHandler.getDBConnection().prepareStatement(getItems)) {
+            getItemsStmt.setInt(1, orderId);
+            ResultSet rs = getItemsStmt.executeQuery();
+
+            while(rs.next()) {
+                cart = rs.getString("Items");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        JOptionPane.showMessageDialog(this, cart);
     }
 
     private JPanel createSupportPanel() {
