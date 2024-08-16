@@ -127,10 +127,11 @@ public class DriverHomePage extends JFrame {
     private void populateOrders() {
         // Query to get current orders for the driver
         String query = "SELECT O.ID, C.USERNAME AS Customer, C.ADDRESS as Address, R.NAME AS Restaurant, O.TOTAL_PRICE, O.STATUS " +
-                "FROM Orders O " +
-                "JOIN Customer C ON O.CUSTOMER_ID = C.ID " +
-                "JOIN Restaurant R ON O.RESTAURANT_ID = R.ID " +
-                "WHERE O.DRIVER_ID IS NULL OR O.DRIVER_ID = ?";
+                       "FROM Orders O " +
+                       "JOIN Customer C ON O.CUSTOMER_ID = C.ID " +
+                       "JOIN Restaurant R ON O.RESTAURANT_ID = R.ID " +
+                       "WHERE (O.DRIVER_ID IS NULL OR O.DRIVER_ID = ?) " +
+                       "AND O.STATUS = 'Accepted by Restaurant'";
 
         try (PreparedStatement pstmt = dbConnection.prepareStatement(query)) {
             pstmt.setInt(1, getDriverId()); // Replace with method to get driver ID
@@ -275,7 +276,7 @@ public class DriverHomePage extends JFrame {
 
     private void acceptOrder(int orderId) {
         try {
-            String updateOrderQuery = "UPDATE Orders SET DRIVER_ID = ?, STATUS = 'Accepted' WHERE ID = ?";
+            String updateOrderQuery = "UPDATE Orders SET DRIVER_ID = ?, STATUS = 'Accepted by Driver' WHERE ID = ?";
             PreparedStatement pstmt = dbConnection.prepareStatement(updateOrderQuery);
             pstmt.setInt(1, getDriverId());
             pstmt.setInt(2, orderId);
