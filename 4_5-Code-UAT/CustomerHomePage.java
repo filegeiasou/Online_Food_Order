@@ -470,13 +470,24 @@ class RestaurantPage extends JFrame {
                 customerID = rs.getInt("ID");
             }
 
-            query = "INSERT INTO Orders(CUSTOMER_ID, RESTAURANT_ID, QUANTITY, TOTAL_PRICE, STATUS) VALUES (?, ?, ?, ?, ?)";
+            StringBuilder itemsBuilder = new StringBuilder();
+            for(String item:cart) {
+                if(!itemsBuilder.isEmpty()) {
+                    itemsBuilder.append("\n");
+                }
+                itemsBuilder.append(item);
+            }
+
+            String items = itemsBuilder.toString();
+
+            query = "INSERT INTO Orders(CUSTOMER_ID, RESTAURANT_ID, QUANTITY, ITEMS, TOTAL_PRICE, STATUS) VALUES (?, ?, ?, ?, ?, ?)";
             pstmt = cHandler.getDBConnection().prepareStatement(query);
             pstmt.setInt(1, customerID);
             pstmt.setInt(2, restaurantID);
             pstmt.setInt(3, cart.size());
-            pstmt.setDouble(4, totalPrice);
-            pstmt.setString(5, "Awaiting Confirmation");
+            pstmt.setString(4, items);
+            pstmt.setDouble(5, totalPrice);
+            pstmt.setString(6, "Awaiting Confirmation");
             pstmt.executeUpdate();
 
             pstmt.close();
