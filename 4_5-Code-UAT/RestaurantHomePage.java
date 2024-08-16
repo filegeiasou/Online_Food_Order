@@ -125,7 +125,7 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
                                 "JOIN RESTAURANT R ON O.RESTAURANT_ID = R.ID " +
                                 "JOIN USER U ON O.CUSTOMER_ID = U.ID " +
                                 "WHERE R.NAME = ? " +
-                                "AND O.STATUS = 'Awaiting Confirmation'";
+                                "AND O.STATUS = 'Awaiting Confirmation' OR O.STATUS = 'Accepted by Restaurant'";
         CredentialsHandler cHandler = new CredentialsHandler();
         try (PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(retrieveOrders)) {
             pstmt.setString(1, restaurantName);
@@ -142,27 +142,29 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         int result = JOptionPane.showOptionDialog(
                 this, // parent component
                 cart, // message
-                "Cart", // title
+                "Order Details", // title
                 JOptionPane.YES_NO_OPTION, // type of options
                 JOptionPane.INFORMATION_MESSAGE, // type of message
                 null,
                 new Object[]{"Accept Order", "Decline Order"}, // options
-                "Add More Items" // initial value
+                "" // initial value
         );
 
         if (result == JOptionPane.YES_OPTION) {
             // Implement accept order logic
             acceptOrder(orderId);
+            loadOrders(restaurantName);
             JOptionPane.showMessageDialog(this, "Order Accepted");
         } else if(result == JOptionPane.NO_OPTION) {
             declineOrder(orderId);
+            loadOrders(restaurantName);
             JOptionPane.showMessageDialog(this, "Order Declined");
         }
     }
 
     private void acceptOrder(int orderId) {
         CredentialsHandler cHandler = new CredentialsHandler();
-        String setDeclineStatus = "UPDATE Orders SET STATUS = 'Accepted' WHERE ID = ? ";
+        String setDeclineStatus = "UPDATE Orders SET STATUS = 'Accepted by Restaurant' WHERE ID = ? ";
         try(PreparedStatement declineStatement = cHandler.getDBConnection().prepareStatement(setDeclineStatus)) {
             declineStatement.setInt(1, orderId);
             declineStatement.executeUpdate();
@@ -174,7 +176,7 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
 
     private void declineOrder(int orderId) {
         CredentialsHandler cHandler = new CredentialsHandler();
-        String setDeclineStatus = "UPDATE Orders SET STATUS = 'Declined' WHERE ID = ? ";
+        String setDeclineStatus = "UPDATE Orders SET STATUS = 'Declined by Restaurant' WHERE ID = ? ";
         try(PreparedStatement declineStatement = cHandler.getDBConnection().prepareStatement(setDeclineStatus)) {
             declineStatement.setInt(1, orderId);
             declineStatement.executeUpdate();
@@ -211,8 +213,7 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
                                 "FROM ORDERS O " +
                                 "JOIN RESTAURANT R ON O.RESTAURANT_ID = R.ID " +
                                 "JOIN USER U ON O.CUSTOMER_ID = U.ID " +
-                                "WHERE R.NAME = ? " +
-                                "AND O.STATUS = 'Awaiting Confirmation'";
+                                "WHERE R.NAME = ? ";
 
         CredentialsHandler cHandler = new CredentialsHandler();
         try (PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(retrieveOrders)) {

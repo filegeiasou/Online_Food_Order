@@ -302,12 +302,6 @@ class RestaurantPage extends JFrame {
         JScrollPane scrollPane = new JScrollPane(menuPanel);
         botPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Add "Add to Cart" button
-//        addToCartButton = new JButton("Add to Cart");
-//        addToCartButton.addActionListener(e -> addToCart());
-//        addToCartButton.setEnabled(false); // start with the button locked. This will update if the user selected an item
-//        botPanel.add(addToCartButton, BorderLayout.SOUTH);
-
         viewCartButton = new JButton("View Cart");
         viewCartButton.setEnabled(false);
         viewCartButton.addActionListener(e -> showCartItems());
@@ -420,14 +414,13 @@ class RestaurantPage extends JFrame {
             for (String item : cart) {
                 cartContent.append(item).append("\n");
             }
-//            JOptionPane.showMessageDialog(this, cartContent.toString(), "Cart", JOptionPane.INFORMATION_MESSAGE);
         }
 
         int result = JOptionPane.showOptionDialog(
-                this, // parent component
-                cartContent.toString(), // message
-                "Cart", // title
-                JOptionPane.YES_NO_OPTION, // type of options
+                this,             // parent component
+                cartContent.toString(),          // message
+                "Cart",                          // title
+                JOptionPane.YES_NO_OPTION,       // type of options
                 JOptionPane.INFORMATION_MESSAGE, // type of message
                 null,
                 new Object[]{"Finish Order", "Add More Items"}, // options
@@ -535,7 +528,7 @@ class OrdersPage extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
         add(botPanel, BorderLayout.SOUTH);
 
-        setSize(500, 500);
+        setSize(600, 600);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
