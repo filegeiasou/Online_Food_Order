@@ -85,6 +85,9 @@ public class DriverHomePage extends JFrame {
             }
         };
 
+        // dont allow the table to be reordered
+        ordersTable.getTableHeader().setReorderingAllowed(false);
+
         ordersTable = new JTable(ordersTableModel);
         ordersTable.addMouseListener(new MouseAdapter() {
             @Override
