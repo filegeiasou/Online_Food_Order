@@ -79,7 +79,8 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         ordersTable.setForeground(Color.WHITE);
         ordersTable.setSelectionBackground(new Color(0x4a4a4a));
         ordersTable.setSelectionForeground(Color.WHITE);
-        ordersTable.getTableHeader().setReorderingAllowed(false); // dont allow the table to be reordered
+        ordersTable.getTableHeader().setReorderingAllowed(false); // don't allow the table to be reordered
+        ordersTable.getTableHeader().setResizingAllowed(false);   // don't allow the table to be resizable
 
         ordersTable.addMouseListener(new MouseAdapter() {
             @Override
