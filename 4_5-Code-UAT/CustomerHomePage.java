@@ -547,8 +547,11 @@ class OrdersPage extends JFrame {
         topPanel.add(logo.getLabel());
 
         ordersContainer = new JPanel();
-        ordersContainer.setLayout(new GridLayout(0, 1, 10, 10));
+        ordersContainer.setLayout(new GridBagLayout());
         ordersContainer.setBackground(new Color(0x575658));
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5); // Add padding around components
 
         JScrollPane scrollPane = new JScrollPane(ordersContainer);
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -565,7 +568,7 @@ class OrdersPage extends JFrame {
         add(scrollPane, BorderLayout.CENTER);
         add(botPanel, BorderLayout.SOUTH);
 
-        setSize(600, 600);
+        setSize(450, 450);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -590,10 +593,12 @@ class OrdersPage extends JFrame {
             pstmt.setInt(1, customerID);
             rs = pstmt.executeQuery();
 
-            int orderCount = 0;
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.insets = new Insets(5, 5, 5, 5); // Add padding around components
 
+            int row = 0;
             while (rs.next()) {
-                orderCount++;
                 int restaurantID = rs.getInt("RESTAURANT_ID");
 
                 // Retrieve the restaurant name
@@ -608,10 +613,13 @@ class OrdersPage extends JFrame {
                 int quantity = rs.getInt("QUANTITY");
                 double totalPrice = rs.getDouble("TOTAL_PRICE");
                 String status = rs.getString("STATUS");
+                String items = rs.getString("ITEMS");
 
                 // Create and add the order panel to the orders container
-                JPanel orderPanel = createOrderPanel(orderCount, restaurantName, quantity, totalPrice, status);
-                ordersContainer.add(orderPanel);
+                RoundedPanel orderPanel = createOrderPanel(restaurantID, restaurantName, quantity, totalPrice, status, items);
+                gbc.gridx = 0;
+                gbc.gridy = row++;
+                ordersContainer.add(orderPanel, gbc);
             }
 
             pstmt.close();
@@ -620,16 +628,31 @@ class OrdersPage extends JFrame {
         }
     }
 
-    private JPanel createOrderPanel(int orderCount, String restaurantName, int quantity, double totalPrice, String status) {
-        JPanel orderPanel = new JPanel();
+    private RoundedPanel createOrderPanel(int orderId, String restaurantName, int quantity, double totalPrice, String status, String items) {
+        RoundedPanel orderPanel = new RoundedPanel(new GridLayout(0, 1));
+        orderPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         orderPanel.setLayout(new BoxLayout(orderPanel, BoxLayout.Y_AXIS));
-        orderPanel.setBackground(new Color(0x424242));
-        orderPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.DARK_GRAY, 1),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-        orderPanel.setPreferredSize(new Dimension(150, 100));
+        orderPanel.setBackground(new Color(0x7A7A7B));
+        orderPanel.setPreferredSize(new Dimension(400, 100));
 
-        JLabel orderCountLabel = new JLabel("Order: " + orderCount);
+        orderPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JOptionPane.showMessageDialog(null, items, "Order's Items", JOptionPane.INFORMATION_MESSAGE);
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                orderPanel.setBackground(new Color(0xe7a780));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                orderPanel.setBackground(new Color(0x7A7A7B));
+            }
+        });
+
+        JLabel orderCountLabel = new JLabel("Order ID: " + orderId);
         JLabel restaurantNameLabel = new JLabel("Restaurant: " + restaurantName);
         JLabel quantityLabel = new JLabel("Quantity: " + quantity);
         JLabel totalPriceLabel = new JLabel("Total Price: €" + String.format("%.2f", totalPrice));
