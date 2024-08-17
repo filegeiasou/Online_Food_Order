@@ -96,8 +96,9 @@ public class DriverHomePage extends JFrame {
                     }
             }
         });
-        // don't allow the table to be reordered
-        ordersTable.getTableHeader().setReorderingAllowed(false);
+
+        ordersTable.getTableHeader().setReorderingAllowed(false); // don't allow the table to be reordered
+        ordersTable.getTableHeader().setResizingAllowed(false);   // don't allow the table to be resizeable
 
         JScrollPane scrollPane = new JScrollPane(ordersTable);
 
@@ -254,22 +255,50 @@ public class DriverHomePage extends JFrame {
         // Add button actions
         startDeliveryButton.addActionListener(e -> {
             // Implement start delivery logic
-            deliveryLabels.get("Status").setText("In Progress");
-            startDeliveryButton.setEnabled(false);
-            completeDeliveryButton.setEnabled(true);
-            JOptionPane.showMessageDialog(DriverHomePage.this, "Delivery started!");
+            startDelivery();
         });
 
         completeDeliveryButton.addActionListener(e -> {
             // Implement complete delivery logic
-            deliveryLabels.get("Status").setText("Completed");
-            startDeliveryButton.setEnabled(true);
-            completeDeliveryButton.setEnabled(false);
-            panel.setVisible(false); // Hide panel after completion
-            JOptionPane.showMessageDialog(DriverHomePage.this, "Delivery completed!");
+            completeDelivery();
+            panel.setVisible(false);
         });
 
         return panel;
+    }
+
+    private void startDelivery() {
+        String startDeliveryQuery = "UPDATE Orders SET STATUS = 'On the way' WHERE ID = ?";
+        CredentialsHandler cHandler = new CredentialsHandler();
+        try(PreparedStatement stmt = cHandler.getDBConnection().prepareStatement(startDeliveryQuery)) {
+            stmt.setInt(1, orderId);
+            int rows = stmt.executeUpdate();
+            if(rows > 0) {
+                deliveryLabels.get("Status").setText("In Progress");
+                startDeliveryButton.setEnabled(false);
+                completeDeliveryButton.setEnabled(true);
+                JOptionPane.showMessageDialog(DriverHomePage.this, "Delivery Started!");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void completeDelivery() {
+        String startDeliveryQuery = "UPDATE Orders SET STATUS = 'Completed' WHERE ID = ?";
+        CredentialsHandler cHandler = new CredentialsHandler();
+        try(PreparedStatement stmt = cHandler.getDBConnection().prepareStatement(startDeliveryQuery)) {
+            stmt.setInt(1, orderId);
+            int rows = stmt.executeUpdate();
+            if(rows > 0) {
+                deliveryLabels.get("Status").setText("Completed");
+                startDeliveryButton.setEnabled(true);
+                completeDeliveryButton.setEnabled(false);
+                JOptionPane.showMessageDialog(DriverHomePage.this, "Delivery Completed!");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void updateDeliveryPanel(int orderId) {
@@ -308,6 +337,7 @@ public class DriverHomePage extends JFrame {
             pstmt.executeUpdate();
             populateOrders();
             deliveryPanel.setVisible(true);
+            deliveryLabels.get("Status").setText("Awaiting Pick Up");
             acceptOrderButton.setEnabled(false);
             updateDeliveryPanel(orderId); // Update delivery details panel
 
