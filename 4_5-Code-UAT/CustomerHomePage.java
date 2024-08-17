@@ -9,33 +9,15 @@ public class CustomerHomePage extends JFrame implements ActionListener {
 
     private JButton viewOrdersButton, infoButton, LogoutButton;
     private String username;
-    private JList<String> restaurantList;
-    private DefaultListModel<String> listModel;
+    private JPanel restaurantPanel;
     JPanel topPanel, botPanel;
 
     public CustomerHomePage(String username) {
-
         this.username = username;
-        listModel = new DefaultListModel<>();
-        restaurantList = new JList<>(listModel);
         initFrame();
 
         // Load restaurants from database
         loadRestaurants();
-
-        // Open restaurant page on double click
-        restaurantList.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                if (e.getClickCount() == 2) { // Double-click detected
-                    int index = restaurantList.locationToIndex(e.getPoint());
-                    if (index >= 0) {
-                        String selectedRestaurant = restaurantList.getModel().getElementAt(index);
-                        String restaurantName = selectedRestaurant.split(" ")[0];
-                        new RestaurantPage(restaurantName, username);
-                    }
-                }
-            }
-        });
     }
 
     private void initFrame() {
@@ -89,34 +71,24 @@ public class CustomerHomePage extends JFrame implements ActionListener {
         botPanel.add(buttonPanel, BorderLayout.NORTH);
         botPanel.setBackground(new Color(0x575658));
 
-        // Available Restaurants Label
-        JLabel availableRestaurantsLabel = new JLabel("Available Restaurants");
-        availableRestaurantsLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        availableRestaurantsLabel.setForeground(new Color(0xe7a780));
-        availableRestaurantsLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        // Create restaurant panel to hold rounded labels
+        restaurantPanel = new JPanel();
+        restaurantPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+        restaurantPanel.setBackground(new Color(0x575658));
 
-        // Restaurant List
-        restaurantList.setFont(new Font("Arial", Font.PLAIN, 18));
-        restaurantList.setBackground(new Color(0x575658));
-        restaurantList.setForeground(Color.WHITE);
-
-        JScrollPane listScrollPane = new JScrollPane(restaurantList, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        listScrollPane.setPreferredSize(new Dimension(450, 300));
-        listScrollPane.setBorder(BorderFactory.createLineBorder(new Color(0x575658)));
-        listScrollPane.setBackground(new Color(0x575658));
-        listScrollPane.getViewport().setBackground(new Color(0x575658));
+        JScrollPane scrollPane = new JScrollPane(restaurantPanel);
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
 
         listPanel.setLayout(new BorderLayout());
         listPanel.setBackground(new Color(0x575658)); // Match background color
-        listPanel.add(availableRestaurantsLabel, BorderLayout.NORTH);
-        listPanel.add(listScrollPane, BorderLayout.CENTER);
+        listPanel.add(scrollPane, BorderLayout.CENTER);
 
         botPanel.add(listPanel, BorderLayout.CENTER);
 
         add(topPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
 
-        setSize(500, 500);
+        setSize(800, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -135,9 +107,54 @@ public class CustomerHomePage extends JFrame implements ActionListener {
                 String cuisine = rs.getString("CUISINE_TYPE");
                 int rating = rs.getInt("RATING");
 
-                String restaurantInfo = restaurantName + " | " + location + " | " + cuisine + " | " + rating;
+                // Create a rounded panel for each restaurant
+                RoundedPanel restaurantLabel = new RoundedPanel(new GridLayout(0, 1));
+                restaurantLabel.setPreferredSize(new Dimension(250, 80));
+                restaurantLabel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
-                listModel.addElement(restaurantInfo);
+                JLabel nameLabel = new JLabel(restaurantName);
+                nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+                nameLabel.setForeground(Color.WHITE);
+
+                JLabel locationLabel = new JLabel("Location: " + location);
+                locationLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+                locationLabel.setForeground(Color.WHITE);
+
+                JLabel cuisineLabel = new JLabel("Cuisine Type: " + cuisine);
+                cuisineLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+                cuisineLabel.setForeground(Color.WHITE);
+
+                JLabel ratingLabel = new JLabel("Rating: " + rating);
+                ratingLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+                ratingLabel.setForeground(Color.WHITE);
+                restaurantLabel.setBackground(new Color(0x7A7A7B));
+
+                restaurantLabel.add(nameLabel);
+                restaurantLabel.add(locationLabel);
+                restaurantLabel.add(cuisineLabel);
+                restaurantLabel.add(ratingLabel);
+
+                restaurantLabel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        if (e.getClickCount() == 1) {
+                            new RestaurantPage(restaurantName, username);
+                        }
+                    }
+
+                    @Override
+                    public void mouseEntered(MouseEvent e) {
+                        restaurantLabel.setBackground(new Color(0xe7a780)); // Highlight on hover
+                    }
+
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        restaurantLabel.setBackground(new Color(0x7A7A7B)); // Default color on exit
+                    }
+                });
+
+                restaurantPanel.add(restaurantLabel);
+                restaurantPanel.add(Box.createRigidArea(new Dimension(0, 15))); // Add space between panels
             }
 
             stmt.close();
@@ -154,7 +171,7 @@ public class CustomerHomePage extends JFrame implements ActionListener {
         if (e.getSource() == infoButton) {
             new AboutInfo(username);
         }
-        if(e.getSource() == LogoutButton) {
+        if (e.getSource() == LogoutButton) {
             dispose();
             new LogInForm();
         }
@@ -164,6 +181,26 @@ public class CustomerHomePage extends JFrame implements ActionListener {
         return username;
     }
 }
+
+// Custom RoundedPanel class
+class RoundedPanel extends JPanel {
+    private int cornerRadius = 25;
+
+    public RoundedPanel(LayoutManager layout) {
+        super(layout);
+        setOpaque(false);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(getBackground());
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
+    }
+}
+
 
 class AboutInfo extends JFrame {
     JTextField passwordField, emailField, addressField, userTypeField;
@@ -352,7 +389,7 @@ class RestaurantPage extends JFrame {
 
             JPanel categoryPanel = new JPanel();
             categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.Y_AXIS));
-            categoryPanel.setBackground(new Color(0x575658)); 
+            categoryPanel.setBackground(new Color(0x575658));
             TitledBorder border = BorderFactory.createTitledBorder(category);
             border.setTitleColor(Color.WHITE);
             categoryPanel.setBorder(border);
@@ -366,7 +403,7 @@ class RestaurantPage extends JFrame {
 
             if(hasItems) {
                 menuPanel.add(categoryPanel);
-                menuPanel.add(Box.createRigidArea(new Dimension(0, 10))); 
+                menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
             }
         } catch (SQLException e) {
             e.printStackTrace();
