@@ -84,10 +84,6 @@ public class DriverHomePage extends JFrame {
                 return false;
             }
         };
-
-        // dont allow the table to be reordered
-        ordersTable.getTableHeader().setReorderingAllowed(false);
-
         ordersTable = new JTable(ordersTableModel);
         ordersTable.addMouseListener(new MouseAdapter() {
             @Override
@@ -100,6 +96,8 @@ public class DriverHomePage extends JFrame {
                     }
             }
         });
+        // don't allow the table to be reordered
+        ordersTable.getTableHeader().setReorderingAllowed(false);
 
         JScrollPane scrollPane = new JScrollPane(ordersTable);
 
@@ -177,7 +175,7 @@ public class DriverHomePage extends JFrame {
             throw new RuntimeException(e);
         }
 
-        JOptionPane.showMessageDialog(this, cart);
+        JOptionPane.showMessageDialog(this, cart, "Order's Items", JOptionPane.INFORMATION_MESSAGE);
     }
 
     private JPanel createSupportPanel() {
@@ -207,7 +205,7 @@ public class DriverHomePage extends JFrame {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createTitledBorder(
                 BorderFactory.createEtchedBorder(), "Current Delivery",
-                TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.BOLD, 14), Color.BLUE));
+                TitledBorder.LEFT, TitledBorder.TOP, new Font("Arial", Font.BOLD, 14), Color.WHITE));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(6, 6, 6, 6); // Padding between components
