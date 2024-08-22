@@ -615,8 +615,10 @@ class OrdersPage extends JFrame {
                 String status = rs.getString("STATUS");
                 String items = rs.getString("ITEMS");
 
+                int orderId = rs.getInt("ID");
+
                 // Create and add the order panel to the orders container
-                RoundedPanel orderPanel = createOrderPanel(restaurantID, restaurantName, quantity, totalPrice, status, items);
+                RoundedPanel orderPanel = createOrderPanel(orderId, restaurantName, quantity, totalPrice, status, items);
                 gbc.gridx = 0;
                 gbc.gridy = row++;
                 ordersContainer.add(orderPanel, gbc);
