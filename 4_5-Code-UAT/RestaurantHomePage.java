@@ -1,4 +1,3 @@
-import javax.security.auth.login.CredentialException;
 import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +5,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.HashMap;
+import java.util.Map;
+import javax.swing.border.*;
 
 public class RestaurantHomePage extends JFrame implements ActionListener {
 
@@ -248,11 +252,11 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         }
 
         if(e.getSource() == menuButton) {
-            // Implement Menu Logic
+            new MenuPage(username);
         }
 
         if (e.getSource() == infoButton) {
-            new AboutInfoRES(username);
+            new AboutInfoRes(username);
         }
 
         if (e.getSource() == LogoutButton) {
@@ -352,11 +356,192 @@ class Order {
     }
 }
 
-class AboutInfoRES extends JFrame {
+class MenuPage extends JFrame implements ActionListener {
+
+    private String username;
+    private JPanel botPanel, menuPanel;
+
+    public MenuPage(String username) {
+        this.username = username;
+        initFrame();
+        retrieveMenu(); 
+    }
+
+    private void initFrame() {
+        setTitle("Menu Page");
+        setLayout(new BorderLayout());
+
+        JPanel logoPanel = new JPanel();
+        logoPanel.setBackground(new Color(0xe7a780));
+        AppLogo logo = new AppLogo(); 
+        logoPanel.add(logo.getLabel());
+
+        botPanel = new JPanel(new BorderLayout());
+        botPanel.setBackground(new Color(0x575658));
+
+        JButton addMenuItemButton = new JButton("Add Item");
+        JButton editMenuItemButton = new JButton("Edit Item");
+        JButton deleteMenuItemButton = new JButton("Delete Item");
+
+        JButton[] buttons = {addMenuItemButton, editMenuItemButton, deleteMenuItemButton};
+        for (JButton button : buttons) {
+            button.setBackground(Color.WHITE);
+            button.setForeground(Color.BLACK);
+            button.setFocusable(false);
+            button.addActionListener(this);
+        }
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(new Color(0x575658));
+        buttonPanel.add(addMenuItemButton);
+        buttonPanel.add(editMenuItemButton);
+        buttonPanel.add(deleteMenuItemButton);
+
+        menuPanel = new JPanel();
+        menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
+        menuPanel.setBackground(new Color(0x575658));  
+        JScrollPane scrollPane = new JScrollPane(menuPanel);
+      
+        botPanel.add(scrollPane, BorderLayout.CENTER);
+        botPanel.add(buttonPanel, BorderLayout.NORTH);
+
+        add(logoPanel, BorderLayout.NORTH);
+        add(botPanel, BorderLayout.CENTER);
+       
+        setSize(500, 500);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void retrieveMenu() {
+        try {
+            CredentialsHandler cHandler = new CredentialsHandler();
+            String query = "SELECT NAME, PRICE, CATEGORY FROM Menu WHERE RESTAURANT_ID = (SELECT ID FROM RESTAURANT WHERE USERNAME = ?)";
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+
+            Map<String, List<String>> menuMap = new HashMap<>(); // Map to store the menu items by category
+
+            while (rs.next()) {
+                String itemName = rs.getString("NAME");
+                String itemPrice = rs.getString("PRICE");
+                String itemCategory = rs.getString("CATEGORY");
+
+                menuMap.computeIfAbsent(itemCategory, k -> new ArrayList<>()).add(itemName + " - $" + itemPrice); // If the category is new, create a new list
+            }
+
+            pstmt.close();
+            displayMenu(menuMap);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void displayMenu(Map<String, List<String>> menuMap) {
+
+        for (Map.Entry<String, List<String>> entry : menuMap.entrySet()) {
+            String category = entry.getKey();
+            List<String> items = entry.getValue();
+
+            JPanel categoryPanel = new JPanel();
+            categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.Y_AXIS));
+            categoryPanel.setBackground(new Color(0x575658));
+            TitledBorder border = BorderFactory.createTitledBorder(category);
+            border.setTitleColor(Color.WHITE);
+            categoryPanel.setBorder(border);
+
+            for (String item : items) {
+                JLabel itemLabel = new JLabel(item);
+                itemLabel.setFont(new Font("Arial", Font.BOLD, 14));
+                itemLabel.setForeground(Color.WHITE);
+                categoryPanel.add(itemLabel);
+            }
+
+            menuPanel.add(categoryPanel);
+            menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        }
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getActionCommand().equals("Add Item")) {
+            addMenuItem();
+        }
+
+        if (e.getActionCommand().equals("Edit Item")) {
+            editMenuItem();
+        }
+
+        if (e.getActionCommand().equals("Delete Item")) {
+            deleteItem();
+        }
+         // Refresh the menu
+         menuPanel.removeAll();
+         retrieveMenu();
+    }
+
+    private void addMenuItem() {
+        String itemName = JOptionPane.showInputDialog(this, "Enter the name of the item: ");
+        double itemPrice = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter the price of the item: "));
+        String itemCategory = JOptionPane.showInputDialog(this, "Enter the category of the item: ");
+
+        try {
+            CredentialsHandler cHandler = new CredentialsHandler();
+            String query = "INSERT INTO Menu (NAME, PRICE, CATEGORY, RESTAURANT_ID) VALUES (?, ?, ?, (SELECT ID FROM RESTAURANT WHERE USERNAME = ?))";
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
+            pstmt.setString(1, itemName);
+            pstmt.setDouble(2, itemPrice);
+            pstmt.setString(3, itemCategory);
+            pstmt.setString(4, username);
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }     
+    }
+
+    private void editMenuItem() {
+        String itemName = JOptionPane.showInputDialog(this, "Enter the name of the item you want to edit: ");
+        double itemPrice = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter the new price of the item: "));
+        String itemCategory = JOptionPane.showInputDialog(this, "Enter the new category of the item: ");
+
+        try {
+            CredentialsHandler cHandler = new CredentialsHandler();
+            String query = "UPDATE Menu SET PRICE = ?, CATEGORY = ? WHERE NAME = ? AND RESTAURANT_ID = (SELECT ID FROM RESTAURANT WHERE USERNAME = ?)";
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
+            pstmt.setDouble(1, itemPrice);
+            pstmt.setString(2, itemCategory);
+            pstmt.setString(3, itemName);
+            pstmt.setString(4, username);
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    private void deleteItem(){
+        String itemName = JOptionPane.showInputDialog(this, "Enter the name of the item you want to delete: ");
+        try {
+            CredentialsHandler cHandler = new CredentialsHandler();
+            String query = "DELETE FROM Menu WHERE NAME = ? AND RESTAURANT_ID = (SELECT ID FROM RESTAURANT WHERE USERNAME = ?)";
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
+            pstmt.setString(1, itemName);
+            pstmt.setString(2, username);
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+class AboutInfoRes extends JFrame {
     private String username;
     private JTextField passwordField, emailField, nameField, locationField, cuisineField, ratingField;
 
-    public AboutInfoRES(String username) {
+    public AboutInfoRes(String username) {
         this.username = username;
         initFrame();
         retrieveRestaurantInfo();
