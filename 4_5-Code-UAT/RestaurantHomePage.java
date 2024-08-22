@@ -478,8 +478,9 @@ class MenuPage extends JFrame implements ActionListener {
             deleteItem();
         }
          // Refresh the menu
-         menuPanel.removeAll();
-         retrieveMenu();
+        menuPanel.removeAll();
+        retrieveMenu();
+        menuPanel.revalidate();
     }
 
     private void addMenuItem() {
