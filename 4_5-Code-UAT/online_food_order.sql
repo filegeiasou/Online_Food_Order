@@ -116,6 +116,26 @@ VALUES
 (1, "Loukoumades", 3, "Dessert"),
 (1, "Tsipouro", 4, "Drinks");
 
+# MENU FOR ELLINIKO
+INSERT INTO Menu(RESTAURANT_ID, NAME, PRICE, CATEGORY)
+VALUES
+(2, "Chicken Souvlaki", 5, "Main"),
+(2, "Pork Souvlaki", 5, "Main"),
+(2, "Lamb Gyros", 6, "Main"),
+(2, "Greek Salad", 5, "Appetizer"),
+(2, "Spanakopita", 4, "Appetizer"),
+(2, "Dolmades", 5, "Appetizer"),
+(2, "Falafel Wrap", 5, "Main"),
+(2, "Baklava", 3, "Dessert"),
+(2, "Loukoumades", 4, "Dessert"),
+(2, "Greek Yogurt with Honey", 3, "Dessert"),
+(2, "Grilled Halloumi", 4, "Appetizer"),
+(2, "Ouzo", 6, "Drinks"),
+(2, "Greek Coffee", 3, "Drinks"),
+(2, "Mythos Beer", 5, "Drinks");
+
+
+xw
 SELECT * FROM USER;
 SELECT * FROM CUSTOMER;
 SELECT * FROM DRIVER;
