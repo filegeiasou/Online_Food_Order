@@ -96,7 +96,8 @@ INSERT INTO ADMINISTRATOR(USERNAME, PASSWORD) VALUES ("admin", "admin1234");
 
 # ΕΝΔΕΙΚΤΙΚΑ
 INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("manos", "manos1234", "Misafir", "Athens", "Turkish", 4);
-INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("aggelos", "aggelos1234", "Elliniko", "Athens", "Greek", 4.5);
+INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("ellinas", "ellinas1234", "Elliniko", "Athens", "Greek", 4.5);
+INSERT INTO RESTAURANT (USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("frosso", "kim1234", "Shiraki", "Athens", "Japanese", 4.5);
 
 # MENU FOR MISAFIR
 INSERT INTO Menu(RESTAURANT_ID, NAME, PRICE, CATEGORY) 
@@ -134,6 +135,23 @@ VALUES
 (2, "Greek Coffee", 3, "Drinks"),
 (2, "Mythos Beer", 5, "Drinks");
 
+# MENU FOR SHIRAKI
+INSERT INTO Menu(RESTAURANT_ID, NAME, PRICE, CATEGORY)
+VALUES
+(3, "Sushi", 5, "Main"),
+(3, "Sashimi", 6, "Main"),
+(3, "Miso Soup", 3, "Appetizer"),
+(3, "Edamame", 4, "Appetizer"),
+(3, "Gyoza", 5, "Appetizer"),
+(3, "Tempura", 6, "Appetizer"),
+(3, "California Roll", 5, "Main"),
+(3, "Dragon Roll", 6, "Main"),
+(3, "Rainbow Roll", 7, "Main"),
+(3, "Salmon Nigiri", 4, "Main"),
+(3, "Tuna Nigiri", 5, "Main"),
+(3, "Sake", 4, "Drinks"),
+(3, "Sapporo Beer", 5, "Drinks"),
+(3, "Green Tea", 3, "Drinks");
 
 xw
 SELECT * FROM USER;
