@@ -153,7 +153,6 @@ VALUES
 (3, "Sapporo Beer", 5, "Drinks"),
 (3, "Green Tea", 3, "Drinks");
 
-xw
 SELECT * FROM USER;
 SELECT * FROM CUSTOMER;
 SELECT * FROM DRIVER;
