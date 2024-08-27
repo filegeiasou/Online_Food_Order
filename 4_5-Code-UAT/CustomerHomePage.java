@@ -169,7 +169,7 @@ public class CustomerHomePage extends JFrame implements ActionListener {
             new OrdersPage(username);
         }
         if (e.getSource() == infoButton) {
-            new AboutInfo(username);
+            new AboutInfoCus(username);
         }
         if (e.getSource() == LogoutButton) {
             dispose();
@@ -202,11 +202,11 @@ class RoundedPanel extends JPanel {
 }
 
 
-class AboutInfo extends JFrame {
+class AboutInfoCus extends JFrame {
     JTextField passwordField, emailField, addressField, userTypeField;
     private String username;
 
-    public AboutInfo(String username) {
+    public AboutInfoCus(String username) {
         this.username = username;
         initFrame();
         retrieveCustomerInfo();
