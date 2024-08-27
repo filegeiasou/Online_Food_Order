@@ -168,19 +168,20 @@ public class AdminHomePage extends JFrame {
     }
 
     private void populateTable(String userType) {
-        String userQuery = "SELECT ID, USERNAME, EMAIL" +
-                           "FROM User" +
-                           "WHERE USERNAME IN (SELECT USERNAME FROM " + userType + ")";
+        String userQuery = "";
         String additionalQuery = "";
 
         switch (userType) {
             case "Customer":
+                userQuery = "SELECT ID, USERNAME, EMAIL FROM User WHERE USERNAME IN (SELECT USERNAME FROM Customer)";
                 additionalQuery = "SELECT ADDRESS FROM Customer WHERE USERNAME = ?";
                 break;
             case "Driver":
+                userQuery = "SELECT ID, USERNAME, EMAIL FROM User WHERE USERNAME IN (SELECT USERNAME FROM Driver)";
                 additionalQuery = "SELECT PHONE_NUMBER FROM Driver WHERE USERNAME = ?";
                 break;
             case "Restaurant":
+                userQuery = "SELECT ID, USERNAME, EMAIL FROM User WHERE USERNAME IN (SELECT USERNAME FROM Restaurant)";
                 additionalQuery = "SELECT NAME FROM Restaurant WHERE USERNAME = ?";
                 break;
             default:
@@ -206,39 +207,42 @@ public class AdminHomePage extends JFrame {
 
         tableModel.setRowCount(0);
 
-        try (Statement stmt = dbConnection.createStatement(); ResultSet rs = stmt.executeQuery(userQuery)) {
+        try {
+            PreparedStatement pstmt1 = dbConnection.prepareStatement(userQuery); 
+            ResultSet rs = pstmt1.executeQuery();
+
             while (rs.next()) {
                 int id = rs.getInt("ID");
                 String username = rs.getString("USERNAME");
                 String email = rs.getString("EMAIL");
 
-                try (PreparedStatement pstmt = dbConnection.prepareStatement(additionalQuery)) {
-                    pstmt.setString(1, username);
-                    try (ResultSet additionalRs = pstmt.executeQuery()) {
-                        if (additionalRs.next()) {
-                            Object[] row = new Object[4];
-                            row[0] = id;
-                            row[1] = username;
-                            row[2] = email;
+                PreparedStatement pstmt = dbConnection.prepareStatement(additionalQuery);
+                pstmt.setString(1, username);
+                ResultSet additionalRs = pstmt.executeQuery();
+                if (additionalRs.next()) {
+                    Object[] row = new Object[4];
+                    row[0] = id;
+                    row[1] = username;
+                    row[2] = email;
 
-                            switch (userType) {
-                                case "Customer":
-                                    row[3] = additionalRs.getString("ADDRESS");
-                                    break;
-                                case "Driver":
-                                    row[3] = additionalRs.getString("PHONE_NUMBER");
-                                    break;
-                                case "Restaurant":
-                                    row[3] = additionalRs.getString("NAME");
-                                    break;
-                                default:
-                                    row[3] = "";
-                            }
-                            tableModel.addRow(row);
-                        }
+                    switch (userType) {
+                        case "Customer":
+                            row[3] = additionalRs.getString("ADDRESS");
+                            break;
+                        case "Driver":
+                            row[3] = additionalRs.getString("PHONE_NUMBER");
+                            break;
+                        case "Restaurant":
+                            row[3] = additionalRs.getString("NAME");
+                            break;
+                        default:
+                            row[3] = "";
                     }
-                }
+                    tableModel.addRow(row);
+                } 
+            pstmt.close(); 
             }
+        pstmt1.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
