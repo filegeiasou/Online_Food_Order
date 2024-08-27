@@ -84,10 +84,12 @@ DELIMITER ;
 INSERT INTO User(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES 
 ('admin', 'admin1234', "admin@gmail.com", "Admin"),
 ('manos', 'manos1234', "manos@gmail.com", "Restaurant"),
-('aggelos', 'aggelos1234', "aggelos@gmail.com", "Restaurant");
--- ('frottori', 'frosso1234'),
--- ('tsosmi', 'dimitris1234'),
--- ('filegeiasou', 'aggelos1234');
+('ellinas', 'aggelos1234', "aggelos@gmail.com", "Restaurant"),
+("kim", "kim1234", "kim@gmail.com", "Restaurant");
+-- ('tsosmi', 'dimitris1234', "
+-- -- ('frottori', 'frosso1234'),
+-- -- ('tsosmi', 'dimitris1234'),
+-- -- ('filegeiasou', 'aggelos1234');
 
 # Admins will probably just be in the database and can only sign in.
 INSERT INTO ADMINISTRATOR(USERNAME, PASSWORD) VALUES ("admin", "admin1234");
@@ -95,7 +97,7 @@ INSERT INTO ADMINISTRATOR(USERNAME, PASSWORD) VALUES ("admin", "admin1234");
 # ΕΝΔΕΙΚΤΙΚΑ
 INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("manos", "manos1234", "Misafir", "Athens", "Turkish", 4);
 INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("ellinas", "ellinas1234", "Elliniko", "Athens", "Greek", 4.5);
-INSERT INTO RESTAURANT (USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("frosso", "kim1234", "Shiraki", "Athens", "Japanese", 4.5);
+INSERT INTO RESTAURANT (USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES ("kim", "kim1234", "Shiraki", "Athens", "Japanese", 4.5);
 
 # MENU FOR MISAFIR
 INSERT INTO Menu(RESTAURANT_ID, NAME, PRICE, CATEGORY) 
