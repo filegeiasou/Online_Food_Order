@@ -170,37 +170,26 @@ public class AdminHomePage extends JFrame {
     private void populateTable(String userType) {
         String userQuery = "";
         String additionalQuery = "";
+        DefaultTableModel tableModel = null;
 
         switch (userType) {
             case "Customer":
                 userQuery = "SELECT ID, USERNAME, EMAIL FROM User WHERE USERNAME IN (SELECT USERNAME FROM Customer)";
                 additionalQuery = "SELECT ADDRESS FROM Customer WHERE USERNAME = ?";
+                tableModel = customerTableModel;
                 break;
             case "Driver":
                 userQuery = "SELECT ID, USERNAME, EMAIL FROM User WHERE USERNAME IN (SELECT USERNAME FROM Driver)";
                 additionalQuery = "SELECT PHONE_NUMBER FROM Driver WHERE USERNAME = ?";
+                tableModel = driverTableModel;
                 break;
             case "Restaurant":
                 userQuery = "SELECT ID, USERNAME, EMAIL FROM User WHERE USERNAME IN (SELECT USERNAME FROM Restaurant)";
                 additionalQuery = "SELECT NAME FROM Restaurant WHERE USERNAME = ?";
-                break;
-            default:
-                return;
-        }
-
-        DefaultTableModel tableModel;
-        switch (userType) {
-            case "Customer":
-                tableModel = customerTableModel;
-                break;
-            case "Driver":
-                tableModel = driverTableModel;
-                break;
-            case "Restaurant":
                 tableModel = restaurantTableModel;
                 break;
             default:
-                tableModel = null;
+                return;
         }
 
         if (tableModel == null) return;
