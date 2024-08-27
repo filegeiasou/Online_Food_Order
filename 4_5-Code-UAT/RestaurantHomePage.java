@@ -105,8 +105,16 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         tableScrollPane.setBorder(BorderFactory.createLineBorder(new Color(0x575658)));
         tableScrollPane.getViewport().setBackground(new Color(0x575658));
 
-        // Add the scroll pane to the center of botPanel
-        botPanel.add(tableScrollPane, BorderLayout.CENTER);
+        // Create a JPanel to hold the orders table with a titled border
+        JPanel ordersTablePanel = new JPanel(new BorderLayout());
+        ordersTablePanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.WHITE), "Incoming Orders",
+                TitledBorder.CENTER, TitledBorder.TOP,
+                new Font("Arial", Font.BOLD, 18), Color.WHITE));
+        ordersTablePanel.setBackground(new Color(0x575658)); // Set background to match botPanel
+        ordersTablePanel.add(tableScrollPane, BorderLayout.CENTER);
+
+        // Add the ordersTablePanel to the center of botPanel
+        botPanel.add(ordersTablePanel, BorderLayout.CENTER);
 
         // Add top and bottom panels to the frame
         add(topPanel, BorderLayout.NORTH);
@@ -118,6 +126,7 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setVisible(true);
     }
+
 
     private void viewOrderItems() {
         String cart = "";
