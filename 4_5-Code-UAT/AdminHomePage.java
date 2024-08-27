@@ -18,9 +18,15 @@ public class AdminHomePage extends JFrame {
         setLayout(new BorderLayout());
         
         AppLogo appLogo = new AppLogo();
-        JPanel logoPanel = new JPanel();
-        logoPanel.add(appLogo.getLabel());
+        JPanel logoPanel = new JPanel(new BorderLayout());
         logoPanel.setBackground(new Color(0xe7a780));
+
+        JLabel welcomeLabel = new JLabel("Welcome, " + username + "!");
+        welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        welcomeLabel.setFont(new Font("Arial", Font.BOLD, 25));
+        welcomeLabel.setForeground(Color.WHITE);
+        logoPanel.add(appLogo.getLabel(), BorderLayout.CENTER);
+        logoPanel.add(welcomeLabel, BorderLayout.SOUTH);
 
         tabbedPane = new JTabbedPane();
 
