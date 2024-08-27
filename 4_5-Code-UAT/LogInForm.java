@@ -106,7 +106,7 @@ public class LogInForm extends JFrame implements ActionListener {
         preSignUpLabel.setForeground(Color.WHITE);
         JLabel signUpLabel = new JLabel("<html><u>Sign Up</u></html>");
         signUpLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        signUpLabel.setForeground(Color.BLUE);
+        signUpLabel.setForeground(new Color(0x0099FF));
         signUpLabel.setFont(new Font("JetBrains Mono", Font.BOLD, 13));
     
         // Set up GridBagConstraints 
