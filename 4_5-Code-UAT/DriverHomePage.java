@@ -253,7 +253,9 @@ public class DriverHomePage extends JFrame {
 
         for (int i = 0; i < labelNames.length; i++) {
             JLabel label = new JLabel(labelNames[i]);
+            label.setForeground(Color.WHITE);
             JLabel value = new JLabel("N/A");
+            value.setForeground(Color.WHITE);
 
             gbc.gridx = 0;
             gbc.gridy = i;
@@ -268,6 +270,12 @@ public class DriverHomePage extends JFrame {
         // Add the Start/Finish Delivery Buttons
         startDeliveryButton = new JButton("Start Delivery");
         completeDeliveryButton = new JButton("Complete Delivery");
+
+        JButton[] buttons = {startDeliveryButton, completeDeliveryButton};
+        for(JButton button : buttons) {
+            button.setBackground(Color.WHITE);
+            button.setForeground(Color.BLACK);
+        }
 
         gbc.gridx = 0;
         gbc.gridy = labelNames.length;
