@@ -39,14 +39,9 @@ public class LogInForm extends JFrame implements ActionListener {
         // add main panel to the frame
         add(mainPanel);
 
-        setupPanel();
-    }
-
-    private void setupPanel() {
-        setLocationRelativeTo(null); // in order for the window to be a bit more to the center
-        //setResizable(false);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(500, 550);
+        setLocationRelativeTo(null); // Center the frame on the screen
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
     }
 
