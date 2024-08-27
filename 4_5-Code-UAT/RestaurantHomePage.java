@@ -429,7 +429,7 @@ class MenuPage extends JFrame implements ActionListener {
         add(logoPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
 
-        setSize(350, 500);
+        setSize(500, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
