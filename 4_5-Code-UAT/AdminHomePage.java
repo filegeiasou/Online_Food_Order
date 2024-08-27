@@ -316,7 +316,85 @@ public class AdminHomePage extends JFrame {
     private void addUser(String userType) {
         // Implement add logic here based on userType
         JOptionPane.showMessageDialog(this, "Add new " + userType);
-        SwingUtilities.invokeLater(this::launchAddForm);
+        addUserToDB(userType);
+    }
+
+    private void addUserToDB(String userType) {
+        String username = JOptionPane.showInputDialog(this, "Enter username:");
+        String password = JOptionPane.showInputDialog(this, "Enter password:");
+        String email = JOptionPane.showInputDialog(this, "Enter email:");
+        String address = "";
+        String phoneNumber = "";
+        String name = "";
+        String cuisineType = "";
+        String location = "";
+
+
+        if (!email.matches("^(.+)@(.+)$")) {
+            JOptionPane.showMessageDialog(this, "Wrong E-mail format (e.g example@gmail.com)");
+            return;
+        }
+
+        String query = "INSERT INTO User (USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES (?, ?, ?, ?)";
+        try {
+            PreparedStatement pstmt = dbConnection.prepareStatement(query);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+            pstmt.setString(3, email);
+            pstmt.setString(4, userType);
+
+            int rowsInserted = pstmt.executeUpdate();
+            if (rowsInserted < 0) {
+                JOptionPane.showMessageDialog(this, "Failed to add user");
+                return;
+            }
+        
+            switch(userType){
+                case "Customer":
+                    address = JOptionPane.showInputDialog(this, "Enter address:");
+                    query = "INSERT INTO Customer (USERNAME, PASSWORD, ADDRESS) VALUES (?,?,?)";
+                    break;
+                case "Driver":
+                    phoneNumber = JOptionPane.showInputDialog(this, "Enter phone number:");
+                    query = "INSERT INTO Driver (USERNAME, PASSWORD, PHONE_NUMBER) VALUES (?,?,?)";
+                    break;
+                case "Restaurant":
+                    name = JOptionPane.showInputDialog(this, "Enter name:");
+                    location = JOptionPane.showInputDialog(this, "Enter location:");
+                    cuisineType = JOptionPane.showInputDialog(this, "Enter cuisine type:");
+                    query = "INSERT INTO Restaurant(USERNAME, PASSWORD, NAME, LOCATION, CUISINE_TYPE, RATING) VALUES (?,?,?,?,?,0)";
+                    break;
+            }
+
+            pstmt = dbConnection.prepareStatement(query);
+            pstmt.setString(1, username);
+            pstmt.setString(2, password);
+
+            switch(userType){
+                case "Customer":
+                    pstmt.setString(3, address);
+                    break;
+                case "Driver":
+                    pstmt.setString(3, phoneNumber);
+                    break;
+                case "Restaurant":
+                    pstmt.setString(3, name);
+                    pstmt.setString(4, location);
+                    pstmt.setString(5, cuisineType);
+                    break;
+            }
+
+            rowsInserted = pstmt.executeUpdate();
+            if (rowsInserted > 0) {
+                JOptionPane.showMessageDialog(this, "User added successfully");
+                refreshTable(userType);
+            }
+            
+            pstmt.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        
     }
 
     private void editUser(String userType, int selectedRow) {
