@@ -353,6 +353,26 @@ class RestaurantPage extends JFrame {
         setVisible(true);
     }
 
+    private String[] retrieveMenuCategories(CredentialsHandler cHandler){
+        try {
+            String query = "SELECT DISTINCT CATEGORY FROM Menu WHERE RESTAURANT_ID = ?";
+            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
+            pstmt.setInt(1, restaurantID);
+            ResultSet rs = pstmt.executeQuery();
+
+            ArrayList<String> categories = new ArrayList<>();
+            while (rs.next()) {
+                categories.add(rs.getString("CATEGORY"));
+            }
+
+            pstmt.close();
+            return categories.toArray(new String[0]);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     private void retrieveMenuItems() {
         try {
             CredentialsHandler cHandler = new CredentialsHandler();
@@ -365,11 +385,11 @@ class RestaurantPage extends JFrame {
                 restaurantID = rs.getInt("ID");
             }
 
-            // Retrieve the menu categories
-            addMenuCategory(cHandler, "Appetizer");
-            addMenuCategory(cHandler, "Main");
-            addMenuCategory(cHandler, "Dessert");
-            addMenuCategory(cHandler, "Drinks");
+            // Retrieve and add menu Categories
+            String[] categories = retrieveMenuCategories(cHandler);
+            for(String category:categories) {
+                addMenuCategory(cHandler, category);
+            }
 
             pstmt.close();
         } catch (SQLException e) {
