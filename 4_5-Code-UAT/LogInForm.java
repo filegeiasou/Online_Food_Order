@@ -70,7 +70,7 @@ public class LogInForm extends JFrame implements ActionListener {
 
         // Handle show password checkbox for registration panel
         if (ae.getSource() == showPassReg) {
-            passwd.setEchoChar(showPassReg.isSelected() ? (char)0 : '●');
+            passwdRegField.setEchoChar(showPassReg.isSelected() ? (char)0 : '●');
         }
     }
 
@@ -195,7 +195,7 @@ public class LogInForm extends JFrame implements ActionListener {
 
         JLabel backToLoginLabel = new JLabel("<html><u>Back to Log In</u></html>");
         backToLoginLabel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        backToLoginLabel.setForeground(Color.BLUE);
+        backToLoginLabel.setForeground(new Color(0x0099FF));
         backToLoginLabel.setFont(new Font("JetBrains Mono", Font.BOLD, 13));
 
         // Set up GridBagConstraints 
