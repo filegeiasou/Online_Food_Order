@@ -46,13 +46,14 @@ public class AdminHomePage extends JFrame {
 
         // Table for displaying users
         JTable userTable = new JTable();
+        userTable.setSelectionBackground(new Color(0x2e2e2e));  // Change selection background color
         userTable.setBackground(new Color(0x575658)); 
         userTable.setForeground(Color.WHITE); 
         userTable.setGridColor(Color.WHITE);
 
         // Set table header (ID, Username, etc.) background to black and text to white
         JTableHeader tableHeader = userTable.getTableHeader();
-        tableHeader.setBackground(new Color(0x575658)); 
+        tableHeader.setBackground(new Color(0x2e2e2e)); 
         tableHeader.setForeground(Color.WHITE);
 
         DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"ID", "Username", "Email", "Details"}, 0) {
