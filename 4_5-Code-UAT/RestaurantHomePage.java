@@ -638,12 +638,12 @@ class EditItemDialog extends JDialog {
     private JTextField nameField, categoryField;
     private JSpinner priceField;
     private JButton saveButton, cancelButton;
-    private String originalName;
+    // private String originalName;
     private boolean confirmed;
 
     public EditItemDialog(Frame parent, String itemName, String itemPrice, String itemCategory) {
         super(parent, "Edit Menu Item", true);
-        this.originalName = itemName;
+        // this.originalName = itemName;
         this.confirmed = false;
 
         setLayout(new GridLayout(4, 2));
