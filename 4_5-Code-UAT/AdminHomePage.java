@@ -168,7 +168,9 @@ public class AdminHomePage extends JFrame {
     }
 
     private void populateTable(String userType) {
-        String userQuery = "SELECT ID, USERNAME, EMAIL FROM User WHERE USERNAME IN (SELECT USERNAME FROM " + userType + ")";
+        String userQuery = "SELECT ID, USERNAME, EMAIL" +
+                           "FROM User" +
+                           "WHERE USERNAME IN (SELECT USERNAME FROM " + userType + ")";
         String additionalQuery = "";
 
         switch (userType) {

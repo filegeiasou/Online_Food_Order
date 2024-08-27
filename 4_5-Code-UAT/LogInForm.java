@@ -52,9 +52,7 @@ public class LogInForm extends JFrame implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent ae) {
-        if (ae.getSource() == loginButton) {
-            handleLogin();
-        } else if (ae.getSource() == regButton) {
+        if (ae.getSource() == regButton) {
             handleRegistration();
         } else if (ae.getSource() == userTypeComboBox) {
             String selectedType = (String) userTypeComboBox.getSelectedItem();
@@ -67,16 +65,12 @@ public class LogInForm extends JFrame implements ActionListener {
 
         // Handle show password checkbox for login panel
         if (ae.getSource() == showPassLogin) {
-            if (showPassLogin.isSelected())
-                passwd.setEchoChar((char) 0);
-            else passwd.setEchoChar('●');
+            passwd.setEchoChar(showPassLogin.isSelected() ? (char)0 : '●');
         }
 
         // Handle show password checkbox for registration panel
         if (ae.getSource() == showPassReg) {
-            if (showPassReg.isSelected())
-                passwdRegField.setEchoChar((char) 0);
-            else passwdRegField.setEchoChar('●');
+            passwd.setEchoChar(showPassReg.isSelected() ? (char)0 : '●');
         }
     }
 
@@ -101,7 +95,8 @@ public class LogInForm extends JFrame implements ActionListener {
         loginButton.setFocusable(false);
         loginButton.setBackground(Color.WHITE);
         loginButton.setForeground(Color.BLACK);
-    
+        loginButton.addActionListener(e -> handleLogin());
+
         showPassLogin = new JCheckBox("Show Password");
         showPassLogin.setForeground(Color.WHITE);
         showPassLogin.setBackground(botPanel.getBackground());
@@ -209,10 +204,13 @@ public class LogInForm extends JFrame implements ActionListener {
         addToGrid(unameRegLabel, unameRegField, botPanel, gbc, 0, 0);
         addToGrid(emailRegLabel, emailRegField, botPanel, gbc, 0, 1);
         addToGrid(passwdRegLabel, passwdRegField, botPanel, gbc, 0, 2);
+
         gbc.gridx = 2; gbc.gridy = 2; gbc.anchor = GridBagConstraints.EAST;
         botPanel.add(showPassReg, gbc);
+
         gbc.gridx = 1; gbc.gridy = 3; gbc.anchor = GridBagConstraints.WEST;
         botPanel.add(userTypeComboBox, gbc);
+
         gbc.gridx = 1; gbc.gridy = 4; gbc.anchor = GridBagConstraints.CENTER;
         botPanel.add(dynamicPanel, gbc); // Add dynamic panel to the registration panel
 

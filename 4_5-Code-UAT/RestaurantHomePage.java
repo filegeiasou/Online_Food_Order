@@ -14,8 +14,8 @@ import javax.swing.border.*;
 public class RestaurantHomePage extends JFrame implements ActionListener {
 
     private final String username;
-    private JButton refreshButton, menuButton, infoButton, LogoutButton;
-    private JPanel topPanel, botPanel, buttonPanel;
+    private JButton refreshButton, menuButton, infoButton, logoutButton;
+    private JPanel topPanel, botPanel, buttonPanel, bottomPanel;
     private OrderTableModel orderTableModel;
     private JTable ordersTable;
 
@@ -61,13 +61,13 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         refreshButton = new JButton("Refresh");
         menuButton = new JButton("Menu");
         infoButton = new JButton("Account Info");
-        LogoutButton = new JButton("Log Out");
+        logoutButton = new JButton("Log Out");
 
         buttonPanel = new JPanel();
-        buttonPanel.setLayout(new FlowLayout());
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         buttonPanel.setBackground(new Color(0x575658));
 
-        JButton[] buttons = {refreshButton, menuButton, infoButton, LogoutButton};
+        JButton[] buttons = {menuButton, infoButton, logoutButton};
         for (JButton button : buttons) {
             button.setBackground(Color.WHITE);
             button.setForeground(Color.BLACK);
@@ -75,7 +75,17 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
             button.addActionListener(this);
             buttonPanel.add(button);
         }
-        botPanel.add(buttonPanel, BorderLayout.NORTH);
+
+        // Bottom panel with refresh button
+        bottomPanel = new JPanel();
+        bottomPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        bottomPanel.setBackground(new Color(0x575658));
+
+        refreshButton.setBackground(Color.WHITE);
+        refreshButton.setForeground(Color.BLACK);
+        refreshButton.setFocusable(false);
+        refreshButton.addActionListener(this);
+        bottomPanel.add(refreshButton);
 
         // Configure JTable
         ordersTable.setFont(new Font("Arial", Font.PLAIN, 14));
@@ -116,9 +126,13 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         // Add the ordersTablePanel to the center of botPanel
         botPanel.add(ordersTablePanel, BorderLayout.CENTER);
 
+        // Add the buttonPanel to the top of botPanel
+        botPanel.add(buttonPanel, BorderLayout.NORTH);
+
         // Add top and bottom panels to the frame
         add(topPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
 
         // Frame settings
         setSize(800, 650);
@@ -126,7 +140,6 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
         setVisible(true);
     }
-
 
     private void viewOrderItems() {
         String cart = "";
@@ -166,11 +179,12 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
         );
 
         if (result == JOptionPane.YES_OPTION) {
-            // Implement accept order logic
+            // Handle Accept Order logic
             acceptOrder(orderId);
             loadOrders(restaurantName);
             JOptionPane.showMessageDialog(this, "Order Accepted");
         } else if(result == JOptionPane.NO_OPTION) {
+            // Handle Decline Order logic
             declineOrder(orderId);
             loadOrders(restaurantName);
             JOptionPane.showMessageDialog(this, "Order Declined");
@@ -268,14 +282,10 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
             new AboutInfoRes(username);
         }
 
-        if (e.getSource() == LogoutButton) {
+        if (e.getSource() == logoutButton) {
             dispose();
             new LogInForm();
         }
-    }
-
-    public String getUserName() {
-        return username;
     }
 }
 
@@ -369,11 +379,13 @@ class MenuPage extends JFrame implements ActionListener {
 
     private String username;
     private JPanel botPanel, menuPanel;
+    private JLabel selectedItemLabel;
+    private JButton addMenuItemButton, deleteMenuItemButton;
 
     public MenuPage(String username) {
         this.username = username;
         initFrame();
-        retrieveMenu(); 
+        retrieveMenu();
     }
 
     private void initFrame() {
@@ -382,17 +394,16 @@ class MenuPage extends JFrame implements ActionListener {
 
         JPanel logoPanel = new JPanel();
         logoPanel.setBackground(new Color(0xe7a780));
-        AppLogo logo = new AppLogo(); 
+        AppLogo logo = new AppLogo();
         logoPanel.add(logo.getLabel());
 
         botPanel = new JPanel(new BorderLayout());
         botPanel.setBackground(new Color(0x575658));
 
-        JButton addMenuItemButton = new JButton("Add Item");
-        JButton editMenuItemButton = new JButton("Edit Item");
-        JButton deleteMenuItemButton = new JButton("Delete Item");
+        addMenuItemButton = new JButton("Add Item");
+        deleteMenuItemButton = new JButton("Delete Item");
 
-        JButton[] buttons = {addMenuItemButton, editMenuItemButton, deleteMenuItemButton};
+        JButton[] buttons = {addMenuItemButton, deleteMenuItemButton};
         for (JButton button : buttons) {
             button.setBackground(Color.WHITE);
             button.setForeground(Color.BLACK);
@@ -400,24 +411,25 @@ class MenuPage extends JFrame implements ActionListener {
             button.addActionListener(this);
         }
 
+        deleteMenuItemButton.setEnabled(false);
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBackground(new Color(0x575658));
         buttonPanel.add(addMenuItemButton);
-        buttonPanel.add(editMenuItemButton);
         buttonPanel.add(deleteMenuItemButton);
 
         menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
-        menuPanel.setBackground(new Color(0x575658));  
+        menuPanel.setBackground(new Color(0x575658));
         JScrollPane scrollPane = new JScrollPane(menuPanel);
-      
+
         botPanel.add(scrollPane, BorderLayout.CENTER);
         botPanel.add(buttonPanel, BorderLayout.NORTH);
 
         add(logoPanel, BorderLayout.NORTH);
         add(botPanel, BorderLayout.CENTER);
-       
-        setSize(500, 500);
+
+        setSize(350, 500);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -438,7 +450,7 @@ class MenuPage extends JFrame implements ActionListener {
                 String itemPrice = rs.getString("PRICE");
                 String itemCategory = rs.getString("CATEGORY");
 
-                menuMap.computeIfAbsent(itemCategory, k -> new ArrayList<>()).add(itemName + " - $" + itemPrice); // If the category is new, create a new list
+                menuMap.computeIfAbsent(itemCategory, k -> new ArrayList<>()).add(itemName + " - €" + itemPrice); // If the category is new, create a new list
             }
 
             pstmt.close();
@@ -465,22 +477,55 @@ class MenuPage extends JFrame implements ActionListener {
                 JLabel itemLabel = new JLabel(item);
                 itemLabel.setFont(new Font("Arial", Font.BOLD, 14));
                 itemLabel.setForeground(Color.WHITE);
+                itemLabel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e) {
+                        // Set selectedItemLabel and update button states
+                        if (selectedItemLabel != null) {
+                            selectedItemLabel.setForeground(Color.WHITE); // Reset previous selection
+                        }
+                        selectedItemLabel = itemLabel;
+                        selectedItemLabel.setForeground(new Color(0xe7a780)); // Highlight selected item
+                        deleteMenuItemButton.setEnabled(true); // Enable Delete button
+                        if(e.getClickCount() == 2) {
+                            editMenuItem();
+                        }
+                    }
+                });
+
+                itemLabel.addMouseMotionListener(new MouseMotionAdapter() {
+                    @Override
+                    public void mouseMoved(MouseEvent e) {
+                        if (itemLabel != selectedItemLabel) {
+                            itemLabel.setForeground(new Color(0xF3B99B)); // Highlight on hover
+                        }
+                    }
+                });
+
+                itemLabel.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseExited(MouseEvent e) {
+                        if (itemLabel != selectedItemLabel) {
+                            itemLabel.setForeground(Color.WHITE); // Reset color when not hovering
+                        }
+                    }
+                });
+
                 categoryPanel.add(itemLabel);
             }
 
             menuPanel.add(categoryPanel);
             menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         }
+
+        menuPanel.revalidate();
+        menuPanel.repaint();
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getActionCommand().equals("Add Item")) {
             addMenuItem();
-        }
-
-        if (e.getActionCommand().equals("Edit Item")) {
-            editMenuItem();
         }
 
         if (e.getActionCommand().equals("Delete Item")) {
@@ -509,30 +554,72 @@ class MenuPage extends JFrame implements ActionListener {
             pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
-        }     
+        }
     }
 
     private void editMenuItem() {
-        String itemName = JOptionPane.showInputDialog(this, "Enter the name of the item you want to edit: ");
-        double itemPrice = Double.parseDouble(JOptionPane.showInputDialog(this, "Enter the new price of the item: "));
-        String itemCategory = JOptionPane.showInputDialog(this, "Enter the new category of the item: ");
+        if (selectedItemLabel == null) return;
+        String itemDetails = selectedItemLabel.getText();
+        String itemName = itemDetails.split(" - ")[0];
+        String itemPrice = itemDetails.split(" - ")[1].replace("€", "").trim();
+        String itemCategory = "";
+
+        CredentialsHandler cHandler = new CredentialsHandler();
 
         try {
-            CredentialsHandler cHandler = new CredentialsHandler();
-            String query = "UPDATE Menu SET PRICE = ?, CATEGORY = ? WHERE NAME = ? AND RESTAURANT_ID = (SELECT ID FROM RESTAURANT WHERE USERNAME = ?)";
-            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
-            pstmt.setDouble(1, itemPrice);
-            pstmt.setString(2, itemCategory);
-            pstmt.setString(3, itemName);
-            pstmt.setString(4, username);
-            pstmt.executeUpdate();
-            pstmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
+            String query = "SELECT M.CATEGORY as Category " +
+                           "FROM MENU M " +
+                           "JOIN RESTAURANT R ON R.ID = M.RESTAURANT_ID " +
+                           "WHERE M.NAME = ? ";
+            PreparedStatement getCategory = cHandler.getDBConnection().prepareStatement(query);
+            getCategory.setString(1, itemName);
+            ResultSet rs = getCategory.executeQuery();
+            if(rs.next()) {
+                itemCategory = rs.getString("Category");
+            }
+
+            getCategory.close();
+        } catch (SQLException sqe) {
+            sqe.printStackTrace();
         }
+
+        // Create and show the dialog
+        EditItemDialog editDialog = new EditItemDialog(this, itemName, itemPrice, itemCategory);
+        editDialog.setVisible(true);
+
+        if (editDialog.isConfirmed()) {
+            String newName = editDialog.getItemName();
+            double newPrice = editDialog.getItemPrice();
+            String newCategory = editDialog.getItemCategory();
+
+            if(editDialog.validateInput()) {
+                try {
+                    String query = "UPDATE Menu SET NAME = ?, PRICE = ?, CATEGORY = ? WHERE NAME = ? AND RESTAURANT_ID = (SELECT ID FROM RESTAURANT WHERE USERNAME = ?)";
+                    PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
+                    pstmt.setString(1, newName);
+                    pstmt.setDouble(2, newPrice);
+                    pstmt.setString(3, newCategory);
+                    pstmt.setString(4, itemName);
+                    pstmt.setString(5, username);
+                    pstmt.executeUpdate();
+                    pstmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        // Refresh the menu after editing
+        menuPanel.removeAll();
+        retrieveMenu();
+        menuPanel.revalidate();
     }
-    private void deleteItem(){
-        String itemName = JOptionPane.showInputDialog(this, "Enter the name of the item you want to delete: ");
+
+    private void deleteItem() {
+        if (selectedItemLabel == null) return;
+        String itemDetails = selectedItemLabel.getText();
+        String itemName = itemDetails.split(" - ")[0];
+
         try {
             CredentialsHandler cHandler = new CredentialsHandler();
             String query = "DELETE FROM Menu WHERE NAME = ? AND RESTAURANT_ID = (SELECT ID FROM RESTAURANT WHERE USERNAME = ?)";
@@ -544,6 +631,97 @@ class MenuPage extends JFrame implements ActionListener {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+}
+
+class EditItemDialog extends JDialog {
+
+    private JTextField nameField, categoryField;
+    private JSpinner priceField;
+    private JButton saveButton, cancelButton;
+    private String originalName;
+    private boolean confirmed;
+
+    public EditItemDialog(Frame parent, String itemName, String itemPrice, String itemCategory) {
+        super(parent, "Edit Menu Item", true);
+        this.originalName = itemName;
+        this.confirmed = false;
+
+        setLayout(new GridLayout(4, 2));
+
+        add(new JLabel("Item Name"));
+        nameField = new JTextField(itemName);
+        add(nameField);
+
+        add(new JLabel("Item Price"));
+        SpinnerNumberModel priceModel = new SpinnerNumberModel(Double.parseDouble(itemPrice), 0.0, Double.MAX_VALUE, 0.1);
+        priceField = new JSpinner(priceModel);
+
+        JSpinner.NumberEditor editor = new JSpinner.NumberEditor(priceField, "#.##");
+        JFormattedTextField textField = editor.getTextField();
+        textField.setHorizontalAlignment(SwingConstants.LEFT); // Align text to the left
+        priceField.setFont(new Font("Arial", Font.PLAIN, 14));
+        priceField.setEditor(editor);
+
+        add(priceField);
+
+        add(new JLabel("Item Category"));
+        categoryField = new JTextField(itemCategory);
+        add(categoryField);
+
+        saveButton = new JButton("Save");
+        cancelButton = new JButton("Cancel");
+
+        add(saveButton);
+        add(cancelButton);
+
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                confirmed = true;
+                setVisible(false);
+            }
+        });
+
+        cancelButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                confirmed = false;
+                setVisible(false);
+            }
+        });
+
+        setLocationRelativeTo(parent);
+        setSize(200, 150);
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public String getItemName() {
+        return nameField.getText();
+    }
+
+    public double getItemPrice() {
+        return (double) priceField.getValue();
+    }
+
+    public String getItemCategory() {
+        return categoryField.getText();
+    }
+
+    public boolean validateInput() {
+        if (nameField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Item Name field can't be empty", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+        if (categoryField.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Category field can't be empty", "Input Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        return true;
     }
 }
 
