@@ -461,18 +461,19 @@ class MenuPage extends JFrame implements ActionListener {
     }
 
     private void displayMenu(Map<String, List<String>> menuMap) {
-
+        menuPanel.setLayout(new GridLayout(0, 1)); 
+    
         for (Map.Entry<String, List<String>> entry : menuMap.entrySet()) {
             String category = entry.getKey();
             List<String> items = entry.getValue();
-
+    
             JPanel categoryPanel = new JPanel();
-            categoryPanel.setLayout(new BoxLayout(categoryPanel, BoxLayout.Y_AXIS));
+            categoryPanel.setLayout(new GridLayout(items.size(), 1));
             categoryPanel.setBackground(new Color(0x575658));
             TitledBorder border = BorderFactory.createTitledBorder(category);
             border.setTitleColor(Color.WHITE);
             categoryPanel.setBorder(border);
-
+    
             for (String item : items) {
                 JLabel itemLabel = new JLabel(item);
                 itemLabel.setFont(new Font("Arial", Font.BOLD, 14));
@@ -480,19 +481,18 @@ class MenuPage extends JFrame implements ActionListener {
                 itemLabel.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseClicked(MouseEvent e) {
-                        // Set selectedItemLabel and update button states
                         if (selectedItemLabel != null) {
                             selectedItemLabel.setForeground(Color.WHITE); // Reset previous selection
                         }
                         selectedItemLabel = itemLabel;
                         selectedItemLabel.setForeground(new Color(0xe7a780)); // Highlight selected item
                         deleteMenuItemButton.setEnabled(true); // Enable Delete button
-                        if(e.getClickCount() == 2) {
+                        if (e.getClickCount() == 2) {
                             editMenuItem();
                         }
                     }
                 });
-
+    
                 itemLabel.addMouseMotionListener(new MouseMotionAdapter() {
                     @Override
                     public void mouseMoved(MouseEvent e) {
@@ -501,7 +501,7 @@ class MenuPage extends JFrame implements ActionListener {
                         }
                     }
                 });
-
+    
                 itemLabel.addMouseListener(new MouseAdapter() {
                     @Override
                     public void mouseExited(MouseEvent e) {
@@ -510,17 +510,16 @@ class MenuPage extends JFrame implements ActionListener {
                         }
                     }
                 });
-
+    
                 categoryPanel.add(itemLabel);
             }
-
+    
             menuPanel.add(categoryPanel);
-            menuPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         }
-
+    
         menuPanel.revalidate();
         menuPanel.repaint();
-    }
+    }    
 
     @Override
     public void actionPerformed(ActionEvent e) {
