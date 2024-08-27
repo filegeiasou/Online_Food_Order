@@ -40,7 +40,6 @@ public class DriverHomePage extends JFrame {
 
         botPanel = new JPanel();
         botPanel.setLayout(new BorderLayout());
-        botPanel.setBackground(new Color(0x575658));
 
         // Logo and welcome label
         AppLogo logo = new AppLogo();
@@ -93,7 +92,6 @@ public class DriverHomePage extends JFrame {
             }
         };
         ordersTable = new JTable(ordersTableModel);
-
         // Set background color for the table and viewport
         ordersTable.setBackground(new Color(0x575658));
         ordersTable.setForeground(Color.WHITE);  // Set text color to white for readability
@@ -105,8 +103,23 @@ public class DriverHomePage extends JFrame {
         ordersTable.getTableHeader().setBackground(new Color(0x2e2e2e)); // Set header background color
         ordersTable.getTableHeader().setForeground(Color.WHITE);  // Set header text color to white
 
+        ordersTable.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int selectedRow = ordersTable.rowAtPoint(e.getPoint());
+                acceptOrderButton.setEnabled(selectedRow >= 0);
+                    if(e.getClickCount() == 2 && selectedRow >= 0) {
+                        int orderId = (int) ordersTable.getValueAt(selectedRow, 0);
+                        viewOrderItems(orderId);
+                    }
+            }
+        });
+
+        ordersTable.getTableHeader().setReorderingAllowed(false); // don't allow the table to be reordered
+        ordersTable.getTableHeader().setResizingAllowed(false);   // don't allow the table to be resizeable
+
         JScrollPane scrollPane = new JScrollPane(ordersTable);
-        scrollPane.getViewport().setBackground(new Color(0x575658));  // Set the viewport background color
+        scrollPane.getViewport().setBackground(new Color(0x575658));
 
         JPanel actionsPanel = new JPanel();
         actionsPanel.setBackground(new Color(0x575658));
@@ -115,7 +128,7 @@ public class DriverHomePage extends JFrame {
         acceptOrderButton.setEnabled(false);
 
         JButton[] buttons = {refreshOrders, acceptOrderButton};
-        for (JButton button : buttons) {
+        for(JButton button : buttons) {
             button.setBackground(Color.WHITE);
             button.setForeground(Color.BLACK);
         }
