@@ -9,7 +9,7 @@ import java.util.*;
 public class DriverHomePage extends JFrame {
     private JTable ordersTable;
     private DefaultTableModel ordersTableModel;
-    private JButton refreshOrders, acceptOrderButton, startDeliveryButton, completeDeliveryButton, contactSupportButton;
+    private JButton refreshOrders, acceptOrderButton, startDeliveryButton, completeDeliveryButton, contactSupportButton, aboutButton;
     private int orderId;
     private Connection dbConnection;
     private JPanel deliveryPanel, topPanel, botPanel;
@@ -121,9 +121,10 @@ public class DriverHomePage extends JFrame {
         actionsPanel.setBackground(new Color(0x575658));
         refreshOrders = new JButton("Refresh");
         acceptOrderButton = new JButton("Accept Order");
+        aboutButton = new JButton("Account Info");
         acceptOrderButton.setEnabled(false);
 
-        JButton[] buttons = {refreshOrders, acceptOrderButton};
+        JButton[] buttons = {refreshOrders, acceptOrderButton, aboutButton};
         for(JButton button : buttons) {
             button.setBackground(Color.WHITE);
             button.setForeground(Color.BLACK);
@@ -131,6 +132,7 @@ public class DriverHomePage extends JFrame {
 
         actionsPanel.add(refreshOrders);
         actionsPanel.add(acceptOrderButton);
+        actionsPanel.add(aboutButton);
 
         ordersPanel.add(scrollPane, BorderLayout.CENTER);
         ordersPanel.add(actionsPanel, BorderLayout.SOUTH);
@@ -147,6 +149,9 @@ public class DriverHomePage extends JFrame {
                     JOptionPane.showMessageDialog(DriverHomePage.this, "Please select an order to accept.");
                 }
             }
+        });
+        aboutButton.addActionListener(e -> {
+            new AboutInfo(username, "Driver");
         });
 
         return ordersPanel;

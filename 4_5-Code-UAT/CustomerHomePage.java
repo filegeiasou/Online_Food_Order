@@ -169,7 +169,7 @@ public class CustomerHomePage extends JFrame implements ActionListener {
             new OrdersPage(username);
         }
         if (e.getSource() == infoButton) {
-            new AboutInfoCus(username);
+            new AboutInfo(username,"Customer");
         }
         if (e.getSource() == LogoutButton) {
             dispose();
@@ -198,99 +198,6 @@ class RoundedPanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setColor(getBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), cornerRadius, cornerRadius);
-    }
-}
-
-
-class AboutInfoCus extends JFrame {
-    JTextField passwordField, emailField, addressField, userTypeField;
-    private String username;
-
-    public AboutInfoCus(String username) {
-        this.username = username;
-        initFrame();
-        retrieveCustomerInfo();
-    }
-
-    private void initFrame() {
-        setTitle("Customer Information");
-        setLayout(new BorderLayout());
-
-        JPanel topPanel = new JPanel();
-        topPanel.setBackground(new Color(0xe7a780));
-        AppLogo logo = new AppLogo();
-        topPanel.add(logo.getLabel());
-
-        JPanel botPanel = new JPanel(new GridBagLayout());
-        botPanel.setBackground(new Color(0x575658));
-
-        JLabel usernameLabel = new JLabel("Username: "); usernameLabel.setForeground(Color.WHITE);
-        JLabel passwordLabel = new JLabel("Password: "); passwordLabel.setForeground(Color.WHITE);
-        JLabel emailLabel = new JLabel("Email: "); emailLabel.setForeground(Color.WHITE);
-        JLabel addressLabel = new JLabel("Address: "); addressLabel.setForeground(Color.WHITE);
-
-        JTextField usernameField = new JTextField(20); usernameField.setEditable(false); usernameField.setFocusable(false);
-        usernameField.setText(username);
-        passwordField = new JTextField(20); passwordField.setEditable(false); passwordField.setFocusable(false);
-        addressField = new JTextField(20); addressField.setEditable(false); addressField.setFocusable(false);
-        emailField = new JTextField(20);  emailField.setEditable(false); emailField.setFocusable(false);
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 5, 5, 5);
-
-        addToGrid(usernameLabel, usernameField, botPanel, gbc, 0);
-        addToGrid(passwordLabel, passwordField, botPanel, gbc, 1);
-        addToGrid(emailLabel, emailField, botPanel, gbc, 2);
-        addToGrid(addressLabel, addressField, botPanel, gbc, 3);
-
-        add(topPanel, BorderLayout.NORTH);
-        add(botPanel, BorderLayout.CENTER);
-
-        setSize(350, 350);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
-        setVisible(true);
-    }
-
-    private void addToGrid(JLabel label, JTextField field, JPanel panel, GridBagConstraints gbc, int y) {
-        for (int i = 0; i < 2; i++) {
-            gbc.gridx = i;
-            gbc.gridy = y;
-            gbc.anchor = (i == 0) ? GridBagConstraints.EAST : GridBagConstraints.WEST;
-            panel.add((i == 0) ? label : field, gbc);
-        }
-    }
-
-    private void retrieveCustomerInfo() {
-        try{
-            CredentialsHandler cHandler = new CredentialsHandler();
-            String query = "SELECT PASSWORD, ADDRESS FROM Customer WHERE USERNAME = ?";
-            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
-            pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                String passwd = rs.getString("PASSWORD");
-                String address = rs.getString("ADDRESS");
-
-                passwordField.setText(passwd);
-                addressField.setText(address);
-            }
-
-            query = "SELECT EMAIL, USER_TYPE FROM User WHERE USERNAME = ?";
-            pstmt = cHandler.getDBConnection().prepareStatement(query);
-            pstmt.setString(1, username);
-            rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                String email = rs.getString("EMAIL");
-                emailField.setText(email);
-            }
-
-            pstmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }
 

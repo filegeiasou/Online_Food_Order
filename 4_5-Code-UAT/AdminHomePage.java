@@ -6,11 +6,13 @@ import java.sql.*;
 
 public class AdminHomePage extends JFrame {
     private JTabbedPane tabbedPane;
+    private String username;
     private JTable customerTable, driverTable, restaurantTable;
     private DefaultTableModel customerTableModel, driverTableModel, restaurantTableModel;
     Connection dbConnection;
 
     public AdminHomePage(String username) {
+        this.username = username;
         CredentialsHandler cHandler = new CredentialsHandler();
         dbConnection = cHandler.getDBConnection();
 
@@ -40,7 +42,7 @@ public class AdminHomePage extends JFrame {
         add(tabbedPane);
 
         setVisible(true);
-        setSize(800, 600);
+        setSize(1000, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
     }
@@ -105,25 +107,21 @@ public class AdminHomePage extends JFrame {
         JButton deleteButton = new JButton("Delete");
         JButton refreshButton = new JButton("Refresh");
         JButton logOutButton = new JButton("Log Out");
-
-        // Set buttons background to black and text to white
-        JButton[] buttons = {searchButton, addButton, editButton, deleteButton, refreshButton, logOutButton};
-        for (JButton button : buttons) {
-            button.setBackground(Color.WHITE);
-            button.setForeground(Color.BLACK);
-        }
-        searchButton.setEnabled(false);
+        JButton aboutButton = new JButton("Account Info"); 
 
         JLabel searchLabel = new JLabel("Search");
         searchLabel.setForeground(Color.WHITE); 
         controlPanel.add(searchLabel);
         controlPanel.add(searchField);
-        controlPanel.add(searchButton);
-        controlPanel.add(addButton);
-        controlPanel.add(editButton);
-        controlPanel.add(deleteButton);
-        controlPanel.add(refreshButton);
-        controlPanel.add(logOutButton);
+
+        // Set buttons background to black and text to white
+        JButton[] buttons = {searchButton, addButton, editButton, deleteButton, refreshButton, logOutButton, aboutButton};
+        for (JButton button : buttons) {
+            button.setBackground(Color.WHITE);
+            button.setForeground(Color.BLACK);
+            controlPanel.add(button);
+        }
+        searchButton.setEnabled(false);
 
         // Add components to the main panel
         panel.add(controlPanel, BorderLayout.NORTH);
@@ -165,6 +163,9 @@ public class AdminHomePage extends JFrame {
         logOutButton.addActionListener(e -> {
             dispose();
             new LogInForm();
+        });
+        aboutButton.addActionListener(e -> {
+            new AboutInfo(username, "Admin");
         });
 
         populateTable("Customer");
