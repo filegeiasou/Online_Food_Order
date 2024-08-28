@@ -207,6 +207,42 @@ public class CredentialsHandler {
         return regStatus;
     }
 
+    public boolean registerAdmin(String username, String password, String email){
+        boolean regStatus = false;
+        try {
+            if (checkExisting(email)) return false;
+
+            dbConnection.setAutoCommit(false);
+
+            int userId = insertUser(username, password, email, "Administrator");
+            if (userId != -1) {
+                String regAdminQuery = "INSERT INTO Administrator(ID, USERNAME, PASSWORD) VALUES (?, ?, ?);";
+                PreparedStatement regAdminStatement = dbConnection.prepareStatement(regAdminQuery);
+                regAdminStatement.setInt(1, userId);
+                regAdminStatement.setString(2, username);
+                regAdminStatement.setString(3, password);
+
+                int rowsInserted = regAdminStatement.executeUpdate();
+                if (rowsInserted > 0) {
+                    regStatus = true;
+                }
+                regAdminStatement.close();
+            }
+
+            dbConnection.commit();
+            dbConnection.setAutoCommit(true);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                dbConnection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        return regStatus;
+    }
+
     public boolean checkExisting(String email) throws SQLException {
         String checkQuery = "SELECT * FROM USER WHERE EMAIL = ?";
         PreparedStatement checkAlreadyExisting = dbConnection.prepareStatement(checkQuery);

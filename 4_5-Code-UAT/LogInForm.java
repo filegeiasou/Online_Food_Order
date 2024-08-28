@@ -51,7 +51,7 @@ public class LogInForm extends JFrame implements ActionListener {
             handleRegistration();
         } else if (ae.getSource() == userTypeComboBox) {
             String selectedType = (String) userTypeComboBox.getSelectedItem();
-            if (selectedType != null && !selectedType.equals("Select")) {
+            if (selectedType != null && !selectedType.equals("Select") && !selectedType.equals("Administrator")) {
                 SwingUtilities.invokeLater(() -> updateDynamicPanel(selectedType));
             } else {
                 dynamicPanel.setVisible(false);
@@ -181,7 +181,7 @@ public class LogInForm extends JFrame implements ActionListener {
         showPassReg.setFocusable(false);
         
         // User type selection
-        String[] userTypes = {"Select", "Customer", "Driver", "Restaurant"};
+        String[] userTypes = {"Select", "Customer", "Driver", "Restaurant", "Administrator"};
         userTypeComboBox = new JComboBox<>(userTypes);
 
         dynamicPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 20));
@@ -273,6 +273,10 @@ public class LogInForm extends JFrame implements ActionListener {
                     return regHandler.registerRestaurant(username, password, email, restaurantNameField.getText(), cuisineTypeField.getText(), locationField.getText());
                 else JOptionPane.showMessageDialog(this, "You need to fill in the appropriate fields");
                 break;
+            case "Administrator":
+                boolean status = regHandler.registerAdmin(username, password, email);
+                System.out.println(status);
+                return status;
             default:
                 break;
         }
@@ -382,7 +386,7 @@ public class LogInForm extends JFrame implements ActionListener {
                 new RestaurantHomePage(username);
                 // logic for restaurant home page
                 break;
-            case "Admin":
+            case "Administrator":
                 new AdminHomePage(username);
                 break;
             default:

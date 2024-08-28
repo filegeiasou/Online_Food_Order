@@ -82,7 +82,7 @@ END //
 DELIMITER ;
 
 INSERT INTO User(USERNAME, PASSWORD, EMAIL, USER_TYPE) VALUES 
-('admin', 'admin1234', "admin@gmail.com", "Admin"),
+('admin', 'admin1234', "admin@gmail.com", "Administrator"),
 ('manos', 'manos1234', "manos@gmail.com", "Restaurant"),
 ('ellinas', 'aggelos1234', "aggelos@gmail.com", "Restaurant"),
 ("kim", "kim1234", "kim@gmail.com", "Restaurant");
