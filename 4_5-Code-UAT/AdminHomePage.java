@@ -115,7 +115,7 @@ public class AdminHomePage extends JFrame {
         controlPanel.add(searchField);
 
         // Set buttons background to black and text to white
-        JButton[] buttons = {searchButton, addButton, editButton, deleteButton, refreshButton, logOutButton, aboutButton};
+        JButton[] buttons = {searchButton, addButton, editButton, deleteButton, refreshButton, aboutButton, logOutButton,};
         for (JButton button : buttons) {
             button.setBackground(Color.WHITE);
             button.setForeground(Color.BLACK);
@@ -244,7 +244,6 @@ public class AdminHomePage extends JFrame {
             e.printStackTrace();
         }
     }
-
 
     private void searchUser(String userType, JTextField searchField) {
         String searchTerm = searchField.getText();
@@ -397,24 +396,24 @@ public class AdminHomePage extends JFrame {
             return;
         }
 
-        JTable userTable;
+        JTable table;
         String username = JOptionPane.showInputDialog(this, "Enter new username:");
         String email = JOptionPane.showInputDialog(this, "Enter new email:");
         String address = "", phoneNumber = "", name = "", cuisineType = "", location = "";
         String query2 = null;
         switch (userType) {
             case "Customer":
-                userTable = customerTable;
+                table = customerTable;
                 address = JOptionPane.showInputDialog(this, "Enter new address:");  
                 query2 = "UPDATE Customer SET ADDRESS = ? WHERE ID = ?";
                 break;
             case "Driver":
-                userTable = driverTable;
+                table = driverTable;
                 phoneNumber = JOptionPane.showInputDialog(this, "Enter new phone number:");
                 query2 = "UPDATE Driver SET PHONE_NUMBER = ? WHERE ID = ?";
                 break;
             case "Restaurant":
-                userTable = restaurantTable;
+                table = restaurantTable;
                 name = JOptionPane.showInputDialog(this, "Enter new name:");
                 location = JOptionPane.showInputDialog(this, "Enter new location:");
                 cuisineType = JOptionPane.showInputDialog(this, "Enter new cuisine type:");
@@ -424,7 +423,7 @@ public class AdminHomePage extends JFrame {
                 return;
         }
 
-        String id = userTable.getValueAt(selectedRow, 0).toString();
+        String id = table.getValueAt(selectedRow, 0).toString();
         System.out.println(id);
         String query1 = "UPDATE User SET USERNAME = ?, EMAIL = ? WHERE ID = ?";
 
@@ -471,22 +470,22 @@ public class AdminHomePage extends JFrame {
             return;
         }
 
-        JTable userTable;
+        JTable table;
         switch (userType) {
             case "Customer":
-                userTable = customerTable;
+                table = customerTable;
                 break;
             case "Driver":
-                userTable = driverTable;
+                table = driverTable;
                 break;
             case "Restaurant":
-                userTable = restaurantTable;
+                table = restaurantTable;
                 break;
             default:
                 return;
         }
 
-        String id = userTable.getValueAt(selectedRow, 0).toString();
+        String id = table.getValueAt(selectedRow, 0).toString();
 
         // Implement delete logic here based on userType
         int confirmDeletion = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
