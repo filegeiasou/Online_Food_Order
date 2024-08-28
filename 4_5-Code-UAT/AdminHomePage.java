@@ -454,10 +454,10 @@ public class AdminHomePage extends JFrame {
         populateTable(userType);
     }
 
-    private void launchAddForm() {
+    // private void launchAddForm() {
 //        LogInForm addUserForm = new LogInForm();
 //        addUserForm.getCardLayout().show(addUserForm.getMainPanel(), "Registration");
 //        addUserForm.getDynamicPanel().setVisible(true);
 //        addUserForm.handleRegistration();
-    }
+    // }
 }
