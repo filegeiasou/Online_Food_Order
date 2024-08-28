@@ -315,12 +315,6 @@ public class AdminHomePage extends JFrame {
     }
 
     private void addUser(String userType) {
-        // Implement add logic here based on userType
-        JOptionPane.showMessageDialog(this, "Add new " + userType);
-        addUserToDB(userType);
-    }
-
-    private void addUserToDB(String userType) {
         String username = JOptionPane.showInputDialog(this, "Enter username:");
         String password = JOptionPane.showInputDialog(this, "Enter password:");
         String email = JOptionPane.showInputDialog(this, "Enter email:");
@@ -394,8 +388,7 @@ public class AdminHomePage extends JFrame {
             pstmt.close();
         } catch (SQLException e) {
             throw new RuntimeException(e);
-        }
-        
+        } 
     }
 
     private void editUser(String userType, int selectedRow) {
@@ -403,8 +396,73 @@ public class AdminHomePage extends JFrame {
             JOptionPane.showMessageDialog(this, "Please select a " + userType + " to edit");
             return;
         }
-        // Implement edit logic here based on userType
-        JOptionPane.showMessageDialog(this, "Edit " + userType);
+
+        JTable userTable;
+        String username = JOptionPane.showInputDialog(this, "Enter new username:");
+        String email = JOptionPane.showInputDialog(this, "Enter new email:");
+        String address = "", phoneNumber = "", name = "", cuisineType = "", location = "";
+        String query2 = null;
+        switch (userType) {
+            case "Customer":
+                userTable = customerTable;
+                address = JOptionPane.showInputDialog(this, "Enter new address:");  
+                query2 = "UPDATE Customer SET ADDRESS = ? WHERE ID = ?";
+                break;
+            case "Driver":
+                userTable = driverTable;
+                phoneNumber = JOptionPane.showInputDialog(this, "Enter new phone number:");
+                query2 = "UPDATE Driver SET PHONE_NUMBER = ? WHERE ID = ?";
+                break;
+            case "Restaurant":
+                userTable = restaurantTable;
+                name = JOptionPane.showInputDialog(this, "Enter new name:");
+                location = JOptionPane.showInputDialog(this, "Enter new location:");
+                cuisineType = JOptionPane.showInputDialog(this, "Enter new cuisine type:");
+                query2 = "UPDATE Restaurant SET NAME = ?, LOCATION = ?, CUISINE_TYPE = ? WHERE ID = ?";
+                break;
+            default:
+                return;
+        }
+
+        String id = userTable.getValueAt(selectedRow, 0).toString();
+        System.out.println(id);
+        String query1 = "UPDATE User SET USERNAME = ?, EMAIL = ? WHERE ID = ?";
+
+        try {
+            PreparedStatement pstmt = dbConnection.prepareStatement(query1);
+            pstmt.setString(1, username);
+            pstmt.setString(2, email);
+            pstmt.setInt(3, Integer.parseInt(id));
+
+            int rows = pstmt.executeUpdate();
+            if (rows > 0) {
+                pstmt = dbConnection.prepareStatement(query2);
+                int i = 2;
+                switch (userType) {
+                    case "Customer":
+                        pstmt.setString(1, address);
+                        break;
+                    case "Driver":
+                        pstmt.setString(1, phoneNumber);
+                        break;
+                    case "Restaurant":
+                        pstmt.setString(1, name);
+                        pstmt.setString(2, location);
+                        pstmt.setString(3, cuisineType);
+                        i = 4;
+                        break;
+                }
+                pstmt.setInt(i, Integer.parseInt(id));
+                rows = pstmt.executeUpdate();
+
+                if (rows > 0) {
+                    JOptionPane.showMessageDialog(this, "User updated successfully");
+                    refreshTable(userType);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void deleteUser(String userType, int selectedRow) {
@@ -441,6 +499,7 @@ public class AdminHomePage extends JFrame {
 
                 int rowsDeleted = pstmt.executeUpdate();
                 if(rowsDeleted > 0) {
+                    JOptionPane.showMessageDialog(this, "User deleted successfully");
                     refreshTable(userType);
                 }
 
