@@ -513,11 +513,26 @@ public class AdminHomePage extends JFrame {
                 PreparedStatement pstmt = dbConnection.prepareStatement(deleteUserQuery);
                 pstmt.setInt(1, Integer.parseInt(id));
     
-                int rowsDeleted = pstmt.executeUpdate();
-                if(rowsDeleted > 0) {
+                int rowsDeleted1 = pstmt.executeUpdate();
+
+                switch(userType){
+                    case "Customer":
+                        deleteUserQuery = "DELETE FROM Customer WHERE ID = ?";
+                        break;
+                    case "Driver":
+                        deleteUserQuery = "DELETE FROM Driver WHERE ID = ?";
+                        break;
+                    case "Restaurant":
+                        deleteUserQuery = "DELETE FROM Restaurant WHERE ID = ?";
+                        break;
+                }
+                int rowsDeleted2 = pstmt.executeUpdate();
+                if(rowsDeleted2 > 0 && rowsDeleted1 > 0) {
                     JOptionPane.showMessageDialog(this, "User deleted successfully");
                     populateTable(userType);
                 }
+
+                pstmt.close();
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
