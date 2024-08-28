@@ -228,9 +228,18 @@ public class LogInForm extends JFrame implements ActionListener {
         backToLoginLabel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent me) {
+                clearFields();  
                 cardLayout.show(mainPanel, "Login");
             }
         });
+    }
+
+    private void clearFields(){
+        JTextField[] fields = {unameRegField, passwdRegField, emailRegField, phoneNumberField, addressField, restaurantNameField, cuisineTypeField, locationField};
+            for (JTextField field : fields) {
+                field.setText("");
+            }
+            userTypeComboBox.setSelectedIndex(0);
     }
 
     private boolean registerUserByType(String userType, String username, String password, String email) {
@@ -296,6 +305,7 @@ public class LogInForm extends JFrame implements ActionListener {
 
         if (registrationSuccessful) {
             JOptionPane.showMessageDialog(this, "Registration Successful. Pressing OK will take you to the log-in page");
+            clearFields();
             cardLayout.show(mainPanel, "Login");
         }
     }
