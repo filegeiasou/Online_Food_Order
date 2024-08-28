@@ -2,13 +2,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.sql.*;
 
-
 public class AboutInfo extends JFrame {
     private String username;
     private String userType;
     private JTextField passwordField, emailField;
     private JTextField nameField = null, locationField = null, cuisineField = null, ratingField = null, addressField = null, phoneField = null;
-    Connection dbConnection;
+    private Connection dbConnection;
 
     public AboutInfo(String username, String userType) {
         this.username = username;
