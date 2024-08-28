@@ -17,16 +17,22 @@ public class AboutInfo extends JFrame {
         dbConnection = cHandler.getDBConnection();
         switch(userType){
             case "Customer":
-                retrieveCustomerInfo();
+                String[] args1 = {"ADDRESS"};
+                retrieveUserInfo(args1);
             break;
             case "Driver":
-                retrieveDriverInfo();
+                String[] args2 = {"PHONE_NUMBER"};
+                retrieveUserInfo(args2);
             break;
             case "Restaurant":
-                retrieveRestaurantInfo();
+                String[] args3 = {"NAME", "LOCATION", "CUISINE_TYPE", "RATING"};
+                retrieveUserInfo(args3);
+            break;
+            case "Admin":
+                String[] args4 = null;
+                retrieveUserInfo(args4);
             break;
         }
-        retrieveUserInfo();
     }
 
     private void initFrame() {
@@ -124,88 +130,71 @@ public class AboutInfo extends JFrame {
         }
     }
 
-    private void retrieveCustomerInfo() {
+    private void retrieveUserInfo(String[] args) {
         try {
-            CredentialsHandler cHandler = new CredentialsHandler();
-            String query = "SELECT * FROM Customer WHERE USERNAME = ?";
-            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
-            pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                String address = rs.getString("ADDRESS");
-                addressField.setText(address);
+            String query = null;
+            switch(userType){
+                case "Customer":
+                    query = "SELECT * FROM Customer WHERE USERNAME = ?";
+                break;
+                case "Driver":
+                    query = "SELECT * FROM Driver WHERE USERNAME = ?";
+                break;
+                case "Restaurant":
+                    query = "SELECT * FROM Restaurant WHERE USERNAME = ?";
+                break;
             }
 
-            pstmt.close();
+            if(query != null){
+                PreparedStatement pstmt = dbConnection.prepareStatement(query);
+                pstmt.setString(1, username);
+                ResultSet rs = pstmt.executeQuery();
+
+                while (rs.next()) {
+                    for (int i = 0; i < args.length; i++) {
+                        String value = rs.getString(args[i]);
+                        if (value != null) {
+                            switch(args[i]){
+                                case "ADDRESS":
+                                    addressField.setText(value);
+                                break;
+                                case "PHONE_NUMBER":
+                                    phoneField.setText(value);
+                                break;
+                                case "NAME":
+                                    nameField.setText(value);
+                                break;
+                                case "LOCATION":
+                                    locationField.setText(value);
+                                break;
+                                case "CUISINE_TYPE":
+                                    cuisineField.setText(value);
+                                break;
+                                case "RATING":
+                                    ratingField.setText(value);
+                                break;
+                            }
+                        }
+                    }
+                }
+                pstmt.close();
+        }
+        query = "SELECT EMAIL, PASSWORD FROM User WHERE USERNAME = ?";
+        PreparedStatement pstmt = dbConnection.prepareStatement(query);
+        pstmt.setString(1, username);
+        ResultSet rs = pstmt.executeQuery();
+
+        while (rs.next()) {
+            String email = rs.getString("EMAIL");
+            String passwd = rs.getString("PASSWORD");
+            emailField.setText(email);
+            passwordField.setText(passwd);
+        }
+        
+        pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
 
-    private void retrieveDriverInfo() {
-        try {
-            CredentialsHandler cHandler = new CredentialsHandler();
-            String query = "SELECT * FROM Driver WHERE USERNAME = ?";
-            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
-            pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                String phone = rs.getString("PHONE_NUMBER");
-                phoneField.setText(phone);
-            }
-
-            pstmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void retrieveRestaurantInfo() {
-        try {
-            
-            String query = "SELECT * FROM Restaurant WHERE USERNAME = ?";
-            PreparedStatement pstmt = dbConnection.prepareStatement(query);
-            pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                String name = rs.getString("NAME");
-                String location = rs.getString("LOCATION");
-                String cuisine = rs.getString("CUISINE_TYPE");
-                String rating = rs.getString("RATING");
-
-                nameField.setText(name);
-                locationField.setText(location);
-                cuisineField.setText(cuisine);
-                ratingField.setText(rating);
-            }
-
-            pstmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void retrieveUserInfo(){
-        try {
-            CredentialsHandler cHandler = new CredentialsHandler();
-            String query = "SELECT EMAIL, PASSWORD FROM User WHERE USERNAME = ?";
-            PreparedStatement pstmt = cHandler.getDBConnection().prepareStatement(query);
-            pstmt.setString(1, username);
-            ResultSet rs = pstmt.executeQuery();
-
-            while (rs.next()) {
-                String email = rs.getString("EMAIL");
-                String passwd = rs.getString("PASSWORD");
-                emailField.setText(email);
-                passwordField.setText(passwd);
-            }
-
-            pstmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
     }
 }
