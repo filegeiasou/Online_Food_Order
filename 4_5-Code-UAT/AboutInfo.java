@@ -31,7 +31,7 @@ public class AboutInfo extends JFrame {
     }
 
     private void initFrame() {
-        setTitle(userType + "Information");
+        setTitle(userType + " Information");
         setLayout(new BorderLayout());
 
         JPanel topPanel = new JPanel();
