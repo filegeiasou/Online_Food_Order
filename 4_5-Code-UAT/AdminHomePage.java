@@ -160,7 +160,7 @@ public class AdminHomePage extends JFrame {
         addButton.addActionListener(e -> addUser(userType));
         editButton.addActionListener(e -> editUser(userType, userTable.getSelectedRow()));
         deleteButton.addActionListener(e -> deleteUser(userType, userTable.getSelectedRow()));
-        refreshButton.addActionListener(e -> refreshTable(userType));
+        refreshButton.addActionListener(e -> populateTable(userType));
         logOutButton.addActionListener(e -> {
             dispose();
             new LogInForm();
@@ -391,7 +391,7 @@ public class AdminHomePage extends JFrame {
             rowsInserted = pstmt.executeUpdate();
             if (rowsInserted > 0) {
                 JOptionPane.showMessageDialog(this, "User added successfully");
-                refreshTable(userType);
+                populateTable(userType);
             }
             
             pstmt.close();
@@ -411,6 +411,11 @@ public class AdminHomePage extends JFrame {
         String email = JOptionPane.showInputDialog(this, "Enter new email:");
         String address = "", phoneNumber = "", name = "", cuisineType = "", location = "";
         String query2 = null;
+
+        if(username == null || email == null) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields");
+            return;
+        }
     
         switch (userType) {
             case "Customer":
@@ -432,6 +437,11 @@ public class AdminHomePage extends JFrame {
                 break;
             default:
                 return;
+        }
+
+        if(address == null || phoneNumber == null || name == null || cuisineType == null || location == null) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields");
+            return;
         }
     
         String id = table.getValueAt(selectedRow, 0).toString();
@@ -466,7 +476,7 @@ public class AdminHomePage extends JFrame {
     
                 if (rows > 0) {
                     JOptionPane.showMessageDialog(this, "User updated successfully");
-                    refreshTable(userType);
+                    populateTable(userType);
                 }
             }
         } catch (SQLException e) {
@@ -507,15 +517,11 @@ public class AdminHomePage extends JFrame {
                 int rowsDeleted = pstmt.executeUpdate();
                 if(rowsDeleted > 0) {
                     JOptionPane.showMessageDialog(this, "User deleted successfully");
-                    refreshTable(userType);
+                    populateTable(userType);
                 }
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
-    }
-    
-    private void refreshTable(String userType) {
-        populateTable(userType);
     }
 }
