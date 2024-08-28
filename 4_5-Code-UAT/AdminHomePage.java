@@ -58,6 +58,7 @@ public class AdminHomePage extends JFrame {
         userTable.setBackground(new Color(0x575658)); 
         userTable.setForeground(Color.WHITE); 
         userTable.setGridColor(Color.WHITE);
+        userTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
         // Set table header (ID, Username, etc.) background to black and text to white
         JTableHeader tableHeader = userTable.getTableHeader();
@@ -323,6 +324,10 @@ public class AdminHomePage extends JFrame {
         String cuisineType = "";
         String location = "";
 
+        if(username == null || password == null|| email == null) {
+            JOptionPane.showMessageDialog(this, "Please fill in all fields");
+            return;
+        }
 
         if (!email.matches("^(.+)@(.+)$")) {
             JOptionPane.showMessageDialog(this, "Wrong E-mail format (e.g example@gmail.com)");
@@ -360,6 +365,11 @@ public class AdminHomePage extends JFrame {
                     break;
             }
 
+            if(address == null || phoneNumber == null || name == null || cuisineType == null || location == null) {
+                JOptionPane.showMessageDialog(this, "Please fill in all fields");
+                return;
+            }
+
             pstmt = dbConnection.prepareStatement(query);
             pstmt.setString(1, username);
             pstmt.setString(2, password);
@@ -395,16 +405,17 @@ public class AdminHomePage extends JFrame {
             JOptionPane.showMessageDialog(this, "Please select a " + userType + " to edit");
             return;
         }
-
+    
         JTable table;
         String username = JOptionPane.showInputDialog(this, "Enter new username:");
         String email = JOptionPane.showInputDialog(this, "Enter new email:");
         String address = "", phoneNumber = "", name = "", cuisineType = "", location = "";
         String query2 = null;
+    
         switch (userType) {
             case "Customer":
                 table = customerTable;
-                address = JOptionPane.showInputDialog(this, "Enter new address:");  
+                address = JOptionPane.showInputDialog(this, "Enter new address:");
                 query2 = "UPDATE Customer SET ADDRESS = ? WHERE ID = ?";
                 break;
             case "Driver":
@@ -422,21 +433,20 @@ public class AdminHomePage extends JFrame {
             default:
                 return;
         }
-
+    
         String id = table.getValueAt(selectedRow, 0).toString();
-        System.out.println(id);
         String query1 = "UPDATE User SET USERNAME = ?, EMAIL = ? WHERE ID = ?";
-
+    
         try {
             PreparedStatement pstmt = dbConnection.prepareStatement(query1);
             pstmt.setString(1, username);
             pstmt.setString(2, email);
             pstmt.setInt(3, Integer.parseInt(id));
-
+    
             int rows = pstmt.executeUpdate();
             if (rows > 0) {
                 pstmt = dbConnection.prepareStatement(query2);
-                int i = 2;
+                int i = 2; // Default for Customer/Driver
                 switch (userType) {
                     case "Customer":
                         pstmt.setString(1, address);
@@ -448,12 +458,12 @@ public class AdminHomePage extends JFrame {
                         pstmt.setString(1, name);
                         pstmt.setString(2, location);
                         pstmt.setString(3, cuisineType);
-                        i = 4;
+                        i = 4; // Adjust for Restaurant
                         break;
                 }
                 pstmt.setInt(i, Integer.parseInt(id));
                 rows = pstmt.executeUpdate();
-
+    
                 if (rows > 0) {
                     JOptionPane.showMessageDialog(this, "User updated successfully");
                     refreshTable(userType);
@@ -462,14 +472,14 @@ public class AdminHomePage extends JFrame {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-    }
+    }    
 
     private void deleteUser(String userType, int selectedRow) {
         if (selectedRow == -1) {
             JOptionPane.showMessageDialog(this, "Please select a " + userType + " to delete");
             return;
         }
-
+    
         JTable table;
         switch (userType) {
             case "Customer":
@@ -484,38 +494,28 @@ public class AdminHomePage extends JFrame {
             default:
                 return;
         }
-
+    
         String id = table.getValueAt(selectedRow, 0).toString();
-
-        // Implement delete logic here based on userType
+    
         int confirmDeletion = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
         if (confirmDeletion == JOptionPane.YES_OPTION) {
-            // Implement the deletion logic here based on ID or any unique identifier
             String deleteUserQuery = "DELETE FROM User WHERE ID = ?";
             try {
                 PreparedStatement pstmt = dbConnection.prepareStatement(deleteUserQuery);
                 pstmt.setInt(1, Integer.parseInt(id));
-
+    
                 int rowsDeleted = pstmt.executeUpdate();
                 if(rowsDeleted > 0) {
                     JOptionPane.showMessageDialog(this, "User deleted successfully");
                     refreshTable(userType);
                 }
-
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
         }
     }
-
+    
     private void refreshTable(String userType) {
         populateTable(userType);
     }
-
-    // private void launchAddForm() {
-//        LogInForm addUserForm = new LogInForm();
-//        addUserForm.getCardLayout().show(addUserForm.getMainPanel(), "Registration");
-//        addUserForm.getDynamicPanel().setVisible(true);
-//        addUserForm.handleRegistration();
-    // }
 }
