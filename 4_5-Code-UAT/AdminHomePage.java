@@ -107,9 +107,8 @@ public class AdminHomePage extends JFrame {
         JButton editButton = new JButton("Edit");
         JButton deleteButton = new JButton("Delete");
         JButton refreshButton = new JButton("Refresh");
-        JButton logOutButton = new JButton("Log Out");
         JButton aboutButton = new JButton("Account Info"); 
-
+        JButton logOutButton = new JButton("Log Out");
         JLabel searchLabel = new JLabel("Search");
         searchLabel.setForeground(Color.WHITE); 
         controlPanel.add(searchLabel);
