@@ -54,7 +54,6 @@ public class AdminHomePage extends JFrame {
 
         // Table for displaying users
         JTable userTable = new JTable();
-        userTable.setSelectionBackground(new Color(0x2e2e2e));  // Change selection background color
         userTable.setBackground(new Color(0x575658)); 
         userTable.setForeground(Color.WHITE); 
         userTable.setGridColor(Color.WHITE);
@@ -62,7 +61,7 @@ public class AdminHomePage extends JFrame {
 
         // Set table header (ID, Username, etc.) background to black and text to white
         JTableHeader tableHeader = userTable.getTableHeader();
-        tableHeader.setBackground(new Color(0x2e2e2e)); 
+        tableHeader.setBackground(new Color(0x2e2e2e));
         tableHeader.setForeground(Color.WHITE);
 
         DefaultTableModel tableModel = new DefaultTableModel(new Object[]{"ID", "Username", "Email", "Details"}, 0) {
@@ -508,36 +507,26 @@ public class AdminHomePage extends JFrame {
         }
     
         String id = table.getValueAt(selectedRow, 0).toString();
-    
+
         int confirmDeletion = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
         if (confirmDeletion == JOptionPane.YES_OPTION) {
             String deleteUserQuery = "DELETE FROM User WHERE ID = ?";
+            String deleteSpecificQuery = "";
+
             try {
+                // First, delete from the User table
                 PreparedStatement pstmt = dbConnection.prepareStatement(deleteUserQuery);
                 pstmt.setInt(1, Integer.parseInt(id));
-    
                 int rowsDeleted1 = pstmt.executeUpdate();
+                pstmt.close();
 
-                switch(userType){
-                    case "Customer":
-                        deleteUserQuery = "DELETE FROM Customer WHERE ID = ?";
-                        break;
-                    case "Driver":
-                        deleteUserQuery = "DELETE FROM Driver WHERE ID = ?";
-                        break;
-                    case "Restaurant":
-                        deleteUserQuery = "DELETE FROM Restaurant WHERE ID = ?";
-                        break;
-                }
-                int rowsDeleted2 = pstmt.executeUpdate();
-                if(rowsDeleted2 > 0 && rowsDeleted1 > 0) {
+                // Check if both deletions were successful
+                if(rowsDeleted1 > 0) {
                     JOptionPane.showMessageDialog(this, "User deleted successfully");
                     populateTable(userType);
                 }
-
-                pstmt.close();
             } catch (SQLException e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         }
     }
