@@ -419,6 +419,12 @@ public class AdminHomePage extends JFrame {
         JTable table;
         String username = JOptionPane.showInputDialog(this, "Enter new Username:");
         String email = JOptionPane.showInputDialog(this, "Enter new Email:");
+
+        if (!email.matches("^(.+)@(.+)$")) {
+            JOptionPane.showMessageDialog(this, "Wrong E-mail format (e.g example@gmail.com)");
+            return;
+        }
+
         String address = "", phoneNumber = "", name = "", cuisineType = "", location = "";
         String query2 = null;
 
@@ -452,6 +458,11 @@ public class AdminHomePage extends JFrame {
 
         if (address == null || phoneNumber == null || name == null || cuisineType == null || location == null) {
             JOptionPane.showMessageDialog(this, "Please fill in all fields");
+            return;
+        }
+
+        if(!phoneNumber.matches("[0-9]{10}") && !phoneNumber.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Phone number must be 10 digits");
             return;
         }
 
