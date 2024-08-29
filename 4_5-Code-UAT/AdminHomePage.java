@@ -16,7 +16,7 @@ public class AdminHomePage extends JFrame {
         CredentialsHandler cHandler = new CredentialsHandler();
         dbConnection = cHandler.getDBConnection();
 
-        setTitle("Admin Panel");
+        setTitle("Admin Home Page");
         setLayout(new BorderLayout());
         
         AppLogo appLogo = new AppLogo();
