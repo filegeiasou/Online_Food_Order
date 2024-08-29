@@ -375,7 +375,7 @@ public class AdminHomePage extends JFrame {
                 return;
             }
 
-            if(!phoneNumber.matches("[0-9]{10}")) {
+            if(!phoneNumber.matches("[0-9]{10}") && !phoneNumber.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Phone number must be 10 digits");
                 return;
             }
@@ -432,19 +432,19 @@ public class AdminHomePage extends JFrame {
             case "Customer":
                 table = customerTable;
                 address = JOptionPane.showInputDialog(this, "Enter new Address:");
-                query2 = "UPDATE Customer SET ADDRESS = ?, USERNAME = ? WHERE ID = ?";
+                query2 = "UPDATE Customer SET USERNAME  = ?, ADDRESS = ? WHERE ID = ?";
                 break;
             case "Driver":
                 table = driverTable;
                 phoneNumber = JOptionPane.showInputDialog(this, "Enter new Phone Number:");
-                query2 = "UPDATE Driver SET PHONE_NUMBER = ?, USERNAME = ? WHERE ID = ?";
+                query2 = "UPDATE Driver SET USERNAME = ?, PHONE_NUMBER = ?  WHERE ID = ?";
                 break;
             case "Restaurant":
                 table = restaurantTable;
                 name = JOptionPane.showInputDialog(this, "Enter new Restaurant Name:");
                 location = JOptionPane.showInputDialog(this, "Enter new Location:");
                 cuisineType = JOptionPane.showInputDialog(this, "Enter new Cuisine Type:");
-                query2 = "UPDATE Restaurant SET NAME = ?, LOCATION = ?, CUISINE_TYPE = ?, USERNAME = ? WHERE ID = ?";
+                query2 = "UPDATE Restaurant SET USERNAME = ?, NAME = ?, LOCATION = ?, CUISINE_TYPE = ? WHERE ID = ?";
                 break;
             default:
                 return;
@@ -469,26 +469,24 @@ public class AdminHomePage extends JFrame {
             if (rows > 0) {
                 // Update the specific user type table
                 pstmt = dbConnection.prepareStatement(query2);
-
+                pstmt.setString(1, username);
+                int i = 3;
                 switch (userType) {
                     case "Customer":
-                        pstmt.setString(1, address);
-                        pstmt.setString(2, username);
+                        pstmt.setString(2, address);  
                         break;
                     case "Driver":
-                        pstmt.setString(1, phoneNumber);
-                        pstmt.setString(2, username);
+                        pstmt.setString(2, phoneNumber);
                         break;
                     case "Restaurant":
-                        pstmt.setString(1, name);
-                        pstmt.setString(2, location);
-                        pstmt.setString(3, cuisineType);
-                        pstmt.setString(4, username);
+                        pstmt.setString(2, name);
+                        pstmt.setString(3, location);
+                        pstmt.setString(4, cuisineType); 
+                        i = 5; 
                         break;
                 }
-                pstmt.setInt(5, Integer.parseInt(id));
+                pstmt.setInt(i, Integer.parseInt(id));
                 rows = pstmt.executeUpdate();
-
                 if (rows > 0) {
                     JOptionPane.showMessageDialog(this, "User updated successfully");
                     populateTable(userType);
