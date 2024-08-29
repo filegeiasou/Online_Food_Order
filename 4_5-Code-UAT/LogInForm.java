@@ -274,9 +274,7 @@ public class LogInForm extends JFrame implements ActionListener {
                 else JOptionPane.showMessageDialog(this, "You need to fill in the appropriate fields");
                 break;
             case "Administrator":
-                boolean status = regHandler.registerAdmin(username, password, email);
-                System.out.println(status);
-                return status;
+                return regHandler.registerAdmin(username, password, email);
             default:
                 break;
         }
