@@ -104,10 +104,10 @@ public class DriverHomePage extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 int selectedRow = ordersTable.rowAtPoint(e.getPoint());
                 acceptOrderButton.setEnabled(selectedRow >= 0);
-                    if(e.getClickCount() == 2 && selectedRow >= 0) {
-                        int orderId = (int) ordersTable.getValueAt(selectedRow, 0);
-                        viewOrderItems(orderId);
-                    }
+                if(e.getClickCount() == 2 && selectedRow >= 0) {
+                    int orderId = (int) ordersTable.getValueAt(selectedRow, 0);
+                    viewOrderItems(orderId);
+                }
             }
         });
 
