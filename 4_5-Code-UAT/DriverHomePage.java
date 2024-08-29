@@ -9,7 +9,7 @@ import java.util.*;
 public class DriverHomePage extends JFrame {
     private JTable ordersTable;
     private DefaultTableModel ordersTableModel;
-    private JButton refreshOrders, acceptOrderButton, startDeliveryButton, completeDeliveryButton, aboutButton;
+    private JButton refreshOrders, acceptOrderButton, startDeliveryButton, completeDeliveryButton, aboutButton, logOutButton;
     private int orderId;
     private Connection dbConnection;
     private JPanel deliveryPanel, topPanel, botPanel;
@@ -122,9 +122,10 @@ public class DriverHomePage extends JFrame {
         refreshOrders = new JButton("Refresh");
         acceptOrderButton = new JButton("Accept Order");
         aboutButton = new JButton("Account Info");
+        logOutButton = new JButton("Log Out");
         acceptOrderButton.setEnabled(false);
 
-        JButton[] buttons = {refreshOrders, acceptOrderButton, aboutButton};
+        JButton[] buttons = {refreshOrders, acceptOrderButton, aboutButton, logOutButton};
         for(JButton button : buttons) {
             button.setBackground(Color.WHITE);
             button.setForeground(Color.BLACK);
@@ -132,7 +133,6 @@ public class DriverHomePage extends JFrame {
 
         actionsPanel.add(refreshOrders);
         actionsPanel.add(acceptOrderButton);
-//        actionsPanel.add(aboutButton);
 
         ordersPanel.add(scrollPane, BorderLayout.CENTER);
         ordersPanel.add(actionsPanel, BorderLayout.SOUTH);
@@ -208,8 +208,8 @@ public class DriverHomePage extends JFrame {
 
     private JPanel createSupportPanel() {
         JPanel supportPanel = new JPanel();
-        JButton logOutButton = new JButton("Log Out");
 
+        supportPanel.add(aboutButton);
         supportPanel.add(logOutButton);
 
         logOutButton.addActionListener(e -> {
