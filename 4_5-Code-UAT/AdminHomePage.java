@@ -399,7 +399,7 @@ public class AdminHomePage extends JFrame {
             }
 
             rowsInserted = pstmt.executeUpdate();
-            if (rowsInserted > 0) {
+            if (rowsInserted > 0) {     
                 JOptionPane.showMessageDialog(this, "User added successfully");
                 populateTable(userType);
             }
@@ -438,19 +438,19 @@ public class AdminHomePage extends JFrame {
             case "Customer":
                 table = customerTable;
                 address = JOptionPane.showInputDialog(this, "Enter new Address:");
-                query2 = "UPDATE Customer SET USERNAME  = ?, ADDRESS = ? WHERE ID = ?";
+                query2 = "UPDATE Customer SET USERNAME  = ?, ADDRESS = ? WHERE USERNAME = ?";
                 break;
             case "Driver":
                 table = driverTable;
                 phoneNumber = JOptionPane.showInputDialog(this, "Enter new Phone Number:");
-                query2 = "UPDATE Driver SET USERNAME = ?, PHONE_NUMBER = ?  WHERE ID = ?";
+                query2 = "UPDATE Driver SET USERNAME = ?, PHONE_NUMBER = ?  WHERE USERNAME = ?";
                 break;
             case "Restaurant":
                 table = restaurantTable;
                 name = JOptionPane.showInputDialog(this, "Enter new Restaurant Name:");
                 location = JOptionPane.showInputDialog(this, "Enter new Location:");
                 cuisineType = JOptionPane.showInputDialog(this, "Enter new Cuisine Type:");
-                query2 = "UPDATE Restaurant SET USERNAME = ?, NAME = ?, LOCATION = ?, CUISINE_TYPE = ? WHERE ID = ?";
+                query2 = "UPDATE Restaurant SET USERNAME = ?, NAME = ?, LOCATION = ?, CUISINE_TYPE = ? WHERE USERNAME = ?";
                 break;
             default:
                 return;
@@ -466,15 +466,15 @@ public class AdminHomePage extends JFrame {
             return;
         }
 
-        String id = table.getValueAt(selectedRow, 0).toString();
-        String query1 = "UPDATE User SET USERNAME = ?, EMAIL = ? WHERE ID = ?";
+        String oldUsername = table.getValueAt(selectedRow, 1).toString();
+        String query1 = "UPDATE User SET USERNAME = ?, EMAIL = ? WHERE USERNAME = ?";
 
         try {
             // Update the User table
             PreparedStatement pstmt = dbConnection.prepareStatement(query1);
             pstmt.setString(1, username);
             pstmt.setString(2, email);
-            pstmt.setInt(3, Integer.parseInt(id));
+            pstmt.setString(3, oldUsername);
             int rows = pstmt.executeUpdate();
 
             if (rows > 0) {
@@ -496,7 +496,7 @@ public class AdminHomePage extends JFrame {
                         i = 5; 
                         break;
                 }
-                pstmt.setInt(i, Integer.parseInt(id));
+                pstmt.setString(i, oldUsername);
                 rows = pstmt.executeUpdate();
                 if (rows > 0) {
                     JOptionPane.showMessageDialog(this, "User updated successfully");
