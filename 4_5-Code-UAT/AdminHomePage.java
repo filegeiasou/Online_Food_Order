@@ -195,7 +195,7 @@ public class AdminHomePage extends JFrame {
                 break;
             case "Restaurant":
                 userQuery = "SELECT ID, USERNAME, EMAIL FROM User WHERE USERNAME IN (SELECT USERNAME FROM Restaurant)";
-                additionalQuery = "SELECT NAME FROM Restaurant WHERE USERNAME = ?";
+                additionalQuery = "SELECT NAME, LOCATION, CUISINE_TYPE, RATING FROM Restaurant WHERE USERNAME = ?";
                 tableModel = restaurantTableModel;
                 break;
             default:
@@ -232,7 +232,11 @@ public class AdminHomePage extends JFrame {
                             row[3] = additionalRs.getString("PHONE_NUMBER");
                             break;
                         case "Restaurant":
-                            row[3] = additionalRs.getString("NAME");
+                            String name = additionalRs.getString("NAME");
+                            String location = additionalRs.getString("LOCATION");
+                            String cuisineType = additionalRs.getString("CUISINE_TYPE");
+                            String rating = additionalRs.getString("RATING");
+                            row[3] = name + " | " + location + " | " + cuisineType + " | Rating: " + rating;
                             break;
                         default:
                             row[3] = "";
@@ -368,6 +372,11 @@ public class AdminHomePage extends JFrame {
 
             if(address == null || phoneNumber == null || name == null || cuisineType == null || location == null) {
                 JOptionPane.showMessageDialog(this, "Please fill in all fields");
+                return;
+            }
+
+            if(!phoneNumber.matches("[0-9]{10}")) {
+                JOptionPane.showMessageDialog(this, "Phone number must be 10 digits");
                 return;
             }
 
