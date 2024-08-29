@@ -127,7 +127,7 @@ public class AdminHomePage extends JFrame {
         panel.add(scrollPane, BorderLayout.CENTER);
 
         // The methods below are running on multiple instances inside the app (different tabs)
-        // That's why we use the invokeLater methods, because if not,
+        // That's why we use the invokeLater method, because if not,
         // then it won't know which instance is calling the function and it won't work
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
@@ -490,7 +490,7 @@ public class AdminHomePage extends JFrame {
             JOptionPane.showMessageDialog(this, "Please select a " + userType + " to delete");
             return;
         }
-    
+
         JTable table;
         switch (userType) {
             case "Customer":
@@ -511,16 +511,14 @@ public class AdminHomePage extends JFrame {
         int confirmDeletion = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this user?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
         if (confirmDeletion == JOptionPane.YES_OPTION) {
             String deleteUserQuery = "DELETE FROM User WHERE ID = ?";
-            String deleteSpecificQuery = "";
 
             try {
-                // First, delete from the User table
                 PreparedStatement pstmt = dbConnection.prepareStatement(deleteUserQuery);
                 pstmt.setInt(1, Integer.parseInt(id));
                 int rowsDeleted1 = pstmt.executeUpdate();
                 pstmt.close();
 
-                // Check if both deletions were successful
+                // Check if deletion were successful
                 if(rowsDeleted1 > 0) {
                     JOptionPane.showMessageDialog(this, "User deleted successfully");
                     populateTable(userType);
