@@ -151,7 +151,10 @@ public class AdminHomePage extends JFrame {
                 // else restore the initial table with the unfiltered results
                 if(!searchField.getText().trim().isEmpty()) {
                     searchButton.setEnabled(true);
-                } else populateTable(userType);
+                } else {
+                    searchButton.setEnabled(false);
+                    populateTable(userType);
+                }
             }
         });
 
