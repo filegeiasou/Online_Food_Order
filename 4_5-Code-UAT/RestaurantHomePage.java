@@ -231,13 +231,13 @@ public class RestaurantHomePage extends JFrame implements ActionListener {
 
     private void loadOrders(String restaurantName) {
         String retrieveOrders = "SELECT O.ID as OrderId," +
-                                "       U.USERNAME as CustomerName," +
+                                "       C.USERNAME as CustomerName," +
                                 "       O.QUANTITY as Quantity," +
                                 "       O.TOTAL_PRICE as TotalCost," +
                                 "       O.STATUS as Status " +
                                 "FROM ORDERS O " +
                                 "JOIN RESTAURANT R ON O.RESTAURANT_ID = R.ID " +
-                                "JOIN USER U ON O.CUSTOMER_ID = U.ID " +
+                                "JOIN CUSTOMER C ON O.CUSTOMER_ID = C.ID " +
                                 "WHERE R.NAME = ? ";
 
         CredentialsHandler cHandler = new CredentialsHandler();
